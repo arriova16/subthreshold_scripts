@@ -14,13 +14,8 @@ for m = 1:length(monkey_list) %monkey names
     for e = 1:size(electrode_list,1)
     
         block_tld = fullfile(tld, monkey_list(m).name, electrode_list(e).name, 'BlockTask');
-        %keep saying the check path or file permissions
-        % threshold_tld = fullfile(tld, monkey_list(m).name, electrode_list(e).name, 'ThresholdTask');
-        block = dir(fullfile(block_tld, "Amp*"));
-        
-        
-        % block_file = dir(fullfile(block, '*rsp)'));
-    
+        threshold_tld = fullfile(tld, monkey_list(m).name, electrode_list(e).name, 'ThresholdTask')
+
     end
     
 
