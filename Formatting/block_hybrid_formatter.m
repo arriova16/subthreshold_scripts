@@ -21,7 +21,7 @@ for m = 1:length(monkey_list) %monkey names
         % data(ii).Monkey = monkey_list(m).name;
         % data(ii).Electrode = ee;
         
-        subf = fullfile(tld, monkey_list(m).name, electrode_list(e).name, 'ThresholdTask*');
+        subf = fullfile(tld, monkey_list(m).name, electrode_list(e).name, 'ThresholdTask');
         threshold_file_list = dir(fullfile(subf, '*.rsp'));
  
         % block_tld = fullfile(tld, monkey_list(m).name, electrode_list(e).name, 'BlockTask');
@@ -35,6 +35,6 @@ for m = 1:length(monkey_list) %monkey names
     
     end %electrode_list loop
     
-    ii =ii+1;
+    % ii =ii+1;
 
 end %monkey_list loop
