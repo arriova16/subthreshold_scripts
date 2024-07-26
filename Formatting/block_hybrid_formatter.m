@@ -18,12 +18,14 @@ for m = 1:length(monkey_list) %monkey names
             and_idx = strfind(electrode_number, 'and');
             ee = [str2double(electrode_number(1:and_idx-1)), str2double(electrode_number(and_idx+3:end))];
         end
-        % data(ii).Monkey = monkey_list(m).name;
-        % data(ii).Electrode = ee;
         
-        subf = fullfile(tld, monkey_list(m).name, electrode_list(e).name, 'ThresholdTask');
-        threshold_file_list = dir(fullfile(subf, '*.rsp'));
- 
+        block_subf = fullfile(tld, monkey_list(m).name, electrode_list(e).name, 'BlockTask');
+        block_subf_subf = dir(fullfile(block_subf)); 
+        
+         % fullfile(block_subf_subf(3).name)
+         
+        % threshold_file_list = dir(fullfile(subf, '*.rsp'));
+ % 
         % block_tld = fullfile(tld, monkey_list(m).name, electrode_list(e).name, 'BlockTask');
 
         %keep saying the check path or file permissions
