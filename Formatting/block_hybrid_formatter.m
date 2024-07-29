@@ -12,12 +12,6 @@ monkey_list = monkey_list(3:end);
 
 
 
-
-
-
-
-
-
 %%
 
 % data = struct(); ii = 1;
@@ -34,6 +28,8 @@ for m = 1:length(monkey_list) %monkey names
 
         subf_block= fullfile(tld, monkey_list(m).name, electrode_list(e).name, 'BlockTask');
         subf_amp = dir(fullfile(subf_block, 'Amp*'));
+        block_files = dir(fullfile(subf_block, '*\*.rsp'));
+        
         %  block_file_list = dir(fullfile(subf_block, '.rsp'));
         
         % 
