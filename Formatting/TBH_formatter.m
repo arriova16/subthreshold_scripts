@@ -9,6 +9,7 @@ monkey_list = monkey_list(3:end);
 %% Formatting files in folder
 
 
+
 %%
 
 % data = struct(); ii = 1;
@@ -32,7 +33,8 @@ for m = 1:length(monkey_list) %monkey names
             dt_string = block_files(b).name(bf_idx(1)+1:end-4);
             dt_split = strsplit(dt_string, 'T');
 
-            if name_split{3} == 
+            
+            % if name_split{3} == 
 
             fname = sprintf('%s_%s_%s_%s.mat', monkey_list(m).name, dt_split{1}, electrode_number, name_split{3}); 
            
