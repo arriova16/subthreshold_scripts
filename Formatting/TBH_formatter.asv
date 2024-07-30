@@ -12,7 +12,7 @@ monkey_list = monkey_list(3:end);
 
 %%
 
-% data = struct(); ii = 1;
+data = struct(); ii = 1;
 for m = 1:length(monkey_list) %monkey names
     %get list of electrodes
     electrode_list = dir(fullfile(tld, monkey_list(m).name, 'Electrode*'));
@@ -34,8 +34,12 @@ for m = 1:length(monkey_list) %monkey names
             dt_split = strsplit(dt_string, 'T');
 
             
-            % if name_split{3} == 
-
+            if name_split{3} == 'darpaStimSpecific'
+                data(ii).Pulse = 'elec';
+            else
+                data(ii).Pulse = 'mech';
+            end
+            
             fname = sprintf('%s_%s_%s_%s.mat', monkey_list(m).name, dt_split{1}, electrode_number, name_split{3}); 
            
                 
@@ -72,6 +76,6 @@ for m = 1:length(monkey_list) %monkey names
     
     end %electrode_list loop
     
-    % ii =ii+1;
+    ii =ii+1;
 
 end %monkey_list loop
