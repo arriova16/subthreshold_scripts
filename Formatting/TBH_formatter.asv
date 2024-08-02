@@ -12,7 +12,7 @@ monkey_list = monkey_list(3:end);
 
 %%
 
-data = struct(); ii = 1;
+block_struct = struct(); ii = 1;
 for m = 1:length(monkey_list) %monkey names
     %get list of electrodes
     electrode_list = dir(fullfile(tld, monkey_list(m).name, 'Electrode*'));
@@ -23,7 +23,8 @@ for m = 1:length(monkey_list) %monkey names
             and_idx = strfind(electrode_number, 'and');
             ee = [str2double(electrode_number(1:and_idx-1)), str2double(electrode_number(and_idx+3:end))];
         end
-
+        block_struct(ii).Monkey = monkey_list(m).name;
+        block_struct(ii).Electrode = ee;
         subf_block= fullfile(tld, monkey_list(m).name, electrode_list(e).name, 'BlockTask');
         subf_amp = dir(fullfile(subf_block, 'Amp*'));
         block_files = dir(fullfile(subf_block, '*\*.rsp'));
@@ -32,16 +33,23 @@ for m = 1:length(monkey_list) %monkey names
             bf_idx = find(block_files(b).name == '_', 1, 'last');
             dt_string = block_files(b).name(bf_idx(1)+1:end-4);
             dt_split = strsplit(dt_string, 'T');
-
             
-            if name_split{3} == 'darpaStimSpecific'
-                data(ii).Pulse = 'elec';
+            task_idx = string(name_split{3});
+            if task_idx == 'darpaStimSpecific'
+                 task_idx_e = 'BlockElect';
             else
-                data(ii).Pulse = 'mech';
+                task_idx_m = 'BlockMech';
             end
             
-            fname = sprintf('%s_%s_%s_%s.mat', monkey_list(m).name, dt_split{1}, electrode_number, name_split{3}); 
-           
+            fname_m = sprintf('%s_%s_%s_%s.mat', monkey_list(m).name, dt_split{1}, electrode_number, task_idx_m); 
+            fname_e = sprintf('%s_%s_%s_%s.mat', monkey_list(m).name, dt_split{1}, electrode_number, task_idx_e);
+
+            if exist(fullfile(subf_block, fname_m), 'file') ~= 1 || overwrite
+                raw_data = readcell(fullfile(subf_block, block_files(b).name), ...
+                    "FileType","text", 'NumHeaderLines',1);
+                block_mech_table = BlockMechFormatter(raw_data);
+                save(fullfile(sub))
+            end
                 
         
 
