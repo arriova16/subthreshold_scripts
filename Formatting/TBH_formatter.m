@@ -6,10 +6,6 @@ tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\RawData';
 monkey_list = dir(tld);
 monkey_list = monkey_list(3:end);
 
-%% Formatting files in folder
-
-
-
 %%
 
 block_struct = struct(); ii = 1;
@@ -24,36 +20,42 @@ for m = 1:length(monkey_list) %monkey names
             ee = [str2double(electrode_number(1:and_idx-1)), str2double(electrode_number(and_idx+3:end))];
         end
         block_struct(ii).Monkey = monkey_list(m).name;
+        %trouble running through= not recognizing ee
         block_struct(ii).Electrode = ee;
-        subf_block= fullfile(tld, monkey_list(m).name, electrode_list(e).name, 'BlockTask');
-        subf_amp = dir(fullfile(subf_block, 'Amp*'));
-        block_files = dir(fullfile(subf_block, '*\*.rsp'));
-        for b = 1:size(block_files, 1)
-            name_split = strsplit(block_files(b).name, '_');
-            bf_idx = find(block_files(b).name == '_', 1, 'last');
-            dt_string = block_files(b).name(bf_idx(1)+1:end-4);
-            dt_split = strsplit(dt_string, 'T');
-            
-            task_idx = string(name_split{3});
-            if task_idx == 'darpaStimSpecific'
-                 task_idx_e = 'BlockElect';
-            else
-                task_idx_m = 'BlockMech';
-            end
-            
-            fname_m = sprintf('%s_%s_%s_%s.mat', monkey_list(m).name, dt_split{1}, electrode_number, task_idx_m); 
-            fname_e = sprintf('%s_%s_%s_%s.mat', monkey_list(m).name, dt_split{1}, electrode_number, task_idx_e);
-
-            if exist(fullfile(subf_block, fname_m), 'file') ~= 1 || overwrite
-                raw_data = readcell(fullfile(subf_block, block_files(b).name), ...
-                    "FileType","text", 'NumHeaderLines',1);
-                block_mech_table = BlockMechFormatter(raw_data);
-                save(fullfile(subf_block, fname_m), 'BlockMech_table')
-            end
-                
+        %starting with threshold = might be easier than block
+        subf_hybrid = fullfile(tld,  monkey_list(m).name, electrode_list(e).name, 'ThresholdTask');
         
 
-        end
+
+        % subf_block= fullfile(tld, monkey_list(m).name, electrode_list(e).name, 'BlockTask');
+        % subf_amp = dir(fullfile(subf_block, 'Amp*'));
+        % block_files = dir(fullfile(subf_block, '*\*.rsp'));
+        % for b = 1:size(block_files, 1)
+        %     name_split = strsplit(block_files(b).name, '_');
+        %     bf_idx = find(block_files(b).name == '_', 1, 'last');
+        %     dt_string = block_files(b).name(bf_idx(1)+1:end-4);
+        %     dt_split = strsplit(dt_string, 'T');
+        % 
+        %     task_idx = string(name_split{3});
+        %     if task_idx == "darpaStimSpecific"
+        %          task_idx_e = 'BlockElect';
+        %     else
+        %         task_idx_m = 'BlockMech';
+        %     end
+        %     fname_m = sprintf('%s_%s_%s_%s.mat', monkey_list(m).name, dt_split{1}, electrode_number, task_idx_m); 
+        %     %issues run through = not recognizing task_idx_e
+        %     fname_e = sprintf('%s_%s_%s_%s.mat', monkey_list(m).name, dt_split{1}, electrode_number, task_idx_e);
+        % 
+        %     % if exist(fullfile(subf_block, fname_m), 'file') ~= 1 || overwrite
+        %     %     raw_data = readcell(fullfile(subf_block, block_files(b).name), ...
+        %     %         "FileType","text", 'NumHeaderLines',1);
+        %     %     block_mech_table = BlockMechFormatter(raw_data);
+        %     %     save(fullfile(subf_block, fname_m), 'BlockMech_table')
+        %     % end
+        %     % 
+        % 
+        % 
+        % end
 
 
 
