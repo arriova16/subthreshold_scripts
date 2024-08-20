@@ -47,21 +47,36 @@ for m = 1:length(monkey_list)
                 ee = str2double(electrode_numbs);
             end
             electrode_an_ca = ca_an_split{2};
-            if containe(electrode_an_ca, 'and')
+            if contains(electrode_an_ca, 'and')
                 and_idx_2 = strfind(electrode_an_ca, 'and');
-                ee_ca_an = [str2double(electrode_an_ca(1:and_idx_2-1)), str2double(electrode_an_ca(and_idx_2+3:end))];
+                ee_2 = [str2double(electrode_an_ca(1:and_idx_2-1)), str2double(electrode_an_ca(and_idx_2+3:end))];
             else
-                ee_2 = str2double(electrode)
+                ee_2 = str2double(electrode_an_ca);
+            end
 
+           % ca_an_struct(c).Electrode = sort()
             og_struct(g).Electrodes = sort(ee);
-
+            ca_an_struct(c).Electrodes = sort(ee_2);
          end %ca_an_files
          end %og_mat_files           
 
 end %monkey_list
 
+%go over and try to reduce the amount of lines, especially for the
+%electrodes
+
 %% permutations analysis
 
+wind_size = 50;
+
+for d = 1:length(og_struct)
+    for i = 1:(size(og_struct(d).ResponseTable,1) - wind_size+1)
+        current_window = i:i+wind_size-1;
+        next = i+10:1:wind_size-1;
+       
+
+    end % og_struct response table?
+end %og_struct
 
 
 
