@@ -64,6 +64,21 @@ end %monkey_list
 
 %go over and try to reduce the amount of lines, especially for the
 %electrodes
+%takes long to run this part/ any way to make it more efficient
+
+
+%%
+
+for i = length(og_struct)
+
+    % [detect]
+
+
+end % og_struct
+
+
+
+
 
 %% permutations analysis
 

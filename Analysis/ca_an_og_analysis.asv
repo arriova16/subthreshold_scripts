@@ -64,6 +64,16 @@ end %monkey_list
 
 %go over and try to reduce the amount of lines, especially for the
 %electrodes
+%takes long to run this part/ any way to make it more efficient
+
+
+%%
+
+
+
+
+
+
 
 %% permutations analysis
 
@@ -80,15 +90,3 @@ end %og_struct
 
 
 
-a= randi(100,[1,50]);        %Generic Vector
-win_dim=3;                   %Generic window size
-
-num_stps=(length(a)-win_dim) %number of "slides", we need to subtract win_dim to avoid that the window will go over the signal 
-threshold=  15 %Generic number only for the example
-for i= 1:num_stps
-    mean_win(i)=mean(a(i:i+win_dim -1); %we subtract 1 or we make an error, and the code analyzes a segment bigger than one unit 
-    std_win(i)=std( a(i:i+win_dim -1);  %example for i=2 if we don't subtract 1 our segment starts from 2 until 5, so we analyze 
-                                        % 2 3 4 5, but we defined a window dimension of 3
-    If std_win(i)> threshold
-    std_anomalies=std_win(i)             %here i think there is an error                                
-end
