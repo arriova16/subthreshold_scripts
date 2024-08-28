@@ -70,9 +70,7 @@ end %monkey_list
 %%
 
 for i = length(og_struct)
-
-    % [detect]
-
+    [detection_table] = AnalyzeResponseTable(og_struct(1).ResponseTable);
 
 end % og_struct
 

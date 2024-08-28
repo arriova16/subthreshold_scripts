@@ -34,7 +34,7 @@ function [detection_table] = AnalyzeResponseTable(input_table)
         ux2_str{d2} = num2str(u_mech(d2));
     end
    
-    detection_table = array2table([u_mech,detection_table], 'VariableNames', ['MechAmps', 'One', 'Two']);
+    detection_table = array2table(u_mech,detection_table)
 %     detection_table = array2table(detection_table,...
 %         'VariableNames', ux1_str, 'RowNames', ux2_str);
 
