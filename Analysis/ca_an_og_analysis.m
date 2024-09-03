@@ -67,10 +67,15 @@ end %monkey_list
 %takes long to run this part/ any way to make it more efficient
 
 
-%%
+%% Analysis and permutations
 
-for i = length(og_struct)
-    [detection_table] = AnalyzeResponseTable(og_struct(1).ResponseTable);
+for i = 1:length(og_struct)
+    [detection_table{i}, dprime_table{i}] = AnalyzeResponseTable(og_struct(i).ResponseTable(:,:));
+    og_struct(i).detection_table = detection_table{i};
+    og_struct(i).drpime_table = dprime_table{i};
+
+    % [~, coeffs, ~,~,~, warn] = FitSigmoid()
+
 
 end % og_struct
 
@@ -82,14 +87,14 @@ end % og_struct
 
 wind_size = 50;
 
-for d = 1:length(og_struct)
-    for i = 1:(size(og_struct(d).ResponseTable,1) - wind_size+1)
+% for d = 1:length(og_struct)
+    for i = 1:(size(og_struct(1).ResponseTable,1) - wind_size+1)
         current_window = i:i+wind_size-1;
-        next = i+10:1:wind_size-1;
-       
-
+%         next = i+10:1:wind_size-1;
+% 
+% 
     end % og_struct response table?
-end %og_struct
+% end %og_struct
 
 
 
