@@ -57,6 +57,11 @@ for m = 1:length(monkey_list)
            % ca_an_struct(c).Electrode = sort()
             og_struct(g).Electrodes = sort(ee);
             ca_an_struct(c).Electrodes = sort(ee_2);
+
+            num_trials = size(og_struct(g).ResponseTable,1);
+            og_struct(g).Trials = num_trials;
+            num_trial_1 = size(ca_an_struct(c).ResponseTable,1);
+            ca_an_struct(c).Trials = num_trial_1;
          end %ca_an_files
          end %og_mat_files           
 
@@ -85,16 +90,43 @@ end % og_struct
 
 %% permutations analysis
 
-wind_size = 50;
+wind_size = 100;
 
-% for d = 1:length(og_struct)
+
+for d = 1:length(og_struct)
     for i = 1:(size(og_struct(1).ResponseTable,1) - wind_size+1)
+
         current_window = i:i+wind_size-1;
-%         next = i+10:1:wind_size-1;
+        % next = i+10:1:wind_size-1;
 % 
 % 
     end % og_struct response table?
-% end %og_struct
+end %og_struct
 
-
-
+% for d = 1:length(og_struct)
+%     trials_num = og_struct(1).Trials;
+%     max_idx = trials_num - wind_size;
+%     running_perf = zeros(max_idx,1);
+%     for j = 1:max_idx
+%         running_perf(j) = og_struct(1).ResponseTable(j:j+wind_size-1);
+%     end
+% 
+% 
+% end
+%     % num_trials = block_struct(i).trials;
+%     % max_idx = num_trials - win_size;
+%     % running_perf = zeros(max_idx,1);
+%     % for j = 1:max_idx
+%     %     running_perf(j) = mean(strcmp(block_struct(i).ResponseTable.Response(j:j+win_size-1), 'correct'));
+%     % end
+%     % 
+% for d = 1:length(og_struct)
+%     trials_num = og_struct(1).Trials;
+%     max_idx = trials_num - wind_size;
+%     running_perf = zeros(max_idx,1);
+%     for j = 1:max_idx
+%         running_perf(j) = og_struct(1).ResponseTable(j:j+wind_size-1);
+%     end
+% 
+% 
+% end
