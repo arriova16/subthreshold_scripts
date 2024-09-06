@@ -91,42 +91,22 @@ end % og_struct
 %% permutations analysis
 
 wind_size = 100;
-
+wind_step = 100;
 
 for d = 1:length(og_struct)
-    for i = 1:(size(og_struct(1).ResponseTable,1) - wind_size+1)
 
-        current_window = i:i+wind_size-1;
-        % next = i+10:1:wind_size-1;
-% 
-% 
+    table_size = (size(og_struct(1).ResponseTable,1));
+    for i = 1:table_size
+
+        if table_size < (i * wind_size) + 1)
+            current_window = ((i-1)*wind_size) + 1:table_size;
+        else
+            current_window = ((i-1)*wind_size) + 1:table_size;
+
+
+
+        upper_idx = min((size(og_struct(1).ResponseTable,1)), (i * wind_size) + 1);
+        
     end % og_struct response table?
 end %og_struct
 
-% for d = 1:length(og_struct)
-%     trials_num = og_struct(1).Trials;
-%     max_idx = trials_num - wind_size;
-%     running_perf = zeros(max_idx,1);
-%     for j = 1:max_idx
-%         running_perf(j) = og_struct(1).ResponseTable(j:j+wind_size-1);
-%     end
-% 
-% 
-% end
-%     % num_trials = block_struct(i).trials;
-%     % max_idx = num_trials - win_size;
-%     % running_perf = zeros(max_idx,1);
-%     % for j = 1:max_idx
-%     %     running_perf(j) = mean(strcmp(block_struct(i).ResponseTable.Response(j:j+win_size-1), 'correct'));
-%     % end
-%     % 
-% for d = 1:length(og_struct)
-%     trials_num = og_struct(1).Trials;
-%     max_idx = trials_num - wind_size;
-%     running_perf = zeros(max_idx,1);
-%     for j = 1:max_idx
-%         running_perf(j) = og_struct(1).ResponseTable(j:j+wind_size-1);
-%     end
-% 
-% 
-% end
