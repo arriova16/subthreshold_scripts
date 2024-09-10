@@ -94,7 +94,7 @@ wind_size = 100;
 wind_step = 100;
 
 for d = 1:length(og_struct)
-    table_size = (size(og_struct(1).ResponseTable,1));
+    table_size = (size(og_struct(d).ResponseTable,1));
     for i = 1:table_size
         if table_size < (i * wind_size) + 1
             current_window = ((i-1)*wind_size) + 1:table_size;
@@ -102,6 +102,9 @@ for d = 1:length(og_struct)
         else
             current_window = ((i-1)*wind_size) + 1:(i * wind_size) + 1;
         end
+        [detection_table{d}, dprime_table{d}] = AnalyzeResponseTable(og_struct(d).ResponseTable(current_window,:));
+    
+
     end % og_struct
 end %og_struct
 
