@@ -104,7 +104,7 @@ for d = 1:length(og_struct)
         end
         [detection_table{d}, dprime_table{d}] = AnalyzeResponseTable(og_struct(d).ResponseTable(current_window,:));
     
-
+        
     end % og_struct
 end %og_struct
 
