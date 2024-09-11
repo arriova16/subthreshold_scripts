@@ -74,10 +74,18 @@ end %monkey_list
 
 %% Analysis and permutations
 
+% get detection table(pdetect and dprime)
+% get fitsigmoid for each electrode 
+% find threshold points for each pair
+% then do permutation test
+
+
 for i = 1:length(og_struct)
-    [detection_table{i}, dprime_table{i}] = AnalyzeResponseTable(og_struct(i).ResponseTable(:,:));
-    og_struct(i).detection_table = detection_table{i};
-    og_struct(i).drpime_table = dprime_table{i};
+    [detection_table{i}, dprime_table{i}] = AnalyzeResponseTable(og_struct(1).ResponseTable(:,:));
+    % og_struct(i).detection_table = detection_table{i};
+    % og_struct(i).drpime_table = dprime_table{i};
+    % 
+    % x_value = 
 
     % [~, coeffs, ~,~,~, warn] = FitSigmoid()
 
@@ -85,26 +93,39 @@ for i = 1:length(og_struct)
 end % og_struct
 
 
+%% sliding window - nice to have
+% wind_size = 100;
+% wind_step = 100;
+% 
+% for d = 1:length(og_struct)
+%     table_size = (size(og_struct(d).ResponseTable,1));
+%     for i = 1:table_size
+%         if table_size < (i * wind_size) + 1
+%             current_window = ((i-1)*wind_size) + 1:table_size;
+%             break;
+%         else
+%             current_window = ((i-1)*wind_size) + 1:(i * wind_size) + 1;
+%         end
+%         [detection_table{d}, dprime_table{d}] = AnalyzeResponseTable(og_struct(d).ResponseTable(current_window,:));
+% 
+% 
+%     end % og_struct
+% end %og_struct
+
+%% permutation anaylsis- 
+
+%
 
 
 
-%% permutations analysis
 
-wind_size = 100;
-wind_step = 100;
 
-for d = 1:length(og_struct)
-    table_size = (size(og_struct(d).ResponseTable,1));
-    for i = 1:table_size
-        if table_size < (i * wind_size) + 1
-            current_window = ((i-1)*wind_size) + 1:table_size;
-            break;
-        else
-            current_window = ((i-1)*wind_size) + 1:(i * wind_size) + 1;
-        end
-        [detection_table{d}, dprime_table{d}] = AnalyzeResponseTable(og_struct(d).ResponseTable(current_window,:));
-    
-        
-    end % og_struct
-end %og_struct
+
+
+
+
+
+
+
+
 
