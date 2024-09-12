@@ -21,25 +21,18 @@ function [detection_table, dprime_table] = AnalyzeResponseTable(input_table)
             else
                 detection_table(d2,d1) = mean(y(d_idx));
             end
-
-
-        end %u_mech
+           pd_strings{d1} = sprintf('pDetect_%d', u_icms(d1)); 
+           
+         end %u_mech
     end %u_icms
    
-    ux1_str = cell(size(u_icms));
-    for d1 = 1:length(u_icms)
-        ux1_str{d1} = num2str(u_icms(d1));
-    end
-    ux2_str = cell(size(u_mech));
-    for d2 = 1:length(u_mech)
-        ux2_str{d2} = num2str(u_mech(d2));
-    end
+
    
-detection_table = table(ux2_str, detection_tble);
+    detection_table = array2table([u_mech, detection_table], 'VariableNames', ['MechAmps', pd_strings]);
        % detection_table = array2table(detection_table,...
        %  'VariableNames', ux1_str, 'RowNames', ux2_str);
     % 
-
+   
 
     dprime_table = detection_table;
     for c = 1:size(dprime_table,2)

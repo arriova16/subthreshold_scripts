@@ -87,11 +87,11 @@ for i = 1:length(og_struct)
     og_struct(i).drpime_table = dprime_table{i};
 
     %getting coeffs
-    x_mech{i} = og_struct(i).detection_table{:,1}; 
-    % y_icms_catch{i} = og_struct(i).detection_table{:,2};
-    % y_icms{i} = og_struct(i).detection_table{:,3};
+    x_mech = og_struct(i).detection_table{:,1}; 
+    y_icms_catch = og_struct(i).detection_table{:,2};
+    y_icms = og_struct(i).detection_table{:,3};
 
-    % [~, coeffs_catch{i}, ~,~,~, warn_catch{i}] = FitSigmoid(x_mech, y_icms_catch, 'NumCoeffs', 4, 'Constraints',[0,200;-5, 5], 'PlotFit', true );
+    [~, coeffs_catch{i}, ~,~,~, warn_catch{i}] = FitSigmoid(x_mech, y_icms_catch, 'NumCoeffs', 4, 'Constraints',[0,200;-1, 1], 'PlotFit', true );
 
 
 
