@@ -74,7 +74,7 @@ end %monkey_list
 
 %% Analysis and permutations
 
-% get detection table(pdetect and dprime)
+% get detection table(pdetect and dprime) -error with dprime
 % get fitsigmoid for each electrode 
 % find threshold points for each pair
 % then do permutation test
@@ -87,39 +87,15 @@ for i = 1:length(og_struct)
     og_struct(i).drpime_table = dprime_table{i};
 
     %getting coeffs
-    x_mech{i} = og_struct(i).detection_table{:,1}; 
-    % y_icms_catch{i} = og_struct(i).detection_table{:,2};
+    x_mech = og_struct(i).detection_table{:,1}; 
+    y_icms_catch = og_struct(i).detection_table{:,2};
     % y_icms{i} = og_struct(i).detection_table{:,3};
 
-    % [~, coeffs_catch{i}, ~,~,~, warn_catch{i}] = FitSigmoid(x_mech, y_icms_catch, 'NumCoeffs', 4, 'Constraints',[0,200;-5, 5], 'PlotFit', true );
+    [~, coeffs_catch, ~,~,~, warn_catch] = FitSigmoid(x_mech, y_icms_catch, 'NumCoeffs', 4, 'Constraints',[0,200;-5, 5], 'PlotFit', true );
 
 
 
 end % og_struct
-
-
-%% sliding window - nice to have
-% wind_size = 100;
-% wind_step = 100;
-% 
-% for d = 1:length(og_struct)
-%     table_size = (size(og_struct(d).ResponseTable,1));
-%     for i = 1:table_size
-%         if table_size < (i * wind_size) + 1
-%             current_window = ((i-1)*wind_size) + 1:table_size;
-%             break;
-%         else
-%             current_window = ((i-1)*wind_size) + 1:(i * wind_size) + 1;
-%         end
-%         [detection_table{d}, dprime_table{d}] = AnalyzeResponseTable(og_struct(d).ResponseTable(current_window,:));
-% 
-% 
-%     end % og_struct
-% end %og_struct
-
-%% permutation anaylsis- 
-
-%
 
 
 

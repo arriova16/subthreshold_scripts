@@ -29,10 +29,6 @@ function [detection_table, dprime_table] = AnalyzeResponseTable(input_table)
 
    
     detection_table = array2table([u_mech, detection_table], 'VariableNames', ['MechAmps', pd_strings]);
-       % detection_table = array2table(detection_table,...
-       %  'VariableNames', ux1_str, 'RowNames', ux2_str);
-    % 
-   
 
     dprime_table = detection_table;
     for c = 1:size(dprime_table,2)
