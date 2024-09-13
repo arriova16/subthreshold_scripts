@@ -31,7 +31,9 @@ function [detection_table, dprime_table] = AnalyzeResponseTable(input_table)
     detection_table = array2table([u_mech, detection_table], 'VariableNames', ['MechAmps', pd_strings]);
 
     dprime_table = detection_table;
-    for c = 1:size(dprime_table,2)
+
+    %start at second column instead of first
+    for c = 2:size(dprime_table,2)
         % Make d'
         if dprime_table{1,c} < 1e-3
             z_fa = norminv(1e-3);

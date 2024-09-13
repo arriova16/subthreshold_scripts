@@ -38,7 +38,7 @@ for m = 1:length(monkey_list)
 
             og_struct(g).ResponseTable = temp.bigtable;
             ca_an_struct(c).ResponseTable = temp_ca_an.bigtable;
-
+            % rewrite this to be combined
             electrode_numbs = fname_split{2};
             if contains(electrode_numbs, 'and')
                 and_idx = strfind(electrode_numbs, 'and');
@@ -53,8 +53,8 @@ for m = 1:length(monkey_list)
             else
                 ee_2 = str2double(electrode_an_ca);
             end
+            %
 
-           % ca_an_struct(c).Electrode = sort()
             og_struct(g).Electrodes = sort(ee);
             ca_an_struct(c).Electrodes = sort(ee_2);
 
@@ -72,7 +72,7 @@ end %monkey_list
 %takes long to run this part/ any way to make it more efficient
 
 
-%% Analysis and permutations
+%% Analysis pdetect and dprime
 
 % get detection table(pdetect and dprime) -error with dprime
 % get fitsigmoid for each electrode 
@@ -82,24 +82,22 @@ end %monkey_list
 
 for i = 1:length(og_struct)
     %getting pdetect and dprime
+    % [detection_table{i}, dprime_table{i}] = AnalyzeResponseTable(og_struct(i).ResponseTable(:,:));
+
     [detection_table{i}, dprime_table{i}] = AnalyzeResponseTable(og_struct(i).ResponseTable(:,:));
     og_struct(i).detection_table = detection_table{i};
-    og_struct(i).drpime_table = dprime_table{i};
+    og_struct(i).dprime_table = dprime_table{i};
 
     %getting coeffs
     x_mech = og_struct(i).detection_table{:,1}; 
     y_icms_catch = og_struct(i).detection_table{:,2};
     % y_icms{i} = og_struct(i).detection_table{:,3};
 
-    [~, coeffs_catch, ~,~,~, warn_catch] = FitSigmoid(x_mech, y_icms_catch, 'NumCoeffs', 4, 'Constraints',[0,200;-5, 5], 'PlotFit', true );
-
+    % [~, coeffs_catch, ~,~,~, warn_catch] = FitSigmoid(x_mech, y_icms_catch, 'NumCoeffs', 4, 'Constraints',[0,200;-5, 5], 'PlotFit', true );
+    
 
 
 end % og_struct
-
-
-
-
 
 
 
