@@ -92,10 +92,11 @@ for i = 1:length(og_struct)
     x_mech = og_struct(i).detection_table{:,1}; 
     y_icms_catch = og_struct(i).detection_table{:,2};
     % y_icms{i} = og_struct(i).detection_table{:,3};
-
-    % [~, coeffs_catch, ~,~,~, warn_catch] = FitSigmoid(x_mech, y_icms_catch, 'NumCoeffs', 4, 'Constraints',[0,200;-5, 5], 'PlotFit', true );
     
-
+    %hitting boundary
+    [~, coeffs_catch, ~,~,~, warn_catch] = FitSigmoid(x_mech, y_icms_catch, 'NumCoeffs', 4, 'Constraints',[0,200;-5, 5], 'PlotFit', true );
+    
+    %do transformation with coeffs rather than just doing dprime
 
 end % og_struct
 
