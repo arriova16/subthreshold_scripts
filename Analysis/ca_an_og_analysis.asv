@@ -72,13 +72,15 @@ end %monkey_list
 %takes long to run this part/ any way to make it more efficient
 
 
-%% Analysis pdetect and dprime
+%% Analysis pdetect and dprime 
+%og_struct
 
 % get detection table(pdetect and dprime) -error with dprime
 % get fitsigmoid for each electrode 
 % find threshold points for each pair
 % then do permutation test
 
+threshold = 1.35;
 
 for i = 1:length(og_struct)
     %getting pdetect and dprime
@@ -91,12 +93,33 @@ for i = 1:length(og_struct)
     %getting coeffs
     x_mech = og_struct(i).detection_table{:,1}; 
     y_icms_catch = og_struct(i).detection_table{:,2};
-    % y_icms{i} = og_struct(i).detection_table{:,3};
-    
-    %hitting boundary
-    [~, coeffs_catch(i), ~,~,~, warn_catch(i)] = FitSigmoid(x_mech, y_icms_catch, 'NumCoeffs', 4, 'Constraints',[0,200;-5, 5], 'PlotFit', true );
-    
-    %do transformation with coeffs rather than just doing dprime
+    y_icms = og_struct(i).detection_table{:,3};
+
+    [sig_catch, coeffs_catch, ~,~,~, warn_catch] = FitSigmoid(x_mech, y_icms_catch, 'Constraints',[0,200;-5, 5], 'Plotfit', true);
+    [sig, coeffs, ~,~,~, warn] = FitSigmoid(x_mech, y_icms,'Constraints',[0,200;-5, 5]);
+
+    og_struct(i). coeff_catch = coeffs_catch;
+    og_struct(i).coeff = coeffs;
+    % %do transformation with coeffs rather than just doing dprime
+    xq = linspace(0, x_mech(end));
+    y_fit_catch = sig_catch(coeffs_catch, xq);
+    y_fit = sig(coeffs, xq);
+    dprime_con_catch = norminv(y_fit_catch)- norminv(y_fit_catch(1));
+    dprime_con = norminv(y_fit) - norminv(y_fit(1));
+
+    yq_idx = find(dprime_con >= threshold,1, "first");
+    yq_idx_catch = find(dprime_con_catch >= threshold, 1, 'first');
+    mt_catch = xq(yq_idx_catch);
+    mt = xq(yq_idx);
+
+    if isempty(yq_idx) && isempty(yq_idx_catch)
+        mt = NaN;
+    else
+        mt_catch = NaN;
+    end
+    og_struct(i).mech_threshold_catch = mt_catch;
+    og_struct(i).mech_threshold = mt;
+    % plot(xq,y_fit)
 
 end % og_struct
 
