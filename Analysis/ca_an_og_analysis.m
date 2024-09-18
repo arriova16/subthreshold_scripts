@@ -96,7 +96,7 @@ for i = 1:length(og_struct)
     y_icms = og_struct(i).detection_table{:,3};
 
     [sig_catch, coeffs_catch, ~,~,~, warn_catch] = FitSigmoid(x_mech, y_icms_catch, 'Constraints',[0,200;-5, 5]);
-    [sig, coeffs, ~,~,~, warn] = FitSigmoid(x_mech, y_icms,'Constraints',[0,200;-5, 5]);
+    [sig, coeffs, ~,~,~, warn] = FitSigmoid(x_mech, y_icms, 'Constraints',[0,200;-5, 5]);
 
     og_struct(i). coeff_catch = coeffs_catch;
     og_struct(i).coeff = coeffs;
@@ -127,6 +127,10 @@ for i = 1:length(og_struct)
 end % og_struct
 
 
+%% Cathodic and Anodic Structure
+% get dprime and pdetect 
+%set up coeffs 
+%get 
 
 
 
@@ -134,4 +138,7 @@ end % og_struct
 
 
 
+
+
+% https://www.youtube.com/watch?v=5Z7pIWMYi64
 
