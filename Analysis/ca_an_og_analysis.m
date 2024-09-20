@@ -1,7 +1,7 @@
 %Darpa Cathodic Anodic Analysis
 % pdetect and dprime of cathodic and anodic mat files
 
-tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
 
 og_struct = struct();
 ca_an_struct = struct();
@@ -132,10 +132,13 @@ end % og_struct
 %set up coeffs 
 %get 
 
+% do permutations; do separate indeces (idx) for each condition. leave out
+% catch trials for now
+for p = 1:length(og_struct)
+    
 
 
-
-
+end %og_struct
 
 
 
