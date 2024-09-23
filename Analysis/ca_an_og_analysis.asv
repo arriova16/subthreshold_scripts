@@ -1,8 +1,8 @@
 %Darpa Cathodic Anodic Analysis
 % pdetect and dprime of cathodic and anodic mat files
 
-tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
-% tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+% tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
 
 og_struct = struct();
 ca_an_struct = struct();
@@ -141,6 +141,7 @@ end % og_struct
 %histogram the plot to see where the differences lie between permutation
 %data and 
 
+
 datasample(og_struct(1).ResponseTable,120);
 
 for p = 1:length(og_struct)
@@ -149,10 +150,22 @@ for p = 1:length(og_struct)
     mech_idx = find(og_struct(p).ResponseTable.IndentorAmp ~= 0 & og_struct(p).ResponseTable.StimAmp == 0);
     
     %run permutations
-    for i = 1:length(100)
-        mech_ele_perm = datasample(og_struct(p).ResponseTable(mech_elec_idx,:), 120);
-        mech_perm = datasample(og_struct(p).ResponseTable(mech_idx,:), 120);
+    for i = 1:100
+        mech_ele_perm = datasample(og_struct(p).ResponseTable(mech_elec_idx,:), 120, 'Replace', false);
+        mech_perm = datasample(og_struct(p).ResponseTable(mech_idx,:), 120, 'Replace', false);
+
+        % Calculate the curves based on trials selected above
+
+
+
+        % Get the difference between the curves
+        % delta_null(i) = mech_ele_dprime - mech_dprime; 
+
+
+
     end
+
+
 
 end %og_struct
 
