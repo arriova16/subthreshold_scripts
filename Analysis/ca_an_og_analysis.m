@@ -144,6 +144,9 @@ end % og_struct
 
 
 for p = 1:length(og_struct)
+    %getting results to show 010101 and indexing that into a find? 
+    %make sure the grouping isn't limiting the group
+    % amp1(mech1) all of electrical and having all on mech
     
     mech_u = unique(og_struct(1).ResponseTable.IndentorAmp);
     %get indices
