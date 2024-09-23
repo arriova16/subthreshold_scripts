@@ -1,8 +1,8 @@
 %Darpa Cathodic Anodic Analysis
 % pdetect and dprime of cathodic and anodic mat files
 
-% tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
-tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+% tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
 
 og_struct = struct();
 ca_an_struct = struct();
@@ -106,7 +106,7 @@ for i = 1:length(og_struct)
         [sig_catch, coeffs_catch, ~,~,~, warn_catch] = FitSigmoid(x_mech, y_icms_catch, 'Constraints',[0,200;-5, 5]);
         [sig, coeffs, ~,~,~, warn] = FitSigmoid(x_mech, y_icms, 'Constraints',[0,200;-5, 5]);
         
-        [sig_catch_ca, coegg]
+        [sig_catch_ca, coeffs_ca, ~,~,~, warn_catch_ca] = FitSigmoid(x_mech_ca, y_icms_catch_ca, 'NumCoeffs', 4, 'CoeffInit', [.01,30,NaN,NaN], 'PlotFit', true);
         og_struct(i). coeff_catch = coeffs_catch;
         og_struct(i).coeff = coeffs;
         % %do transformation with coeffs rather than just doing dprime
@@ -141,11 +141,20 @@ end % og_struct
 %histogram the plot to see where the differences lie between permutation
 %data and 
 
+datasample(og_struct(1).ResponseTable,120);
 
-% for p = 1:length(og_struct)
-  
+for p = 1:length(og_struct)
+    %get indices
+    mech_elec_idx = find(og_struct(p).ResponseTable.IndentorAmp ~= 0 & og_struct(p).ResponseTable.StimAmp ~= 0);
+    mech_idx = find(og_struct(p).ResponseTable.IndentorAmp ~= 0 & og_struct(p).ResponseTable.StimAmp == 0);
+    
+    %run permutations
+    for i = 1:length(100)
+        mech_ele_perm = datasample(og_struct(p).ResponseTable(mech_elec_idx,:), 120);
+        mech_perm = datasample(og_struct(p).ResponseTable(mech_idx,:), 120);
+    end
 
-% end %og_struct
+end %og_struct
 
 %% Cathodic and Anodic Structure
 % get dprime and pdetect 
