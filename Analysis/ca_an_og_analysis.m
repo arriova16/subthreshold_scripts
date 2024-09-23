@@ -142,20 +142,24 @@ end % og_struct
 %data and 
 
 
-datasample(og_struct(1).ResponseTable,120);
 
 for p = 1:length(og_struct)
+    
+    mech_u = unique(og_struct(1).ResponseTable.IndentorAmp);
     %get indices
-    mech_elec_idx = find(og_struct(p).ResponseTable.IndentorAmp ~= 0 & og_struct(p).ResponseTable.StimAmp ~= 0);
-    mech_idx = find(og_struct(p).ResponseTable.IndentorAmp ~= 0 & og_struct(p).ResponseTable.StimAmp == 0);
+    mech_elec_idx = find(og_struct(1).ResponseTable.IndentorAmp ~= 0 & og_struct(1).ResponseTable.StimAmp ~= 0);
+    mech_idx = find(og_struct(1).ResponseTable.IndentorAmp ~= 0 & og_struct(1).ResponseTable.StimAmp == 0);
+    % mech_elec_idx = find(og_struct(p).ResponseTable.IndentorAmp ~= 0 & og_struct(p).ResponseTable.StimAmp ~= 0);
+    % mech_idx = find(og_struct(p).ResponseTable.IndentorAmp ~= 0 & og_struct(p).ResponseTable.StimAmp == 0);
     
     %run permutations
     for i = 1:100
-        mech_ele_perm = datasample(og_struct(p).ResponseTable(mech_elec_idx,:), 120, 'Replace', false);
-        mech_perm = datasample(og_struct(p).ResponseTable(mech_idx,:), 120, 'Replace', false);
+        % mech_ele_perm = datasample(og_struct(p).ResponseTable(mech_elec_idx,:), 120, 'Replace', false);
+        % mech_perm = datasample(og_struct(p).ResponseTable(mech_idx,:), 120, 'Replace', false);
 
-        % Calculate the curves based on trials selected above
-        [dt_mep, dp_mep] = AnalyzeResponseTable(mech_perm);
+        % Calculate the curves based on trials selected above %need to
+        % include all mehc amps
+        % [dt_mep, dp_mep] = AnalyzeResponseTable(mech_perm);
 
 
 
