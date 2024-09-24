@@ -148,10 +148,8 @@ for p = 1:length(og_struct)
     % amp1(mech1) all of electrical and having all on mech
     
     uniqIndAmp = unique(og_struct(1).ResponseTable.IndentorAmp);
-    %way natalaya gave me to get new indices
-    %problem with find(ampIdx & mech_idx)
+
     for a = 1:length(uniqIndAmp)
-        %uniqIndAmp(a): loops through the unique amplitudes
         ampIdx = og_struct(1).ResponseTable.IndentorAmp == uniqIndAmp(a);
         mech_idx = og_struct(1).ResponseTable.IndentorAmp ~= 0 & og_struct(1).ResponseTable.StimAmp == 0;
     
