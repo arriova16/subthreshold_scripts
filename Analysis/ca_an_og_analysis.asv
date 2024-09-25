@@ -1,8 +1,8 @@
 %Darpa Cathodic Anodic Analysis
 % pdetect and dprime of cathodic and anodic mat files
 
-% tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
-tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+% tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
 
 og_struct = struct();
 ca_an_struct = struct();
@@ -72,6 +72,114 @@ end %monkey_list
 %electrodes
 %takes long to run this part/ any way to make it more efficient
 
+%% Analysis(Pdetect and dPrime) for cathodic and anodic data
+
+threshold = 1.35;
+for a = 1:length(ca_an_struct)
+    %pdetect and dprime
+    [dt_ca_an{a}, dp_ca_an{a}] = AnalyzeResponseTable(ca_an_struct(a).ResponseTable(:,:));
+    %adding to table
+    ca_an_struct(a).DetectionTable = dt_ca_an{a};
+    ca_an_struct(a).DprimeTable = dp_ca_an{a};
+    %getting coeffs
+    mech_ca_an = ca_an_struct(a).DetectionTable{:,1};
+    pd1_ca_an = ca_an_struct(a).DetectionTable{:,2};
+    pd2_ca_an = ca_an_struct(a).DetectionTable{:,3};
+
+    [sig_pd1, coeffs_pd1, ~,~,~, warn_pd1] = FitSigmoid(mech_ca_an, pd1_ca_an,'NumCoeffs', 4, 'Constraints', [0,300; -5, 5]);
+    [sig_pd2, coeffs_pd2, ~,~,~, warn_pd2] = FitSigmoid(mech_ca_an, pd2_ca_an, 'NumCoeffs', 4, 'Constraints',[0,300;-5, 5]);
+    xq_ca_an = linspace(mech_ca_an(1), mech_ca_an(end)*2);
+    fit_pd1 = sig_pd1(coeffs_pd1, xq_ca_an);
+    fit_pd2 = sig_pd2(coeffs_pd2, xq_ca_an);
+ 
+    dp_1 = norminv(fit_pd1) - norminv(fit_pd1(1));
+    dp_2 = norminv(fit_pd2) - norminv(fit_pd2(1));
+
+    yq_dp1 = find(dp_1 >= threshold, 1, 'first');
+    yq_dp2 = find(dp_2 >= threshold, 1, "first");
+
+    mt_1 = xq_ca_an(yq_dp1);
+    mt_2 = xq_ca_an(yq_dp2);
+    
+     
+    ca_an_struct(a).mt_catch = mt_1;
+    ca_an_struct(a).mt_elec = mt_2;
+
+ 
+end %ca_an_struct
+
+%% Permutation
+
+%getting separate indeces based on condition
+%(leave out catch for now)
+%getting multarriiple permutations
+%histogram the plot to see where the differences lie between permutation
+%data and 
+
+
+
+for p = 1:length(ca_an_struct)
+    %getting results to show 010101 and indexing that into a find? 
+    %make sure the grouping isn't limiting the group
+    % amp1(mech1) all of electrical and having all on mech
+    
+%     uniqIndAmp = unique(og_struct(1).ResponseTable.IndentorAmp);
+    %way natalaya gave me to get new indices
+    %problem with find(ampIdx & mech_idx)
+%     for a = 1:length(uniqIndAmp)
+        %uniqIndAmp(a): loops through the unique amplitudes
+%         ampIdx = og_struct(1).ResponseTable.IndentorAmp == uniqIndAmp(a);
+%         mech_idx = og_struct(1).ResponseTable.IndentorAmp ~= 0 & og_struct(1).ResponseTable.StimAmp == 0;
+    
+%     end
+     % trialIdx = find(ampIdx & mech_idx)
+
+%     icms_u = unique(og_struct(1).ResponseTable.StimAmp);
+    %get indices
+    % for ic = 1:length(icms_u)
+    %     for me = 1:length(mech_u)
+    %         trial_idx = ia == me & [og_struct(1).ResponseTable.StimAmp] == icms_u(ic);
+    % 
+    %     end%mech_u
+    % end %icms_u
+
+
+    % for u = 1:length(mech_u)
+        %this is showing the rows with mech indentor
+        % mech_row = ia == u;
+    % end
+    % catch_idx = find(og_struct(1).ResponseTable.IndentorAmp == 0 & og_struct(1).ResponseTable.StimAmp == 0);
+    % mech_idx = find(og_struct(1).ResponseTable.IndentorAmp ~= 0 & og_struct(1).ResponseTable.StimAmp == 0);
+    % amp_idx = 
+    % mech_elec_idx = find(og_struct(1).ResponseTable.IndentorAmp ~= 0 & og_struct(1).ResponseTable.StimAmp ~= 0);
+    % % mech_elec_idx = find(og_struct(p).ResponseTable.IndentorAmp ~= 0 & og_struct(p).ResponseTable.StimAmp ~= 0);
+    % mech_idx = find(og_struct(p).ResponseTable.IndentorAmp ~= 0 & og_struct(p).ResponseTable.StimAmp == 0);
+    
+
+
+    %run permutations
+    % for i = 1:100
+        % mech_ele_perm = datasample(og_struct(p).ResponseTable(mech_elec_idx,:), 120, 'Replace', false);
+        % mech_perm = datasample(og_struct(p).ResponseTable(mech_idx,:), 120, 'Replace', false);
+    
+        % Calculate the curves based on trials selected above %need to
+        % include all mehc amps
+        % [dt_mep, dp_mep] = AnalyzeResponseTable(mech_perm);
+
+
+
+        % Get the difference between the curves
+        % delta_null(i) = mech_ele_dprime - mech_dprime; 
+
+
+
+    % end %100 times
+
+
+
+
+end %ca_an_struct
+
 
 %% Analysis pdetect and dprime 
 %og_struct
@@ -81,7 +189,7 @@ end %monkey_list
 % find threshold points for each pair
 % then do permutation test
 
-threshold = 1.35;
+
 
 for i = 1:length(og_struct)
     %getting pdetect and dprime
@@ -148,8 +256,10 @@ for p = 1:length(og_struct)
     % amp1(mech1) all of electrical and having all on mech
     
     uniqIndAmp = unique(og_struct(1).ResponseTable.IndentorAmp);
-
+    %way natalaya gave me to get new indices
+    %problem with find(ampIdx & mech_idx)
     for a = 1:length(uniqIndAmp)
+        %uniqIndAmp(a): loops through the unique amplitudes
         ampIdx = og_struct(1).ResponseTable.IndentorAmp == uniqIndAmp(a);
         mech_idx = og_struct(1).ResponseTable.IndentorAmp ~= 0 & og_struct(1).ResponseTable.StimAmp == 0;
     
