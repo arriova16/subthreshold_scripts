@@ -121,14 +121,15 @@ for p = 1:length(ca_an_struct)
     uniqIndAmp = unique(ca_an_struct(1).ResponseTable.IndentorAmp);
     catch_stim = find(ca_an_struct(1).ResponseTable.StimAmp == 0);
     stim = find(ca_an_struct(1).ResponseTable.StimAmp ~= 0);
+    %still need condition for unique ind amps
     mech_idx = ca_an_struct(1).ResponseTable(catch_stim,:);
     mech_elec_idx = ca_an_struct(1).ResponseTable(stim,:);
-%     for a = 1:length(uniqIndAmp)
+    for a = 1:length(uniqIndAmp)
 % %         mech_catch = find(catch_stim & uniqIndAmp(a));
 % %         mech_ellll = find(mech_elec & uniqIndAmp(a));
 % 
-%     end
-    mech_perm = datasample(ca_an_struct(1).ResponseTable(mech_idx,:), 120, 'Replace', false);        
+    end
+%     mech_perm = datasample(ca_an_struct(1).ResponseTable(mech_idx,:), 120, 'Replace', false);        
 %     mech_ele_perm = datasample(ca_an_struct(1).ResponseTable(mech_elec,:), 120, 'Replace', false);
 
 
