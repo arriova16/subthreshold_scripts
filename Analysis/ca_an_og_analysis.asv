@@ -1,8 +1,8 @@
 %Darpa Cathodic Anodic Analysis
 % pdetect and dprime of cathodic and anodic mat files
-
-tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
-% tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+% 
+% tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
 
 og_struct = struct();
 ca_an_struct = struct();
@@ -116,38 +116,32 @@ end %ca_an_struct
 %histogram the plot to see where the differences lie between permutation
 %data and 
 
-for p = 1:length(ca_an_struct)  
+for p = 1:1%length(ca_an_struct)  
     %get indices
-    uniqIndAmp = unique(ca_an_struct(1).ResponseTable.IndentorAmp);
-    catch_stim = find(ca_an_struct(1).ResponseTable.StimAmp == 0);
-    stim = find(ca_an_struct(1).ResponseTable.StimAmp ~= 0);
-%     amp_ind = ca_an_struct(1).ResponseTable(catch_stim,:);
-    mech_elec = ca_an_struct(1).ResponseTable(stim,:);
+    uniqIndAmp = unique(ca_an_struct(p).ResponseTable.IndentorAmp);
     for a = 1:length(uniqIndAmp)
-%         mech_catch = find(catch_stim & uniqIndAmp(a));
-%         mech_ellll = find(mech_elec & uniqIndAmp(a));
+        ampIdx = ca_an_struct(p).ResponseTable.IndentorAmp == uniqIndAmp(a);
+        mech_idx = ca_an_struct(p).ResponseTable.StimAmp == 0;
+        % mech_idx = ca_an_struct(1).ResponseTable.IndentorAmp ~= 0 & ca_an_struct(1).ResponseTable.StimAmp == 0;
 
     end
-%     mech_perm = datasample(ca_an_struct(1).ResponseTable(mech_catch,:), 120, 'Replace', false);        
-%     mech_ele_perm = datasample(ca_an_struct(1).ResponseTable(mech_elec,:), 120, 'Replace', false);
-
-
-%     for a = 1:length(uniqIndAmp)
-%         ampIdx = ca_an_struct(1).ResponseTable.IndentorAmp == uniqIndAmp(a);
-%         mech_idx = ca_an_struct(1).ResponseTable.IndentorAmp ~= 0 & ca_an_struct(1).ResponseTable.StimAmp == 0;
-%         
-%     end
-%      trailIDX = [ampIdx & mech_idx];
-
-
+    
+    % control = find(ca_an_struct(p).ResponseTable.StimAmp == 0)
+%     mech_idx = find(ca_an_struct(p).ResponseTable.StimAmp == 0 & ...
+%         ca_an_struct(p).ResponseTable.IndentorAmp ~= 0);
+% 
+%     mech_elec_idx = find(ca_an_struct(p).ResponseTable.IndentorAmp ~= 0 & ...
+%         ca_an_struct(p).ResponseTable.StimAmp ~= 0);
+% 
+%     %run permutations
+%     for i = 1:100
+%         mech_perm = datasample(ca_an_struct(p).ResponseTable(mech_idx,:), 120, 'Replace', false);
+%         me_perm = datasample(ca_an_struct(p).ResponseTable(mech_elec_idx,:), 120, 'Replace', false);
+% 
+% 
+%      end %100 times
 end %ca_an_struct
 
-
-    %run permutations
-    % for i = 1:100
-        % mech_ele_perm = datasample(og_struct(p).ResponseTable(mech_elec_idx,:), 120, 'Replace', false);
-        % mech_perm = datasample(og_struct(p).ResponseTable(mech_idx,:), 120, 'Replace', false);
-    
         % Calculate the curves based on trials selected above %need to
         % include all mehc amps
         % [dt_mep, dp_mep] = AnalyzeResponseTable(mech_perm);
@@ -159,10 +153,31 @@ end %ca_an_struct
 
 
 
-    % end %100 times
 
 
 
+%     for a = 1:length(uniqIndAmp)
+%         ampIdx = ca_an_struct(1).ResponseTable.IndentorAmp == uniqIndAmp(a);
+%         mech_idx = ca_an_struct(1).ResponseTable.IndentorAmp ~= 0 & ca_an_struct(1).ResponseTable.StimAmp == 0;
+%         
+%     end
+%      trailIDX = [ampIdx & mech_idx];
+
+
+
+
+
+
+
+
+    % uniqIndAmp = unique(ca_an_struct(1).ResponseTable.IndentorAmp);
+    % for a = 1:length(uniqIndAmp)
+    %     ampIdx = ca_an_struct(1).ResponseTable.IndentorAmp == uniqIndAmp(a);
+    %     mech_idx = ampIdx == mech_catch;
+    % end
+    % % trialIdx = [ampIdx & mech_idx];
+
+    %still need condition for unique ind amps
 
 
 
