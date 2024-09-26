@@ -118,14 +118,15 @@ end %ca_an_struct
 
 for p = 1:1%length(ca_an_struct)  
     %get indices
-    uniqIndAmp = unique(ca_an_struct(p).ResponseTable.IndentorAmp);
-    for a = 1:length(uniqIndAmp)
-        ampIdx = ca_an_struct(p).ResponseTable.IndentorAmp == uniqIndAmp(a);
-        mech_idx = ca_an_struct(p).ResponseTable.StimAmp == 0;
-        % mech_idx = ca_an_struct(1).ResponseTable.IndentorAmp ~= 0 & ca_an_struct(1).ResponseTable.StimAmp == 0;
-
+    [uniqIndAmp, ~, ma] = unique(ca_an_struct(p).ResponseTable.IndentorAmp);
+    [uniqStimAmp, ~, sa] = unique(ca_an_struct(p).ResponseTable.StimAmp);
+    for sta = 1:length(uniqStimAmp)
+        for a = 1:length(uniqIndAmp)
+            stuff = ma == a & [ca_an_struct(p).ResponseTable.StimAmp] == uniqStimAmp(sta);
+            ampIdx = ca_an_struct(p).ResponseTable.IndentorAmp == uniqIndAmp(a);
+            mech_idx = ca_an_struct(p).ResponseTable.StimAmp == 0 & ampIdx;
+        end
     end
-    
     % control = find(ca_an_struct(p).ResponseTable.StimAmp == 0)
 %     mech_idx = find(ca_an_struct(p).ResponseTable.StimAmp == 0 & ...
 %         ca_an_struct(p).ResponseTable.IndentorAmp ~= 0);
