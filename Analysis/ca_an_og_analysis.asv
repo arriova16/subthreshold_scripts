@@ -145,9 +145,9 @@ for p = 1:length(ca_an_struct)
 
         null_delta_threshold(dm) = abs(m1 - m2);
     end %num_perm
-
+    
     ca_an_struct(p).null_dist = null_delta_threshold;
-    ca_an_struct(p).Bootp = 1 - (sum(delta_thresholds > null_delta_threshold) / num_perm);
+    ca_an_struct(p).Bootp = 1 - (sum(delta_thresholds > null_delta_threshold) / num_perm) ;
 
 end %ca_an_struct
 
