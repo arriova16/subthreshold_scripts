@@ -150,30 +150,14 @@ for p = 1:length(ca_an_struct)
     ca_an_struct(p).Bootp = 1 - (sum(delta_thresholds > null_delta_threshold) / num_perm);
 
 end %ca_an_struct
+% figure;
+% histogram(null_delta_threshold)
+% hold on
+% plot([delta_thresholds delta_thresholds], [0 40])
+% 1-(sum(delta_thresholds > null_delta_threshold) / num_perm)
 
-%% plotting
-%plotting cathodic vs anodic
-% for m = 1:length(ca_an_struct)
-%     pulse_data = vertcat(ca_an_struct(m).Pulse);
-%     % cath_idx = strcmpi(pulse_data,'Cathodic')
-%     %     cathodic_idx = strcmpi()
-%     subplot(1,3,1); hold on
-% 
-% 
-% 
-% 
-%     axis square
-%     subplot(1,3,2); hold on
-% 
-% 
-%     axis square
-%     subplot(1,3,3); hold on
-% 
-% 
-%     axis square
-% end %ca_an_struct
-% 
-% 
+%bonferroni correction for p_value correction
+%also loook into alpha to decide if p_value is significant
 
 %%
 function mt = Sigmoid2MechThreshold(coeffs, xq, threshold)
