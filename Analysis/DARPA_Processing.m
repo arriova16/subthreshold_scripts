@@ -134,7 +134,7 @@ end
 
 %% Bootstrap testing
 num_permutations = 1e4;
-[wb, pfwb_update]  = ParforWaitbar('Bootstrap testing', length(cat_data));
+% [wb, pfwb_update]  = ParforWaitbar('Bootstrap testing', length(cat_data));
 parfor d = 1:length(cat_data)
     % Find list of no stim conditions
     control_idx = find([cat_data(d).Summary.ICMSAmp] == 0);
@@ -196,13 +196,14 @@ parfor d = 1:length(cat_data)
                 null_delta_threshold(p) = abs(mt1 - mt2);
             end
             % Compute p
+            
             cat_data(d).Summary(treatment_idx(t)).BootP = sum(null_delta_threshold > delta_thresholds) / num_permutations;
-%             if cat_data(d).Summary(treatment_idx(t)).BootP < 0.05
-%                 disp('Not significant')
-%             end
+            if cat_data(d).Summary(treatment_idx(t)).BootP < 0.05
+                disp('Not significant')
+            end
         end
     end
-    send(pfwb_update, 0);
+%     send(pfwb_update, 0);
 end
 
 %% plot
