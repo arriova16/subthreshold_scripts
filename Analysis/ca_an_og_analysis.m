@@ -104,7 +104,7 @@ for a = 1:length(ca_an_struct)
      
     ca_an_struct(a).mt_catch = mt_1;
     ca_an_struct(a).mt_elec = mt_2;
-    %something new
+    
 end %ca_an_struct
 
 %% Permutation
@@ -165,24 +165,22 @@ end %ca_an_struct
 %plotting cathodic vs anodic
 for m = 1:length(ca_an_struct)
     pulse_data = vertcat(ca_an_struct(m).Pulse);
-    cath_idx = strcmpi(pulse_data,'Cathodic');
-    an_idx = strcmpi(pulse_data, 'Anodic');
-
+    cath_idx = strcmpi(pulse_data,'Cathodic')
     %     cathodic_idx = strcmpi()
-%     subplot(1,3,1); hold on
-
-scatter(ca_an_struct(cath_idx).delta_threshold, )
+    subplot(1,3,1); hold on
 
 
-%     axis square
-%     subplot(1,3,2); hold on
 
 
-%     axis square
-%     subplot(1,3,3); hold on
+    axis square
+    subplot(1,3,2); hold on
+
+
+    axis square
+    subplot(1,3,3); hold on
 
     
-%     axis square
+    axis square
 end %ca_an_struct
     
     
@@ -199,5 +197,3 @@ function mt = Sigmoid2MechThreshold(coeffs, xq, threshold)
         mt = NaN;
     end
 end
-
-
