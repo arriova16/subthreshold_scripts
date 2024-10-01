@@ -113,6 +113,8 @@ num_perm = 1;
 for p = 1:length(ca_an_struct)  
     %get indices
     delta_thresholds = abs(ca_an_struct(p).mt_catch - ca_an_struct(p).mt_elec);
+    delta_thresholds_nonabs = (ca_an_struct(p).mt_catch - ca_an_struct(p).mt_elec);
+    ca_an_struct(p).delta_threshold_1 = delta_thresholds_nonabs;
     ca_an_struct(p).delta_threshold = delta_thresholds;
     num_trials = size(ca_an_struct(p).ResponseTable,1);
     idx_list = 1:num_trials;
@@ -164,13 +166,38 @@ pulse_data = vertcat(ca_an_struct(:).Pulse);
 cath_idx = strcmpi(pulse_data, 'Cathodic');
 an_idx = strcmpi(pulse_data, 'Anodic');
 
-for a = 1:length(ca_an_struct)
+w_o_icms_cath = vertcat(ca_an_struct(cath_idx).mt_catch);
+w_icms_cath = vertcat(ca_an_struct(cath_idx).mt_elec);
+w_o_icms_an = vertcat(ca_an_struct(an_idx).mt_catch);
+w_icms_an = vertcat(ca_an_struct(an_idx).mt_elec);
+delta_an = vertcat(ca_an_struct(an_idx).delta_threshold_1);
+delta_cath = vertcat(ca_an_struct(cath_idx).delta_threshold_1);
 
-    scatter
-end
+SetFont('Arial', 25)
 
+subplot(1,2,1); hold on
+    scatter(w_icms_cath, w_o_icms_cath, 150, rgb(123, 31, 162), 'filled')
+    scatter(w_icms_an, w_o_icms_an, 150, rgb(2, 119, 189), 'filled')
+    title('Thresholds')
+    ylabel('Without ICMS(mm)')
+    xlabel('With ICMS(mm)')
+    xlim([0 .25])
+    ylim([0 .25])
+    plot(xlim,ylim,'Color', [.8 .8 .8], 'LineStyle','--')
+    
+    text(.15,.1, ColorText({'Cathodic', 'Anodic'}, [rgb(123, 31, 162);rgb(2, 119, 189)]), 'HorizontalAlignment', 'left', 'VerticalAlignment', 'top')
+    axis square
 
-
+ subplot(1,2,2); hold on
+    scatter(delta_an, delta_cath, 100, 'MarkerFaceColor', [0 .5 .5],'filled', 'LineWidth', 1.5)
+    plot([0,0], [-0.05 0.05] , 'Color', [.6 .6 .6], 'LineStyle', '--')
+    plot( [-0.05 0.05],[0,0] , 'Color', [.6 .6 .6], 'LineStyle', '--')
+    ylabel('\Delta Cathodic Threshold')
+    xlabel('\Delta Anodic Threshold')
+    xlim([-.05 .05])
+    ylim([-0.05 .05])
+    axis square
+    
 %%
 function mt = Sigmoid2MechThreshold(coeffs, xq, threshold)
     SigmoidFun = GetSigmoid(length(coeffs));
