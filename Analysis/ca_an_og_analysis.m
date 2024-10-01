@@ -108,13 +108,7 @@ for a = 1:length(ca_an_struct)
 end %ca_an_struct
 
 %% Permutation
-siggy = GetSigmoid(2);
-%getting separate indeces based on condition
-%(leave out catch for now)
-%getting multarriiple permutations
-%histogram the plot to see where the differences lie between permutation
-%data and 
-num_perm = 100;
+num_perm = 1e4;
 for p = 1:length(ca_an_struct)  
     %get indices
     delta_thresholds = abs(ca_an_struct(p).mt_catch - ca_an_struct(p).mt_elec);
@@ -137,7 +131,7 @@ for p = 1:length(ca_an_struct)
         [dt_perm_1] = AnalyzeResponseTable(ca_an_struct(p).ResponseTable(tmp_p1_idx,:));
         [dt_perm_2] = AnalyzeResponseTable(ca_an_struct(p).ResponseTable(tmp_p2_idx,:));
 
-        [~, coeffs1, ~,~,~,warn_1] = FitSigmoid(dt_perm_1{:,1}, dt_perm_1{:,2} ,  'Constraints', [0, 300; -5, 5]);
+        [~, coeffs1, ~,~,~,warn_1] = FitSigmoid(dt_perm_1{:,1}, dt_perm_1{:,2} ,  'Constraints', [0.001, 1000; -50, 50]);
         m1 = Sigmoid2MechThreshold(coeffs1, qq, threshold);
 
         [~, coeffs2, ~,~,~,warn_2] = FitSigmoid(dt_perm_2{:,1}, dt_perm_2{:,2}, 'Constraints',[0.001, 1000; -50, 50]);
@@ -150,14 +144,24 @@ for p = 1:length(ca_an_struct)
     ca_an_struct(p).Bootp = 1 - (sum(delta_thresholds > null_delta_threshold) / num_perm);
 
 end %ca_an_struct
-% figure;
-% histogram(null_delta_threshold)
-% hold on
-% plot([delta_thresholds delta_thresholds], [0 40])
-% 1-(sum(delta_thresholds > null_delta_threshold) / num_perm)
+%% plotting histogram check
 
-%bonferroni correction for p_value correction
-%also loook into alpha to decide if p_value is significant
+for d = 1:length(ca_an_struct)
+    figure;
+    hold on
+    histogram(ca_an_struct(d).null_dist)
+    plot([ca_an_struct(d).delta_threshold ca_an_struct(d).delta_threshold] , [0 1000])
+
+end %ca_an_struct
+%% plotting summary
+
+for a = 1:length(ca_an_struct)
+     
+
+
+end
+
+
 
 %%
 function mt = Sigmoid2MechThreshold(coeffs, xq, threshold)
