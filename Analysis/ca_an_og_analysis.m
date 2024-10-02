@@ -91,7 +91,7 @@ for a = 1:length(ca_an_struct)
     xq_ca_an = linspace(mech_ca_an(1), mech_ca_an(end)*2);
     fit_pd1 = sig_pd1(coeffs_pd1, xq_ca_an);
     fit_pd2 = sig_pd2(coeffs_pd2, xq_ca_an);
- 
+    
     dp_1 = norminv(fit_pd1) - norminv(fit_pd1(1));
     dp_2 = norminv(fit_pd2) - norminv(fit_pd2(1));
 
@@ -104,18 +104,42 @@ for a = 1:length(ca_an_struct)
      
     ca_an_struct(a).mt_catch = mt_1;
     ca_an_struct(a).mt_elec = mt_2;
-    
 end %ca_an_struct
 
+    %% plotting example psychometric plots
+ 
+%     % figure;
+% figure;
+%  subplot(1,2,1); %hold on
+% for m = 1:length(ca_an_struct)
+%     am = linspace(ca_an_struct(10).DetectionTable.MechAmps(1), ca_an_struct(10).DetectionTable.MechAmps(end));
+%     plot(am, ca_an_struct(10).CoeffsMech, 'Color', [.0 .0 .0])
+%     plot(am, ca_an_struct(10).CoeffsMechElec, 'Color', [.1 .1 .1])
+%     % plot(ca_an_struct(m).DetectionTable.MechAmps, ca_an_struct(m).CoeffsMechElec, 'Color', [.0 .0 .0] )
+%     % plot(am, ca_an_struct(m).CoeffsMech, 'Color', [.1 .1 .1])
+% 
+% % qq = linspace(mech_u(1), mech_u(end));
+%     ylabel('pDetect')
+%     xlabel('Stimulus Amplitude (mm)')
+%     axis square
+% 
+%  % subplot(1,2,2); hold on
+%  % 
+%  % 
+%  %    ylabel('d''')
+%  %    xlabel('Stimulus Amplitude (mm)')
+%  %    axis square
+% end
+
 %% Permutation
-% num_perm = 1e4;
-num_perm = 1;
+num_perm = 1e4;
+% num_perm = 1;
 for p = 1:length(ca_an_struct)  
     %get indices
-    delta_thresholds = abs(ca_an_struct(p).mt_catch - ca_an_struct(p).mt_elec);
-    delta_thresholds_nonabs = (ca_an_struct(p).mt_catch - ca_an_struct(p).mt_elec);
-    ca_an_struct(p).delta_threshold_1 = delta_thresholds_nonabs;
+    delta_thresholds_abs = abs(ca_an_struct(p).mt_catch - ca_an_struct(p).mt_elec);
+    delta_thresholds = (ca_an_struct(p).mt_catch - ca_an_struct(p).mt_elec);
     ca_an_struct(p).delta_threshold = delta_thresholds;
+    ca_an_struct(p).delta_threshold_abs = delta_thresholds_abs;
     num_trials = size(ca_an_struct(p).ResponseTable,1);
     idx_list = 1:num_trials;
     stim_first = find(ca_an_struct(p).ResponseTable.StimAmp ~=0,1, 'first');
@@ -140,22 +164,38 @@ for p = 1:length(ca_an_struct)
         [~, coeffs2, ~,~,~,warn_2] = FitSigmoid(dt_perm_2{:,1}, dt_perm_2{:,2}, 'Constraints',[0.001, 1000; -50, 50]);
         m2 = Sigmoid2MechThreshold(coeffs2, qq, threshold);
 
-        null_delta_threshold(dm) = abs(m1 - m2);
+        null_delta_threshold(dm) = m1 - m2;
     end %num_perm
 
     ca_an_struct(p).null_dist = null_delta_threshold;
-    ca_an_struct(p).Bootp = 1 - (sum(delta_thresholds > null_delta_threshold) / num_perm);
+    ca_an_struct(p).Bootp_rt = 1 - (sum(delta_thresholds > null_delta_threshold) / num_perm);
+    ca_an_struct(p).Bootp_lt = 1 - (sum(delta_thresholds < null_delta_threshold) / num_perm);
+    
+    
+end %ca_an_struct
+
+
+
+
+%% permutation within electrode pairs of cathodic and anodic
+
+
+% leftTail = 1 - sum(sm.deltaStim.mean(cont, se) < sm.deltaNoStim.dist(cont, :)) / numReps;
+% rightTail = 1 - (sum(sm.deltaStim.mean(cont, se) > sm.deltaNoStim.dist(cont, :)) / numReps);
+% sm.p(cont, se) = min([leftTail, rightTail]);
+% sm.modValue(cont, se) = (sm.deltaStim.mean(cont, se)  - sm.deltaNoStim.mean(cont)) / sm.deltaNoStim.std(cont);
+% sm.isModulated(cont, se) = sm.p(cont, se) <= alpha / 2;
+
+
+%% plotting histogram check
+
+for d = 1:length(ca_an_struct)
+    figure;
+    hold on
+    histogram(ca_an_struct(d).null_dist)
+    plot([ca_an_struct(d).delta_threshold ca_an_struct(d).delta_threshold] , [0 1000])
 
 end %ca_an_struct
-%% plotting histogram check
-% 
-% for d = 1:length(ca_an_struct)
-%     figure;
-%     hold on
-%     histogram(ca_an_struct(d).null_dist)
-%     plot([ca_an_struct(d).delta_threshold ca_an_struct(d).delta_threshold] , [0 1000])
-% 
-% end %ca_an_struct
 %% plotting summary
 
 electrode = vertcat(ca_an_struct(:).Electrodes);
@@ -170,8 +210,8 @@ w_o_icms_cath = vertcat(ca_an_struct(cath_idx).mt_catch);
 w_icms_cath = vertcat(ca_an_struct(cath_idx).mt_elec);
 w_o_icms_an = vertcat(ca_an_struct(an_idx).mt_catch);
 w_icms_an = vertcat(ca_an_struct(an_idx).mt_elec);
-delta_an = vertcat(ca_an_struct(an_idx).delta_threshold_1);
-delta_cath = vertcat(ca_an_struct(cath_idx).delta_threshold_1);
+delta_an = vertcat(ca_an_struct(an_idx).delta_threshold);
+delta_cath = vertcat(ca_an_struct(cath_idx).delta_threshold);
 
 SetFont('Arial', 25)
 
@@ -197,7 +237,7 @@ subplot(1,2,1); hold on
     xlim([-.049 .049])
     ylim([-0.049 .049])
     axis square
-    
+
 %%
 function mt = Sigmoid2MechThreshold(coeffs, xq, threshold)
     SigmoidFun = GetSigmoid(length(coeffs));
