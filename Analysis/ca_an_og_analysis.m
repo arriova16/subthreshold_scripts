@@ -194,8 +194,8 @@ subplot(1,2,1); hold on
     plot( [-0.05 0.05],[0,0] , 'Color', [.6 .6 .6], 'LineStyle', '--')
     ylabel('\Delta Cathodic Threshold')
     xlabel('\Delta Anodic Threshold')
-    xlim([-.05 .05])
-    ylim([-0.05 .05])
+    xlim([-.049 .049])
+    ylim([-0.049 .049])
     axis square
     
 %%
