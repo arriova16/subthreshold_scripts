@@ -134,7 +134,7 @@ end
 
 %% Bootstrap testing
 num_permutations = 1e4;
-% [wb, pfwb_update]  = ParforWaitbar('Bootstrap testing', length(cat_data));
+[wb, pfwb_update]  = ParforWaitbar('Bootstrap testing', length(cat_data));
 parfor d = 1:length(cat_data)
     % Find list of no stim conditions
     control_idx = find([cat_data(d).Summary.ICMSAmp] == 0);
@@ -203,7 +203,7 @@ parfor d = 1:length(cat_data)
             end
         end
     end
-%     send(pfwb_update, 0);
+    send(pfwb_update, 0);
 end
 
 %% plot
@@ -456,18 +456,21 @@ clf;
 % Create axes and format
 ax(1) = subplot(1,3,1); hold on
     plot([0, 1.4], [0, 1.4], 'Color', [.6 .6 .6], 'LineStyle', '--')
-    xlabel('Mech Threhsold (Control)',"FontSize",24)
-    ylabel('Mech Threhsold (ICMS)',"FontSize",24)
+    xlabel('Mech Threhsold (Control)',"FontSize",20)
+    ylabel('Mech Threhsold (ICMS)',"FontSize",20)
+    axis square
 ax(2) = subplot(1,3,2); hold on
     plot([0, length(cat_data)], [0, 0], 'Color', [.6 .6 .6], 'LineStyle', '--')
-    ylabel(sprintf('%s Threshold (mm) (lower is better)', GetUnicodeChar('Delta')),'FontSize',24)
-    xlabel('Monkey/Electrode(s)',"FontSize",24)
+    ylabel(sprintf('%s Threshold (mm) (lower is better)', GetUnicodeChar('Delta')),'FontSize',20)
+    xlabel('Monkey/Electrode(s)',"FontSize",20)
     set(gca,'XTick', [], 'YLim', [-.4 .4])
+    axis square
 ax(3) = subplot(1,3,3); hold on
     plot([0, length(cat_data)], [1, 1], 'Color', [.6 .6 .6], 'LineStyle', '--')
-    ylabel('Threshold ICMS / Threshold Control',"FontSize",24)
-    xlabel('Monkey/Electrode(s)',"FontSize",24)
+    ylabel('Threshold ICMS / Threshold Control',"FontSize",20)
+    xlabel('Monkey/Electrode(s)',"FontSize",20)
     set(gca,'XTick', [], 'YScale', 'log', 'YLim', [.2 5], 'YTick', [.2 5])
+    axis square
 
 for i = 1:length(cat_data)
     % Iterate through unique icms:indentor frequencies
@@ -503,13 +506,13 @@ for i = 1:length(cat_data)
             % Plot individual values
             treatment_threhsold = cat_data(i).Summary(c_idx(j)).MechThreshold;
             % Ax1 - control vs treatment
-            scatter(control_threshold, treatment_threhsold, 80, mrkr_style, 'MarkerEdgeColor', [.6 .6 .6],...
+            scatter(control_threshold, treatment_threhsold, 100, mrkr_style, 'MarkerEdgeColor', [.6 .6 .6],...
                 'MarkerFaceColor', [.6 .6 .6], 'MarkerFaceAlpha', sa, 'Parent', ax(1))
             % Ax2 - treatment minus control
-            scatter(i, treatment_threhsold - control_threshold, 80, mrkr_style, 'MarkerEdgeColor', [.6 .6 .6],...
+            scatter(i, treatment_threhsold - control_threshold, 100, mrkr_style, 'MarkerEdgeColor', [.6 .6 .6],...
                 'MarkerFaceColor', [.6 .6 .6], 'MarkerFaceAlpha', sa, 'Parent', ax(2))
             % Ax3 - treatment / control
-            scatter(i, treatment_threhsold / control_threshold, 80, mrkr_style, 'MarkerEdgeColor', [.6 .6 .6], ...
+            scatter(i, treatment_threhsold / control_threshold, 100, mrkr_style, 'MarkerEdgeColor', [.6 .6 .6], ...
                 'MarkerFaceColor', [.6 .6 .6], 'MarkerFaceAlpha', sa, 'Parent', ax(3))
         end
         
