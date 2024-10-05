@@ -1,8 +1,8 @@
 %Darpa Cathodic Anodic Analysis
 % pdetect and dprime of cathodic and anodic mat files
 % 
-% tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
-tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+% tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
 
 og_struct = struct();
 ca_an_struct = struct();
@@ -189,33 +189,44 @@ for p = 1:length(ca_an_struct)
 end %ca_an_struct
 
 %% permutation within pulse
-electrode = vertcat(ca_an_struct(:).Electrodes);
-electrode_u = unique(electrode, 'rows');
+% getting pairs of electrodes 
+%taking pairs of electrodes and getting the two different pulses
+% 
+% electrode = vertcat(ca_an_struct(:).Electrodes);
+% electrode_u = unique(electrode, 'rows');
 
 pulse_data = vertcat(ca_an_struct(:).Pulse);
 
 cath_idx = strcmpi(pulse_data, 'Cathodic');
 an_idx = strcmpi(pulse_data, 'Anodic');
 
-w_o_icms_cath = vertcat(ca_an_struct(cath_idx).mt_catch);
-w_icms_cath = vertcat(ca_an_struct(cath_idx).mt_elec);
-w_o_icms_an = vertcat(ca_an_struct(an_idx).mt_catch);
-w_icms_an = vertcat(ca_an_struct(an_idx).mt_elec);
-delta_an = vertcat(ca_an_struct(an_idx).delta_threshold);
-delta_cath = vertcat(ca_an_struct(cath_idx).delta_threshold);
 
+% w_o_icms_cath = vertcat(ca_an_struct(cath_idx).mt_catch);
+% w_icms_cath = vertcat(ca_an_struct(cath_idx).mt_elec);
 
+null_example1 = ca_an_struct(2).null_dist - ca_an_struct(1).null_dist;
+ac_example1 = ca_an_struct(2).delta_threshold - ca_an_struct(1).delta_threshold;
+ex_p_rt = 1-(sum(ac_example1 > null_example1) / num_perm);
+ex_p_lt = 1 - (sum(ac_example1 < null_example1) / num_perm);
+    figure;
+    hold on
+    histogram(null_example1)
+    plot([ac_example1 ac_example1] , [0 1000])
 
-for pf = 1:length(ca_an_struct)
-    for v = 1:size(electrode)
-        ca_an_struct(pf).Electrode
+%     figure;
+%     hold on
+%     histogram(ca_an_struct(d).null_dist)
+%     plot([ca_an_struct(d).delta_threshold ca_an_struct(d).delta_threshold] , [0 1000])
+
+for t = 1:length(ca_an_struct)
+%     el_idx = ca_an_struct(t).Electrodes == ca_an_struct(t).Electrodes;
+    
+
+%  ca_an_struct(el_idx).Pulse(cathodic).null_dist -  ca_an_struct(el_idx).Pulse(anodic).null_dist
     
 
 
-
-
-    end %electrode
-end %ca_an_struct
+end
 
 
 
@@ -239,10 +250,27 @@ for d = 1:length(ca_an_struct)
 
 end %ca_an_struct
 %% plotting summary
+% 
+% electrode = vertcat(ca_an_struct(:).Electrodes);
+% electrode_u = unique(electrode, 'rows');
+% 
+% pulse_data = vertcat(ca_an_struct(:).Pulse);
+% 
+% cath_idx = strcmpi(pulse_data, 'Cathodic');
+% an_idx = strcmpi(pulse_data, 'Anodic');
+
+w_o_icms_cath = vertcat(ca_an_struct(cath_idx).mt_catch);
+w_icms_cath = vertcat(ca_an_struct(cath_idx).mt_elec);
+w_o_icms_an = vertcat(ca_an_struct(an_idx).mt_catch);
+w_icms_an = vertcat(ca_an_struct(an_idx).mt_elec);
+delta_an = vertcat(ca_an_struct(an_idx).delta_threshold);
+delta_cath = vertcat(ca_an_struct(cath_idx).delta_threshold);
+
+
 
 SetFont('Arial', 20)
 
-subplot(1,2,1); hold on
+subplot(1,3,1); hold on
     scatter(w_icms_cath, w_o_icms_cath, 150, rgb(123, 31, 162), 'filled')
     scatter(w_icms_an, w_o_icms_an, 150, rgb(2, 119, 189), 'filled')
     title('Thresholds')
@@ -255,7 +283,7 @@ subplot(1,2,1); hold on
     text(.15,.1, ColorText({'Cathodic', 'Anodic'}, [rgb(123, 31, 162);rgb(2, 119, 189)]), 'HorizontalAlignment', 'left', 'VerticalAlignment', 'top')
     axis square
 
- subplot(1,2,2); hold on
+ subplot(1,3,2); hold on
     scatter(delta_an, delta_cath, 150, rgb(33, 33, 33),'filled', 'LineWidth', 1.5)
     plot([0,0], [-0.05 0.05] , 'Color', [.6 .6 .6], 'LineStyle', '--')
     plot( [-0.05 0.05],[0,0] , 'Color', [.6 .6 .6], 'LineStyle', '--')
@@ -264,7 +292,13 @@ subplot(1,2,1); hold on
     xlim([-.049 .049])
     ylim([-0.049 .049])
     axis square
-
+subplot(1,3,3)
+  
+    hold on
+    histogram(null_example1)
+    plot([ac_example1 ac_example1] , [0 1000])
+    axis square
+    
 
 %%
 function mt = Sigmoid2MechThreshold(coeffs, xq, threshold)
