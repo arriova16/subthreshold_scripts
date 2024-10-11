@@ -2,7 +2,7 @@
 % tld = 'B:\ProjectFolders\DARPA\Data\ProcessedData';
 % outdir = 'B:\ProjectFolders\DARPA\Data\FinalData';
 % figure_path = 'B:\ProjectFolders\DARPA\Figures';
-tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProc';
+tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
 outdir = 'C:\Users\arrio\Box\BensmaiaLab\ProjectFolders\DARPA\Figures';
 figure_path = 'C:\Users\arrio\Box\BensmaiaLab\ProjectFolders\DARPA\Figures';
 
@@ -196,10 +196,11 @@ parfor d = 1:length(cat_data)
                 null_delta_threshold(p) = abs(mt1 - mt2);
             end
             % Compute p
+            
             cat_data(d).Summary(treatment_idx(t)).BootP = sum(null_delta_threshold > delta_thresholds) / num_permutations;
-%             if cat_data(d).Summary(treatment_idx(t)).BootP < 0.05
-%                 disp('Not significant')
-%             end
+            if cat_data(d).Summary(treatment_idx(t)).BootP < 0.05
+                disp('Not significant')
+            end
         end
     end
     send(pfwb_update, 0);
@@ -447,26 +448,30 @@ set(gcf, 'Position', [2600 100 2000 500])
 
 
 %% Summary plot w/ significance
-SetFont('Arial', 12)
+SetFont('Arial', 30)
 clearvars ax
 clf; 
+ 
  ax = gca;
       ax.FontSize = 30;
 % Create axes and format
 ax(1) = subplot(1,3,1); hold on
     plot([0, 1.4], [0, 1.4], 'Color', [.6 .6 .6], 'LineStyle', '--')
-    xlabel('Mech Threhsold (Control)',"FontSize",24)
-    ylabel('Mech Threhsold (ICMS)',"FontSize",24)
+    xlabel('Without ICMS (mm)',"FontSize",25)
+    ylabel('With ICMS (mm)',"FontSize",25)
+    axis square
 ax(2) = subplot(1,3,2); hold on
     plot([0, length(cat_data)], [0, 0], 'Color', [.6 .6 .6], 'LineStyle', '--')
-    ylabel(sprintf('%s Threshold (mm) (lower is better)', GetUnicodeChar('Delta')),'FontSize',24)
-    xlabel('Monkey/Electrode(s)',"FontSize",24)
+    ylabel(sprintf('%s Threshold (mm)', GetUnicodeChar('Delta')),'FontSize',25)
+    xlabel('Monkey/Electrode(s)',"FontSize",25)
     set(gca,'XTick', [], 'YLim', [-.4 .4])
+    axis square
 ax(3) = subplot(1,3,3); hold on
     plot([0, length(cat_data)], [1, 1], 'Color', [.6 .6 .6], 'LineStyle', '--')
-    ylabel('Threshold ICMS / Threshold Control',"FontSize",24)
-    xlabel('Monkey/Electrode(s)',"FontSize",24)
+    ylabel('ICMS / With',"FontSize",25)
+    xlabel('Monkey/Electrode(s)',"FontSize",25)
     set(gca,'XTick', [], 'YScale', 'log', 'YLim', [.2 5], 'YTick', [.2 5])
+    axis square
 
 for i = 1:length(cat_data)
     % Iterate through unique icms:indentor frequencies
@@ -502,13 +507,13 @@ for i = 1:length(cat_data)
             % Plot individual values
             treatment_threhsold = cat_data(i).Summary(c_idx(j)).MechThreshold;
             % Ax1 - control vs treatment
-            scatter(control_threshold, treatment_threhsold, 80, mrkr_style, 'MarkerEdgeColor', [.6 .6 .6],...
+            scatter(control_threshold, treatment_threhsold, 150, mrkr_style, 'MarkerEdgeColor', [.6 .6 .6],...
                 'MarkerFaceColor', [.6 .6 .6], 'MarkerFaceAlpha', sa, 'Parent', ax(1))
             % Ax2 - treatment minus control
-            scatter(i, treatment_threhsold - control_threshold, 80, mrkr_style, 'MarkerEdgeColor', [.6 .6 .6],...
+            scatter(i, treatment_threhsold - control_threshold, 150, mrkr_style, 'MarkerEdgeColor', [.6 .6 .6],...
                 'MarkerFaceColor', [.6 .6 .6], 'MarkerFaceAlpha', sa, 'Parent', ax(2))
             % Ax3 - treatment / control
-            scatter(i, treatment_threhsold / control_threshold, 80, mrkr_style, 'MarkerEdgeColor', [.6 .6 .6], ...
+            scatter(i, treatment_threhsold / control_threshold, 150, mrkr_style, 'MarkerEdgeColor', [.6 .6 .6], ...
                 'MarkerFaceColor', [.6 .6 .6], 'MarkerFaceAlpha', sa, 'Parent', ax(3))
         end
         

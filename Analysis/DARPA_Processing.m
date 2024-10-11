@@ -448,28 +448,29 @@ set(gcf, 'Position', [2600 100 2000 500])
 
 
 %% Summary plot w/ significance
-SetFont('Arial', 12)
+SetFont('Arial', 30)
 clearvars ax
 clf; 
+ 
  ax = gca;
       ax.FontSize = 30;
 % Create axes and format
 ax(1) = subplot(1,3,1); hold on
     plot([0, 1.4], [0, 1.4], 'Color', [.6 .6 .6], 'LineStyle', '--')
-    xlabel('Mech Threhsold (Control)',"FontSize",20)
-    ylabel('Mech Threhsold (ICMS)',"FontSize",20)
+    xlabel('Without ICMS (mm)',"FontSize",25)
+    ylabel('With ICMS (mm)',"FontSize",25)
     axis square
 ax(2) = subplot(1,3,2); hold on
     plot([0, length(cat_data)], [0, 0], 'Color', [.6 .6 .6], 'LineStyle', '--')
-    ylabel(sprintf('%s Threshold (mm) (lower is better)', GetUnicodeChar('Delta')),'FontSize',20)
-    xlabel('Monkey/Electrode(s)',"FontSize",20)
+    ylabel(sprintf('%s Threshold (mm)', GetUnicodeChar('Delta')),'FontSize',25)
+    xlabel('Monkey/Electrode(s)',"FontSize",25)
     set(gca,'XTick', [], 'YLim', [-.4 .4])
     axis square
 ax(3) = subplot(1,3,3); hold on
     plot([0, length(cat_data)], [1, 1], 'Color', [.6 .6 .6], 'LineStyle', '--')
-    ylabel('Threshold ICMS / Threshold Control',"FontSize",20)
-    xlabel('Monkey/Electrode(s)',"FontSize",20)
-    set(gca,'XTick', [], 'YScale', 'log', 'YLim', [.2 5], 'YTick', [.2 5])
+    ylabel('ICMS / Without ICMS',"FontSize",25)
+    xlabel('Monkey/Electrode(s)',"FontSize",25)
+    set(gca,'XTick', [])%, 'YScale', 'log', 'YLim', [.1 4])%, 'YTick', [.1 5])
     axis square
 
 for i = 1:length(cat_data)
@@ -506,13 +507,13 @@ for i = 1:length(cat_data)
             % Plot individual values
             treatment_threhsold = cat_data(i).Summary(c_idx(j)).MechThreshold;
             % Ax1 - control vs treatment
-            scatter(control_threshold, treatment_threhsold, 100, mrkr_style, 'MarkerEdgeColor', [.6 .6 .6],...
+            scatter(control_threshold, treatment_threhsold, 150, mrkr_style, 'MarkerEdgeColor', [.6 .6 .6],...
                 'MarkerFaceColor', [.6 .6 .6], 'MarkerFaceAlpha', sa, 'Parent', ax(1))
             % Ax2 - treatment minus control
-            scatter(i, treatment_threhsold - control_threshold, 100, mrkr_style, 'MarkerEdgeColor', [.6 .6 .6],...
+            scatter(i, treatment_threhsold - control_threshold, 150, mrkr_style, 'MarkerEdgeColor', [.6 .6 .6],...
                 'MarkerFaceColor', [.6 .6 .6], 'MarkerFaceAlpha', sa, 'Parent', ax(2))
             % Ax3 - treatment / control
-            scatter(i, treatment_threhsold / control_threshold, 100, mrkr_style, 'MarkerEdgeColor', [.6 .6 .6], ...
+            scatter(i, treatment_threhsold / control_threshold, 150, mrkr_style, 'MarkerEdgeColor', [.6 .6 .6], ...
                 'MarkerFaceColor', [.6 .6 .6], 'MarkerFaceAlpha', sa, 'Parent', ax(3))
         end
         

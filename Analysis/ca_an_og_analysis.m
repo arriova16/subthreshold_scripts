@@ -86,10 +86,10 @@ for a = 1:length(ca_an_struct)
     pd1_ca_an = ca_an_struct(a).DetectionTable{:,2};
     pd2_ca_an = ca_an_struct(a).DetectionTable{:,3};
 
-    % [sig_pd1, coeffs_pd1, ~,~,~, warn_pd1] = FitSigmoid(mech_ca_an, pd1_ca_an, 'NumCoeffs', 4,'Constraints', [0,300; -5, 5]);%, 'Plotfit', true);
-    % [sig_pd2, coeffs_pd2, ~,~,~, warn_pd2] = FitSigmoid(mech_ca_an, pd2_ca_an, 'NumCoeffs', 4,'Constraints',[0,300;-5, 5]);% 'Plotfit', true);
-    [sig_pd1, coeffs_pd1, ~,~,~, warn_pd1] = FitSigmoid(mech_ca_an, pd1_ca_an, 'Constraints', [0,300; -5, 5]);
-    [sig_pd2, coeffs_pd2, ~,~,~, warn_pd2] = FitSigmoid(mech_ca_an, pd2_ca_an, 'Constraints',[0,300;-5, 5]);
+    [sig_pd1, coeffs_pd1, ~,~,~, warn_pd1] = FitSigmoid(mech_ca_an, pd1_ca_an, 'NumCoeffs', 4,'Constraints', [0,300; -5, 5]);%, 'Plotfit', true);
+    [sig_pd2, coeffs_pd2, ~,~,~, warn_pd2] = FitSigmoid(mech_ca_an, pd2_ca_an, 'NumCoeffs', 4,'Constraints',[0,300;-5, 5]);% 'Plotfit', true);
+%     [sig_pd1, coeffs_pd1, ~,~,~, warn_pd1] = FitSigmoid(mech_ca_an, pd1_ca_an, 'Constraints', [0,300; -5, 5]);
+%     [sig_pd2, coeffs_pd2, ~,~,~, warn_pd2] = FitSigmoid(mech_ca_an, pd2_ca_an, 'Constraints',[0,300;-5, 5]);
     xq_ca_an = linspace(mech_ca_an(1), mech_ca_an(end)*2);
     fit_pd1 = sig_pd1(coeffs_pd1, xq_ca_an);
     fit_pd2 = sig_pd2(coeffs_pd2, xq_ca_an);
@@ -107,37 +107,37 @@ for a = 1:length(ca_an_struct)
     ca_an_struct(a).mt_catch = mt_1;
     ca_an_struct(a).mt_elec = mt_2;
 % 
-% SetFont('Arial', 25)
-% figure;
-% 
-% subplot(1,2,1); hold on;
-% scatter(mech_ca_an, pd1_ca_an)
-% scatter(mech_ca_an, pd2_ca_an),
-% plot(xq_ca_an,fit_pd1, 'Color', rgb(33, 33, 33), 'LineWidth', 3)
-% plot(xq_ca_an, fit_pd2, 'Color', rgb(198, 40, 40), 'LineWidth', 3)
-% text(.1,.3, ColorText({'Without ICMS', 'ICMS'}, [rgb(33, 33, 33);rgb(198, 40, 40)]), 'HorizontalAlignment', 'left', 'VerticalAlignment', 'top')
-% 
-% 
-% xlabel('Stimulus Amplitude')
-% ylabel('pDetect')
-% axis square
-% 
-% 
-% 
-% subplot(1,2,2); hold on;
-% 
-% scatter(mech_ca_an, ca_an_struct(a).DprimeTable{:,2}) %,  'Color', rgb(33, 33, 33), 'LineWidth', 3)
-% scatter(mech_ca_an, ca_an_struct(a).DprimeTable{:,3})%, 'Color', rgb(198, 40, 40), 'LineWidth', 3)
-% plot(xq_ca_an,dp_1,'Color', rgb(33, 33, 33), 'LineWidth', 3)
-% plot(xq_ca_an, dp_2,'Color', rgb(198, 40, 40), 'LineWidth', 3)
-%     text(.1,.5, ColorText({'Without ICMS', 'ICMS'}, [rgb(33, 33, 33);rgb(198, 40, 40)]), 'HorizontalAlignment', 'left', 'VerticalAlignment', 'top')
-%     text(.1, 1.2, ColorText({sprintf('%0.3f', mt_1), sprintf('%0.3f', mt_2)},[rgb(33, 33, 33);rgb(198, 40, 40)]), 'HorizontalAlignment', 'left', 'VerticalAlignment', 'top')
-% yline(1.35, '-', 'Threshold', 'FontSize', 25, 'LineWidth',3);
-% xlabel('Stimulus Amplitude')
-% ylabel('d''')
-% axis square
-% 
-% 
+SetFont('Arial', 30)
+figure;
+
+subplot(1,2,1); hold on;
+scatter(mech_ca_an, pd1_ca_an, 150,rgb(33, 33, 33), 'filled')
+scatter(mech_ca_an, pd2_ca_an, 150, rgb(198, 40, 40), 'filled'),
+plot(xq_ca_an,fit_pd1, 'Color', rgb(33, 33, 33), 'LineWidth', 4)
+plot(xq_ca_an, fit_pd2, 'Color', rgb(198, 40, 40), 'LineWidth', 4)
+text(.1,.3, ColorText({'Without ICMS', 'ICMS'}, [rgb(33, 33, 33);rgb(198, 40, 40)]), 'HorizontalAlignment', 'left', 'VerticalAlignment', 'top')
+
+
+xlabel('Stimulus Amplitude(mm)')
+ylabel('pDetect')
+axis square
+
+
+
+subplot(1,2,2); hold on;
+
+scatter(mech_ca_an, ca_an_struct(a).DprimeTable{:,2}, 150,rgb(33, 33, 33), 'filled') %,  'Color', rgb(33, 33, 33), 'LineWidth', 3)
+scatter(mech_ca_an, ca_an_struct(a).DprimeTable{:,3}, 150,rgb(198, 40, 40), 'filled')%, 'Color', rgb(198, 40, 40), 'LineWidth', 3)
+plot(xq_ca_an,dp_1,'Color', rgb(33, 33, 33), 'LineWidth', 4)
+plot(xq_ca_an, dp_2,'Color', rgb(198, 40, 40), 'LineWidth', 4)
+    text(.1,.5, ColorText({'Without ICMS', 'ICMS'}, [rgb(33, 33, 33);rgb(198, 40, 40)]), 'HorizontalAlignment', 'left', 'VerticalAlignment', 'top')
+    text(.1, 1.2, ColorText({sprintf('%0.3f', mt_1), sprintf('%0.3f', mt_2)},[rgb(33, 33, 33);rgb(198, 40, 40)]), 'HorizontalAlignment', 'left', 'VerticalAlignment', 'top')
+yline(1.35, '-', 'Threshold', 'FontSize', 30, 'LineWidth',3);
+xlabel('Stimulus Amplitude(mm)')
+ylabel('d''')
+axis square
+
+
 
 
 end %ca_an_struct
@@ -146,8 +146,8 @@ end %ca_an_struct
 
 
 %% Permutation
-num_perm = 1e4;
-% num_perm = 1;
+% num_perm = 1e4;
+num_perm = 10;
 for p = 1:length(ca_an_struct)  
     %get indices
     delta_thresholds_abs = abs(ca_an_struct(p).mt_catch - ca_an_struct(p).mt_elec);
@@ -195,23 +195,23 @@ end %ca_an_struct
 % electrode = vertcat(ca_an_struct(:).Electrodes);
 % electrode_u = unique(electrode, 'rows');
 
-pulse_data = vertcat(ca_an_struct(:).Pulse);
-
-cath_idx = strcmpi(pulse_data, 'Cathodic');
-an_idx = strcmpi(pulse_data, 'Anodic');
-
-
-% w_o_icms_cath = vertcat(ca_an_struct(cath_idx).mt_catch);
-% w_icms_cath = vertcat(ca_an_struct(cath_idx).mt_elec);
-
-null_example1 = ca_an_struct(2).null_dist - ca_an_struct(1).null_dist;
-ac_example1 = ca_an_struct(2).delta_threshold - ca_an_struct(1).delta_threshold;
-ex_p_rt = 1-(sum(ac_example1 > null_example1) / num_perm);
-ex_p_lt = 1 - (sum(ac_example1 < null_example1) / num_perm);
-    figure;
-    hold on
-    histogram(null_example1)
-    plot([ac_example1 ac_example1] , [0 1000])
+% pulse_data = vertcat(ca_an_struct(:).Pulse);
+% 
+% cath_idx = strcmpi(pulse_data, 'Cathodic');
+% an_idx = strcmpi(pulse_data, 'Anodic');
+% 
+% 
+% % w_o_icms_cath = vertcat(ca_an_struct(cath_idx).mt_catch);
+% % w_icms_cath = vertcat(ca_an_struct(cath_idx).mt_elec);
+% 
+% null_example1 = ca_an_struct(2).null_dist - ca_an_struct(1).null_dist;
+% ac_example1 = ca_an_struct(2).delta_threshold - ca_an_struct(1).delta_threshold;
+% ex_p_rt = 1-(sum(ac_example1 > null_example1) / num_perm);
+% ex_p_lt = 1 - (sum(ac_example1 < null_example1) / num_perm);
+%     figure;
+%     hold on
+%     histogram(null_example1)
+%     plot([ac_example1 ac_example1] , [0 1000])
 
 %     figure;
 %     hold on
@@ -250,14 +250,14 @@ for d = 1:length(ca_an_struct)
 
 end %ca_an_struct
 %% plotting summary
-% 
-% electrode = vertcat(ca_an_struct(:).Electrodes);
-% electrode_u = unique(electrode, 'rows');
-% 
-% pulse_data = vertcat(ca_an_struct(:).Pulse);
-% 
-% cath_idx = strcmpi(pulse_data, 'Cathodic');
-% an_idx = strcmpi(pulse_data, 'Anodic');
+
+electrode = vertcat(ca_an_struct(:).Electrodes);
+electrode_u = unique(electrode, 'rows');
+
+pulse_data = vertcat(ca_an_struct(:).Pulse);
+
+cath_idx = strcmpi(pulse_data, 'Cathodic');
+an_idx = strcmpi(pulse_data, 'Anodic');
 
 w_o_icms_cath = vertcat(ca_an_struct(cath_idx).mt_catch);
 w_icms_cath = vertcat(ca_an_struct(cath_idx).mt_elec);
@@ -270,7 +270,7 @@ delta_cath = vertcat(ca_an_struct(cath_idx).delta_threshold);
 
 SetFont('Arial', 20)
 
-subplot(1,3,1); hold on
+subplot(1,2,1); hold on
     scatter(w_icms_cath, w_o_icms_cath, 150, rgb(123, 31, 162), 'filled')
     scatter(w_icms_an, w_o_icms_an, 150, rgb(2, 119, 189), 'filled')
     title('Thresholds')
@@ -283,7 +283,7 @@ subplot(1,3,1); hold on
     text(.15,.1, ColorText({'Cathodic', 'Anodic'}, [rgb(123, 31, 162);rgb(2, 119, 189)]), 'HorizontalAlignment', 'left', 'VerticalAlignment', 'top')
     axis square
 
- subplot(1,3,2); hold on
+ subplot(1,2,2); hold on
     scatter(delta_an, delta_cath, 150, rgb(33, 33, 33),'filled', 'LineWidth', 1.5)
     plot([0,0], [-0.05 0.05] , 'Color', [.6 .6 .6], 'LineStyle', '--')
     plot( [-0.05 0.05],[0,0] , 'Color', [.6 .6 .6], 'LineStyle', '--')
@@ -294,11 +294,11 @@ subplot(1,3,1); hold on
     axis square
 subplot(1,3,3)
   
-    hold on
-    histogram(null_example1)
-    plot([ac_example1 ac_example1] , [0 1000])
-    axis square
-    
+%     hold on
+%     histogram(null_example1)
+%     plot([ac_example1 ac_example1] , [0 1000])
+%     axis square
+%     
 
 %%
 function mt = Sigmoid2MechThreshold(coeffs, xq, threshold)
