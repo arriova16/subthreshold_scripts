@@ -192,22 +192,22 @@ end %ca_an_struct
 % getting pairs of electrodes 
 %taking pairs of electrodes and getting the two different pulses
 
+electrode = vertcat(ca_an_struct(:).Electrodes);
+electrode_u = unique(electrode, 'rows');
 
-for m = 1:length(ca_an_struct)
-    e_idx = ca_an_struct(m).Electrodes == ca_an_struct(m).Electrodes;
-    pulse_idx = ca_an_struct(e_idx).Pulse;
-    ca_idx = pulse_idx == "Cathodic";
-    an_idx = pulse_idx == "Anodic";
+pulse_data = vertcat(ca_an_struct(:).Pulse);
 
-    
-        % % el_idx = ca_an_struct(m).Electrodes == ca_an_struct(m).Electrodes;
-        % dif = ca_an_struct(el_idx).Pulse;
-        % if dif == 'Cathodic'
-        %     el_idx_ca = 
-        % 
-    
+cath_idx = strcmpi(pulse_data, 'Cathodic');
+an_idx = strcmpi(pulse_data, 'Anodic');
 
-end
+null_dist_cath = vertcat(ca_an_struct(cath_idx).null_dist);
+null_dist_an = vertcat(ca_an_struct(an_idx).null_dist);
+% w_o_icms_cath = vertcat(ca_an_struct(cath_idx).mt_catch);
+% w_icms_cath = vertcat(ca_an_struct(cath_idx).mt_elec);
+
+% if electrodes match then subtract null_dist cath from anodic
+
+
 
 % null_example1 = ca_an_struct(2).null_dist - ca_an_struct(1).null_dist;
 % ac_example1 = ca_an_struct(2).delta_threshold - ca_an_struct(1).delta_threshold;

@@ -107,38 +107,38 @@ for a = 1:length(ca_an_struct)
     ca_an_struct(a).mt_catch = mt_1;
     ca_an_struct(a).mt_elec = mt_2;
 % 
-SetFont('Arial', 30)
-figure;
-
-subplot(1,2,1); hold on;
-scatter(mech_ca_an, pd1_ca_an, 150,rgb(33, 33, 33), 'filled')
-scatter(mech_ca_an, pd2_ca_an, 150, rgb(198, 40, 40), 'filled'),
-plot(xq_ca_an,fit_pd1, 'Color', rgb(33, 33, 33), 'LineWidth', 4)
-plot(xq_ca_an, fit_pd2, 'Color', rgb(198, 40, 40), 'LineWidth', 4)
-text(.1,.3, ColorText({'Without ICMS', 'ICMS'}, [rgb(33, 33, 33);rgb(198, 40, 40)]), 'HorizontalAlignment', 'left', 'VerticalAlignment', 'top')
-
-
-xlabel('Stimulus Amplitude(mm)')
-ylabel('pDetect')
-axis square
-
-
-
-subplot(1,2,2); hold on;
-
-scatter(mech_ca_an, ca_an_struct(a).DprimeTable{:,2}, 150,rgb(33, 33, 33), 'filled') %,  'Color', rgb(33, 33, 33), 'LineWidth', 3)
-scatter(mech_ca_an, ca_an_struct(a).DprimeTable{:,3}, 150,rgb(198, 40, 40), 'filled')%, 'Color', rgb(198, 40, 40), 'LineWidth', 3)
-plot(xq_ca_an,dp_1,'Color', rgb(33, 33, 33), 'LineWidth', 4)
-plot(xq_ca_an, dp_2,'Color', rgb(198, 40, 40), 'LineWidth', 4)
-    text(.1,.5, ColorText({'Without ICMS', 'ICMS'}, [rgb(33, 33, 33);rgb(198, 40, 40)]), 'HorizontalAlignment', 'left', 'VerticalAlignment', 'top')
-    text(.1, 1.2, ColorText({sprintf('%0.3f', mt_1), sprintf('%0.3f', mt_2)},[rgb(33, 33, 33);rgb(198, 40, 40)]), 'HorizontalAlignment', 'left', 'VerticalAlignment', 'top')
-yline(1.35, '-', 'Threshold', 'FontSize', 30, 'LineWidth',3);
-xlabel('Stimulus Amplitude(mm)')
-ylabel('d''')
-axis square
-
-
-
+% SetFont('Arial', 30)
+% figure;
+% 
+% subplot(1,2,1); hold on;
+% scatter(mech_ca_an, pd1_ca_an, 150,rgb(33, 33, 33), 'filled')
+% scatter(mech_ca_an, pd2_ca_an, 150, rgb(198, 40, 40), 'filled'),
+% plot(xq_ca_an,fit_pd1, 'Color', rgb(33, 33, 33), 'LineWidth', 4)
+% plot(xq_ca_an, fit_pd2, 'Color', rgb(198, 40, 40), 'LineWidth', 4)
+% text(.1,.3, ColorText({'Without ICMS', 'ICMS'}, [rgb(33, 33, 33);rgb(198, 40, 40)]), 'HorizontalAlignment', 'left', 'VerticalAlignment', 'top')
+% 
+% 
+% xlabel('Stimulus Amplitude(mm)')
+% ylabel('pDetect')
+% axis square
+% 
+% 
+% 
+% subplot(1,2,2); hold on;
+% 
+% scatter(mech_ca_an, ca_an_struct(a).DprimeTable{:,2}, 150,rgb(33, 33, 33), 'filled') %,  'Color', rgb(33, 33, 33), 'LineWidth', 3)
+% scatter(mech_ca_an, ca_an_struct(a).DprimeTable{:,3}, 150,rgb(198, 40, 40), 'filled')%, 'Color', rgb(198, 40, 40), 'LineWidth', 3)
+% plot(xq_ca_an,dp_1,'Color', rgb(33, 33, 33), 'LineWidth', 4)
+% plot(xq_ca_an, dp_2,'Color', rgb(198, 40, 40), 'LineWidth', 4)
+%     text(.1,.5, ColorText({'Without ICMS', 'ICMS'}, [rgb(33, 33, 33);rgb(198, 40, 40)]), 'HorizontalAlignment', 'left', 'VerticalAlignment', 'top')
+%     text(.1, 1.2, ColorText({sprintf('%0.3f', mt_1), sprintf('%0.3f', mt_2)},[rgb(33, 33, 33);rgb(198, 40, 40)]), 'HorizontalAlignment', 'left', 'VerticalAlignment', 'top')
+% yline(1.35, '-', 'Threshold', 'FontSize', 30, 'LineWidth',3);
+% xlabel('Stimulus Amplitude(mm)')
+% ylabel('d''')
+% axis square
+% 
+% 
+% 
 
 end %ca_an_struct
 
@@ -191,30 +191,21 @@ end %ca_an_struct
 %% permutation within pulse
 % getting pairs of electrodes 
 %taking pairs of electrodes and getting the two different pulses
-% 
 
-for m = 1:length(ca_an_struct)
-        el_idx = ca_an_struct(m).Electrodes == ca_an_struct(m).Electrodes;
-        dif = ca_an_struct(el_idx).Pulse;
-        % if dif == 'Cathodic'
-        %     el_idx_ca = 
-        % 
-    
+electrode = vertcat(ca_an_struct(:).Electrodes);
+electrode_u = unique(electrode, 'rows');
+
+pulse_data = vertcat(ca_an_struct(:).Pulse);
+
+cath_idx = strcmpi(pulse_data, 'Cathodic');
+an_idx = strcmpi(pulse_data, 'Anodic');
 
 
-end
-% electrode = vertcat(ca_an_struct(:).Electrodes);
-% electrode_u = unique(electrode, 'rows');
-% 
-% pulse_data = vertcat(ca_an_struct(:).Pulse);
-% 
-% cath_idx = strcmpi(pulse_data, 'Cathodic');
-% an_idx = strcmpi(pulse_data, 'Anodic');
 
-% 
-% % w_o_icms_cath = vertcat(ca_an_struct(cath_idx).mt_catch);
-% % w_icms_cath = vertcat(ca_an_struct(cath_idx).mt_elec);
-% 
+% if electrodes match then subtract null_dist cath from anodic
+
+
+
 % null_example1 = ca_an_struct(2).null_dist - ca_an_struct(1).null_dist;
 % ac_example1 = ca_an_struct(2).delta_threshold - ca_an_struct(1).delta_threshold;
 % ex_p_rt = 1-(sum(ac_example1 > null_example1) / num_perm);
