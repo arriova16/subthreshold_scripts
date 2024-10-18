@@ -53,12 +53,14 @@ for m = 1:length(monkey_list)
                 ee_2 = [str2double(electrode_an_ca(1:and_idx_2-1)), str2double(electrode_an_ca(and_idx_2+3:end))];
             else
                 ee_2 = str2double(electrode_an_ca);
+                
             end
             %
-
+            
             og_struct(g).Electrodes = sort(ee);
             ca_an_struct(c).Electrodes = sort(ee_2);
 
+            
             num_trials = size(og_struct(g).ResponseTable,1);
             og_struct(g).Trials = num_trials;
             num_trial_1 = size(ca_an_struct(c).ResponseTable,1);
@@ -185,53 +187,9 @@ for p = 1:length(ca_an_struct)
     ca_an_struct(p).Bootp_rt = 1 - (sum(delta_thresholds > null_delta_threshold) / num_perm);
     ca_an_struct(p).Bootp_lt = 1 - (sum(delta_thresholds < null_delta_threshold) / num_perm);
     
+    % stuff = min([ca_an_struct(p).Bootp_rt, ca_an_struct(p).Bootp_lt]);
     
 end %ca_an_struct
-
-%% permutation within pulse
-% getting pairs of electrodes 
-%taking pairs of electrodes and getting the two different pulses
-
-electrode = vertcat(ca_an_struct(:).Electrodes);
-electrode_u = unique(electrode, 'rows');
-
-pulse_data = vertcat(ca_an_struct(:).Pulse);
-
-cath_idx = strcmpi(pulse_data, 'Cathodic');
-an_idx = strcmpi(pulse_data, 'Anodic');
-
-
-
-% if electrodes match then subtract null_dist cath from anodic
-
-
-
-% null_example1 = ca_an_struct(2).null_dist - ca_an_struct(1).null_dist;
-% ac_example1 = ca_an_struct(2).delta_threshold - ca_an_struct(1).delta_threshold;
-% ex_p_rt = 1-(sum(ac_example1 > null_example1) / num_perm);
-% ex_p_lt = 1 - (sum(ac_example1 < null_example1) / num_perm);
-%     figure;
-%     hold on
-%     histogram(null_example1)
-%     plot([ac_example1 ac_example1] , [0 1000])
-
-%     figure;
-%     hold on
-%     histogram(ca_an_struct(d).null_dist)
-%     plot([ca_an_struct(d).delta_threshold ca_an_struct(d).delta_threshold] , [0 1000])
-
-% for t = 1:length(ca_an_struct)
-%     el_idx = ca_an_struct(t).Electrodes == ca_an_struct(t).Electrodes;
-    
-
-%  ca_an_struct(el_idx).Pulse(cathodic).null_dist -  ca_an_struct(el_idx).Pulse(anodic).null_dist
-    
-
-
-% end
-
-
-
 %% permutation within electrode pairs of cathodic and anodic
 %natalyas code
 
@@ -240,7 +198,6 @@ an_idx = strcmpi(pulse_data, 'Anodic');
 % sm.p(cont, se) = min([leftTail, rightTail]);
 % sm.modValue(cont, se) = (sm.deltaStim.mean(cont, se)  - sm.deltaNoStim.mean(cont)) / sm.deltaNoStim.std(cont);
 % sm.isModulated(cont, se) = sm.p(cont, se) <= alpha / 2;
-
 
 %% plotting histogram check
 
@@ -251,6 +208,37 @@ an_idx = strcmpi(pulse_data, 'Anodic');
 %     plot([ca_an_struct(d).delta_threshold ca_an_struct(d).delta_threshold] , [0 1000])
 % 
 % end %ca_an_struct
+
+%% permutation within pulse
+% getting pairs of electrodes 
+%taking pairs of electrodes and getting the two different pulses
+
+
+electrode = vertcat(ca_an_struct(:).Electrodes);
+electrode_u = unique(electrode, 'rows');
+
+pulse_data = vertcat(ca_an_struct(:).Pulse);
+
+cath_idx = strcmpi(pulse_data, 'Cathodic');
+an_idx = strcmpi(pulse_data, 'Anodic');
+
+
+if ca_an_struct(cath_idx)
+
+% null_dist_cath = vertcat(ca_an_struct(cath_idx).null_dist);
+% null_dist_an = vertcat(ca_an_struct(an_idx).null_dist);
+% w_o_icms_cath = vertcat(ca_an_struct(cath_idx).mt_catch);
+% w_icms_cath = vertcat(ca_an_struct(cath_idx).mt_elec);
+
+
+
+
+
+
+
+
+
+
 %% plotting summary
 
 % electrode = vertcat(ca_an_struct(:).Electrodes);
