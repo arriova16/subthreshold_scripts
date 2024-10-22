@@ -223,7 +223,13 @@ pulse_data = vertcat(ca_an_struct(:).Pulse);
 cath_idx = strcmpi(pulse_data, 'Cathodic');
 an_idx = strcmpi(pulse_data, 'Anodic');
 
+for t = 1:size(electrode_u,1)
+    %need to go over how to compare 2 vectors at once
+    e_idx = ca_an_struct(:).Electrodes == electrode_u(t,:);
 
+
+
+end
 % fun = ca_an_struct(cath_idx).Electrodes;
 % not = ca_an_struct(an_idx).Electrodes;
 % c_null = ca_an_struct(cath_idx).null_dist;
