@@ -213,23 +213,29 @@ end %ca_an_struct
 % getting pairs of electrodes 
 %taking pairs of electrodes and getting the two different pulses
 
-
 electrode = vertcat(ca_an_struct(:).Electrodes);
 electrode_u = unique(electrode, 'rows');
+
+% cath_idx = strcmpi(pulse_data, 'Cathodic');
+% an_idx = strcmpi(pulse_data, 'Anodic');
+perm_struct = struct();
+
+for d = 1:length(ca_an_struct)
+    for t = 1:size(electrode_u,1)
+        e_idx =  isequal(ca_an_struct(d).Electrodes, electrode_u(t,:));
+        
+
+    end
+
+ end
+
+    
 
 
 pulse_data = vertcat(ca_an_struct(:).Pulse);
 
-cath_idx = strcmpi(pulse_data, 'Cathodic');
-an_idx = strcmpi(pulse_data, 'Anodic');
 
-for d = 1:length(ca_an_struct)
-    for t = 1:size(electrode_u,1)
-       if isequal(ca_an_struct(d).Electrodes, electrode_u(t,:))
-       
-       end
-    end
-end
+
 
 
   
