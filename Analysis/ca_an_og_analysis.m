@@ -215,18 +215,21 @@ end %ca_an_struct
 
 electrode = vertcat(ca_an_struct(:).Electrodes);
 electrode_u = unique(electrode, 'rows');
-
-cath_idx = strcmpi(pulse_data, 'Cathodic');
-an_idx = strcmpi(pulse_data, 'Anodic');
+% pulse_data = vertcat(ca_an_struct(:).Pulse);
+% cath_idx = strcmpi(pulse_data, 'Cathodic');
+% an_idx = strcmpi(pulse_data, 'Anodic');
 perm_struct = struct();
 
 for d = 1:length(ca_an_struct)
     for t = 1:size(electrode_u,1)
-        e_idx =  isequal(ca_an_struct(d).Electrodes, electrode_u(t,:));
-        ca_try = ca_an_struct(d).Pulse == "Cathodic" & electrode_u(t,:);
-        an_try = ca_an_struct(d).Pulse == "Anodic" & electrode_u(t,:);
-        
+        perm_struct(t).Electrode = electrode_u(t,:);
+        % perm_struct(t).delta_threshold_ca = ca_an_struct(ca_idx).delta_threshold;
 
+        e_idx =  isequal(ca_an_struct(d).Electrodes, electrode_u(t,:));
+        ca_idx = find(ca_an_struct(d).Pulse == "Cathodic");
+        an_idx = find(ca_an_struct(d).Pulse == "Anodic");
+        
+        
     end
 
  end
@@ -234,7 +237,7 @@ for d = 1:length(ca_an_struct)
     
 
 
-pulse_data = vertcat(ca_an_struct(:).Pulse);
+
 
 
 
