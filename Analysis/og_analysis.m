@@ -26,9 +26,23 @@ for m = 1:length(monkey_list)
             num_trials = size(og_struct(g).ResponseTable,1);
             og_struct(g).Trials = num_trials;
 
-
-
         end
+end
+
+
+
+%% pdetect and dprime analysis
+
+threshold = 1.35;
+
+for n = 1:length(og_struct)
+
+
+
+
+
+
+
 
 
 end

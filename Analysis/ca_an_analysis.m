@@ -51,7 +51,6 @@ for m = 1:length(monkey_list)
 end %monkey_list
 
 
-
 %% Analysis(Pdetect and dPrime) for cathodic and anodic data
 
 threshold = 1.35;
@@ -199,10 +198,14 @@ pulse_data = vertcat(ca_an_struct(:).Pulse);
 cath_idx = strcmpi(pulse_data, 'Cathodic');
 an_idx = strcmpi(pulse_data, 'Anodic');
 
-if ca_an_
+perm_struct = struct();
 
 for d = 1:length(ca_an_struct)
      for t = 1:size(electrode_u,1)
+         perm_struct(t).Electrodes = electrode_u(t,:);
+         if 
+            
+         end
 %         e_idx =  isequal(ca_an_struct(d).Electrodes, electrode_u(t,:));
 % 
 %         % if strcmpi(ca_an_struct(d).Pulse)
