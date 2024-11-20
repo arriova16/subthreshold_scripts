@@ -206,7 +206,7 @@ for d = 1:length(ca_an_struct)
         
          e_idx = isequal(ca_an_struct(d).Electrodes,electrode_u(t,:));
 
-         dt = ca_an_struct(e_idx).delta_threshold;
+         % dt = ca_an_struct(e_idx).delta_threshold;
          
      end %electrode_u
 % 
