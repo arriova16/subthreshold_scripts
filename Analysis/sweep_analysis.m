@@ -1,6 +1,7 @@
 %% sweep analysis and permutation
 
-tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+% tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
 
 file_list = dir(tld);
 
@@ -56,7 +57,7 @@ sweep_struct = struct();
   sweep_Electrode = vertcat(data(sweep_idx).Electrode);
   sweep_ResponseTable = vertcat(data(sweep_idx).ResponseTable);
     
-
+%keep getting error but doesn't stop it
 for i = 1:size(sweep_idx)
     sweep_struct(i).Monkey = sweep_monkey(i);
     sweep_struct(i).Task = sweep_Task(i);
@@ -70,12 +71,12 @@ end
 
 for s = 1:length(sweep_struct)
     
-
+    
 
 
 
 end
-1111
+
 
 
 

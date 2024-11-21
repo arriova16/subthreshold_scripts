@@ -1,7 +1,7 @@
 %Darpa Cathodic Anodic Analysis
 
-% tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
-tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+% tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
 
 ca_an_struct = struct();
 monkey_list = dir(tld); monkey_list = monkey_list(3:end);
@@ -23,7 +23,7 @@ for m = 1:length(monkey_list)
             else
                 ca_an_struct(c).Pulse = 'Anodic';
             end
-            ca_an_struct(c).Pulse = convertCharsToStrings(ca_an_struct(c).Pulse);
+            ca_an_struct(c).Pulse = ca_an_struct(c).Pulse;
             temp_ca_an = load(fullfile(ca_an_files(c).folder, ca_an_files(c).name));
 
             ca_an_struct(c).ResponseTable = temp_ca_an.bigtable;
@@ -188,41 +188,50 @@ end %ca_an_struct
 % getting pairs of electrodes 
 %taking pairs of electrodes and getting the two different pulses
 
+null_dist_diff_results  = struct('Electrodes', {}, 'NullDistDifference', {});
+
 electrode = vertcat(ca_an_struct(:).Electrodes);
 electrode_u = unique(electrode, 'rows');
 
-pulse_data = vertcat(ca_an_struct(:).Pulse);
-
-cath_idx = strcmpi(pulse_data, 'Cathodic');
-an_idx = strcmpi(pulse_data, 'Anodic');
-
-% tt = vercat(ca_an_struct(cath_idx).delta_threshold - ca_an_struct(an_idx).delta_threshold);
-
-perm_struct = struct;
-for d = 1:length(ca_an_struct)
-     for t = 1:size(electrode_u,1)
-        
-         perm_struct(t).Electrode = electrode_u(t,:);
-        
-         e_idx = isequal(ca_an_struct(d).Electrodes,electrode_u(t,:));
-
-         % dt = ca_an_struct(e_idx).delta_threshold;
-         
-     end %electrode_u
-% 
-end %ca_an_struct
-
+for e = 1:size(electrode_u,1)
+    current_electrode = electrode_u(e,:);
+    electrode_idx = ismember(electrode,current_electrode,'rows');
     
+    electrode_data = ca_an_struct(electrode_idx);
+
+    cathodic_idx = strcmpi({electrode_data.Pulse}, 'Cathodic');
+    anodic_idx = strcmpi({electrode_data.Pulse}, 'Anodic');
 
 
+    if any(cathodic_idx) && any(anodic_idx)
+        cathodic_null_dist = electrode_data(cathodic_idx).null_dist;
+        anodic_null_dist = electrode_data(anodic_idx).null_dist;
 
+        cathodic_delta_threshold = electrode_data(cathodic_idx).delta_threshold;
+        anodic_delta_threshold = electrode_data(anodic_idx).delta_threshold;
 
+        delta_diff = anodic_delta_threshold- cathodic_delta_threshold;
 
+        null_dist_diff = anodic_null_dist - cathodic_null_dist;
 
+        null_dist_diff_results(end+1).Electrodes = current_electrode;
 
+        null_dist_diff_results(end).NullDistDifference = null_dist_diff;
+        null_dist_diff_results(end).Delta_thresholds = delta_diff;
 
-  
+        
+    end
+ 
 
+end
+
+  %need to fix
+for m = 1:length(null_dist_diff_results)
+%     null_dist_diff_results(m).NullDistDifference = null_delta_threshold;
+    null_dist_diff_results(m).Bootp_rt = 1 - (sum(null_dist_diff_results(m).NullDistDifference > null_dist_diff_results(m).NullDistDifference) / num_perm);
+    null_dist_diff_results(m).Bootp_lt = 1 - (sum(null_dist_diff_results(m).NullDistDifference < null_dist_diff_results(m).NullDistDifference) / num_perm);
+
+end
 
 
 
