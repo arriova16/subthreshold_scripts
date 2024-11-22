@@ -1,5 +1,5 @@
 %% analysis for sweep table
-function [detection_table,dprime_table] = AnalyzeSweepTable(input_table)
+function [detection_table,dprime_table, predict_dt, predict_dp] = AnalyzeSweepTable(input_table)
  % c(1) = rate of change, c(2) = x-offset, c(3) = multiplier, c(4) = offset
  % sigfun = @(c,x) (c(3) .* (1./(1 + exp(-c(1).*(x-c(2)))))) + c(4);
     
@@ -43,6 +43,40 @@ function [detection_table,dprime_table] = AnalyzeSweepTable(input_table)
         dprime_table{:,c} = dprime;
 
     end
+    
+% P(A)+P(B) - P(A)*(and)P(B)
+% P(A) = probability of Mechanical- just mechanical
+% P(B) = Probability of Electrical- just electrical 
+%predicted is from the formula / observed is icms w/ mechnical
+
+    mech = detection_table{1,2};
+   icms_only = detection_table{1,2:end};
+
+   for m = 1:size(icms_only,2)
+        empty_icms = zeros([size(icms_only)]);
+        predict_pd(m) = (mech + icms_only(:,m)) - (mech .* icms_only(:,m));
+   end
+
+%    predict_dt =  predict_pd;
+    predict_dt = array2table(predict_pd, 'VariableNames', [pd_strings]);
+
+   FA = max([icms_only(1,1), 1e-3]);
+
+   for j = 1:size(empty_icms,2)-1
+        phit_predict = predict_pd(j+1);
+        if phit_predict == 1
+           phit_predict = .999;
+       elseif phit_predict == 0
+           phit_predict = 1e-3;
+       end
+
+       empty_icms(j+1) = norminv(phit_predict) - norminv(FA);
+   end %empty_icms
+
+
+%     predict_dp = empty_icms;
+
+    predict_dp = array2table(empty_icms, 'VariableNames', [pd_strings]);
 
 
 end

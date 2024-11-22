@@ -22,13 +22,7 @@ for i = 1:length(monkey)
        
         task_idx = convertCharsToStrings(mat_split{3});
         data(ii).Task = task_idx;
-        % if task_idx == "Sweep"
-        %     data(ii).Task = 'Sweep';
-        % else
-        %     data(ii).Task = 'ME';
-        % end
-     
-        
+       
         if contains(mat_split{2}, 'and')
             and_idx = strfind(mat_split{2}, 'and');
             ee = [str2double(mat_split{2}(1:and_idx-1)), str2double(mat_split{2}(and_idx+3:end))];
@@ -44,7 +38,6 @@ for i = 1:length(monkey)
 
 end %monkey
 
-% need new script for getting mech and elect
 
 %% sweep struct
 %so messy!!!
@@ -66,24 +59,18 @@ for i = 1:size(sweep_idx)
 
 end
 
+%change responsetables for 1 and 9 SweepTask_Pipeline
 
 %% Pdetect and dprime- sweep
 
 for s = 1:length(sweep_struct)
-    %check code 
-    [dt,dp] = AnalyzeSweepTable(sweep_struct(s).ResponseTable(:,:));
+    [dt,dp, dt_predict, dp_predict] = AnalyzeSweepTable(sweep_struct(s).ResponseTable(:,:));
     sweep_struct(s).DetectionTable = dt;
     sweep_struct(s).Dprime = dp;
+    sweep_struct(s).DetectionTable_predict = dt_predict;
+    sweep_struct(s).Dprime_predict = dp_predict;
 
 end
-
-%% predicted pdetect and dprime
-
-for a = 1%:lenght(sweep_struct)
-    [predict_dt, predict_dp] =AnalyzeSweepTable_predict(sweep_struct(a).DetectionTable);
-
-end
-
 
 
 %% permutation start
