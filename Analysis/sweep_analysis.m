@@ -89,6 +89,9 @@ for p = 2%:length(sweep_struct)
             three_sweep = [sweep_struct(p).ResponseTable.StimAmp] == stim_amp_u(s) & ...
             [sweep_struct(p).ResponseTable.IndentorAmp] == mech_u(m);
             three_sweep_idx = sweep_struct(p).ResponseTable(three_sweep,:);
+
+            %individual amplitudes
+%             each_amp = 
     
 %             each_icms(s) = [sweep_struct(p).ResponseTable.IndentorAmp] == mech_u(m) &
 %             [sweep_struct(p).ResponseTable.StimAmp];
@@ -113,7 +116,7 @@ for p = 2%:length(sweep_struct)
                 
          end %stim_amp_u
          for dm = 1:num_perm
-            three_idx = datasample(three_sweep_idx, 10, 'Replace', false);
+            three_idx = datasample(three_sweep_idx, 20, 'Replace', false);
                     %         within_idx = datasample(group, 300, 'Replace', false);
                     %         each_amp = datasample(group, 300, 'Replace', false);
                     
