@@ -83,7 +83,6 @@ for p = 2%:length(sweep_struct)
     %unique mechanical and stim amps
     stim_amp_u = unique(sweep_struct(p).ResponseTable.StimAmp);
     mech_u = unique(sweep_struct(p).ResponseTable.IndentorAmp);
-<<<<<<< HEAD
     for m = 1:length(mech_u)
         for s = 1:length(stim_amp_u)
             %list of conditions
@@ -118,9 +117,7 @@ for p = 2%:length(sweep_struct)
 end %sweep_struct
 
 
-%%
-            %individual amplitudes
-=======
+
     %find catch trials
     control_idx = find([sweep_struct(p).RespoonseTable.StimAmp] == 0 & ...
         [sweep_struct(p).ResponseTable.IndentorAmp] == 0);
@@ -133,16 +130,13 @@ end %sweep_struct
                 three_sweep = [sweep_struct(p).ResponseTable.StimAmp] == stim_amp_u(s) & ...
                 [sweep_struct(p).ResponseTable.IndentorAmp] == mech_u(m);
                 three_sweep_idx = sweep_struct(p).ResponseTable(three_sweep,:);
->>>>>>> 3f5eddea818e2130c24fd1e6201d5c4502217740
     
                 %individual amplitudes
     %             each_amp = 
         
-<<<<<<< HEAD
 %     three_sweep = [sweep_struct(p).ResponseTable.StimAmp] == stim_amp_u(s) & ...
 %             [sweep_struct(p).ResponseTable.IndentorAmp] == mech_u(m);
 %             three_sweep_idx = sweep_struct(p).ResponseTable(three_sweep,:);
-=======
     %             each_icms(s) = [sweep_struct(p).ResponseTable.IndentorAmp] == mech_u(m) &
     %             [sweep_struct(p).ResponseTable.StimAmp];
         %         %no stim condition
@@ -177,4 +171,3 @@ end %sweep_struct
 end %sweep_struct
 
 
->>>>>>> 3f5eddea818e2130c24fd1e6201d5c4502217740
