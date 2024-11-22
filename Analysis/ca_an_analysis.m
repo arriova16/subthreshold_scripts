@@ -1,7 +1,7 @@
 %Darpa Cathodic Anodic Analysis
 
-tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
-% tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+% tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
 
 ca_an_struct = struct();
 monkey_list = dir(tld); monkey_list = monkey_list(3:end);
@@ -23,7 +23,7 @@ for m = 1:length(monkey_list)
             else
                 ca_an_struct(c).Pulse = 'Anodic';
             end
-            ca_an_struct(c).Pulse = ca_an_struct(c).Pulse;
+            ca_an_struct(c).Pulse = convertCharsToStrings(ca_an_struct(c).Pulse);
             temp_ca_an = load(fullfile(ca_an_files(c).folder, ca_an_files(c).name));
 
             ca_an_struct(c).ResponseTable = temp_ca_an.bigtable;
@@ -242,54 +242,54 @@ end %ca_an_struct
 
 %% plotting summary
 
-% electrode = vertcat(ca_an_struct(:).Electrodes);
-% electrode_u = unique(electrode, 'rows');
-% 
-% pulse_data = vertcat(ca_an_struct(:).Pulse);
-% 
-% cath_idx = strcmpi(pulse_data, 'Cathodic');
-% an_idx = strcmpi(pulse_data, 'Anodic');
-% 
-% w_o_icms_cath = vertcat(ca_an_struct(cath_idx).mt_catch);
-% w_icms_cath = vertcat(ca_an_struct(cath_idx).mt_elec);
-% w_o_icms_an = vertcat(ca_an_struct(an_idx).mt_catch);
-% w_icms_an = vertcat(ca_an_struct(an_idx).mt_elec);
-% delta_an = vertcat(ca_an_struct(an_idx).delta_threshold);
-% delta_cath = vertcat(ca_an_struct(cath_idx).delta_threshold);
-% 
-% 
-% 
-% SetFont('Arial', 20)
-% 
-% subplot(1,2,1); hold on
-%     scatter(w_icms_cath, w_o_icms_cath, 150, rgb(123, 31, 162), 'filled')
-%     scatter(w_icms_an, w_o_icms_an, 150, rgb(2, 119, 189), 'filled')
-%     title('Thresholds')
-%     ylabel('Without ICMS(mm)')
-%     xlabel('With ICMS(mm)')
-%     xlim([0 .25])
-%     ylim([0 .25])
-%     plot(xlim,ylim,'Color', [.8 .8 .8], 'LineStyle','--')
-% 
-%     text(.15,.1, ColorText({'Cathodic', 'Anodic'}, [rgb(123, 31, 162);rgb(2, 119, 189)]), 'HorizontalAlignment', 'left', 'VerticalAlignment', 'top')
-%     axis square
-% 
-%  subplot(1,2,2); hold on
-%     scatter(delta_an, delta_cath, 150, rgb(33, 33, 33),'filled', 'LineWidth', 1.5)
-%     plot([0,0], [-0.05 0.05] , 'Color', [.6 .6 .6], 'LineStyle', '--')
-%     plot( [-0.05 0.05],[0,0] , 'Color', [.6 .6 .6], 'LineStyle', '--')
-%     ylabel('\Delta Cathodic Threshold')
-%     xlabel('\Delta Anodic Threshold')
-%     xlim([-.049 .049])
-%     ylim([-0.049 .049])
-%     axis square
+electrode = vertcat(ca_an_struct(:).Electrodes);
+electrode_u = unique(electrode, 'rows');
+
+pulse_data = vertcat(ca_an_struct(:).Pulse);
+
+cath_idx = strcmpi(pulse_data, 'Cathodic');
+an_idx = strcmpi(pulse_data, 'Anodic');
+
+w_o_icms_cath = vertcat(ca_an_struct(cath_idx).mt_catch);
+w_icms_cath = vertcat(ca_an_struct(cath_idx).mt_elec);
+w_o_icms_an = vertcat(ca_an_struct(an_idx).mt_catch);
+w_icms_an = vertcat(ca_an_struct(an_idx).mt_elec);
+delta_an = vertcat(ca_an_struct(an_idx).delta_threshold);
+delta_cath = vertcat(ca_an_struct(cath_idx).delta_threshold);
+
+
+
+SetFont('Arial', 20)
+
+subplot(1,2,1); hold on
+    scatter(w_icms_cath, w_o_icms_cath, 150, rgb(123, 31, 162), 'filled')
+    scatter(w_icms_an, w_o_icms_an, 150, rgb(2, 119, 189), 'filled')
+    title('Thresholds')
+    ylabel('Without ICMS(mm)')
+    xlabel('With ICMS(mm)')
+    xlim([0 .25])
+    ylim([0 .25])
+    plot(xlim,ylim,'Color', [.8 .8 .8], 'LineStyle','--')
+
+    text(.15,.1, ColorText({'Cathodic', 'Anodic'}, [rgb(123, 31, 162);rgb(2, 119, 189)]), 'HorizontalAlignment', 'left', 'VerticalAlignment', 'top')
+    axis square
+
+ subplot(1,2,2); hold on
+    scatter(delta_an, delta_cath, 150, rgb(33, 33, 33),'filled', 'LineWidth', 1.5)
+    plot([0,0], [-0.05 0.05] , 'Color', [.6 .6 .6], 'LineStyle', '--')
+    plot( [-0.05 0.05],[0,0] , 'Color', [.6 .6 .6], 'LineStyle', '--')
+    ylabel('\Delta Cathodic Threshold')
+    xlabel('\Delta Anodic Threshold')
+    xlim([-.049 .049])
+    ylim([-0.049 .049])
+    axis square
 % subplot(1,3,3)
-% 
-% %     hold on
-% %     histogram(null_example1)
-% %     plot([ac_example1 ac_example1] , [0 1000])
-% %     axis square
-% %     
+
+%     hold on
+%     histogram(null_example1)
+%     plot([ac_example1 ac_example1] , [0 1000])
+%     axis square
+%     
 
 %%
 function mt = Sigmoid2MechThreshold(coeffs, xq, threshold)
