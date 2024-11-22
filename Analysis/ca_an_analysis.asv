@@ -210,9 +210,9 @@ for e = 1:size(electrode_u,1)
         cathodic_delta_threshold = electrode_data(cathodic_idx).delta_threshold;
         anodic_delta_threshold = electrode_data(anodic_idx).delta_threshold;
 
-        delta_diff = anodic_delta_threshold- cathodic_delta_threshold;
+        delta_diff = cathodic_delta_threshold- anodic_delta_threshold;
 
-        null_dist_diff = anodic_null_dist - cathodic_null_dist;
+        null_dist_diff = cathodic_null_dist - anodic_null_dist;
 
         null_dist_diff_results(end+1).Electrodes = current_electrode;
 
@@ -225,17 +225,19 @@ for e = 1:size(electrode_u,1)
 
 end
 
-  
 for m = 1:length(null_dist_diff_results)
-%     null_dist_diff_results(m).NullDistDifference = null_delta_threshold;
-    null_dist_diff_results(m).Bootp_rt = 1 - (sum(null_dist_diff_results(m).NullDistDifference > NullDistDifference) / num_perm);
-    null_dist_diff_results(m).Bootp_lt = 1 - (sum(null_dist_diff_results(m).NullDistDifference < v) / num_perm);
-%     
+    null_dist_diff_results(m).Bootp_rt = 1 - (sum(null_dist_diff_results(m).Delta_thresholds > null_dist_diff_results(m).NullDistDifference) / num_perm);
+    null_dist_diff_results(m).Bootp_lt = 1 - (sum(null_dist_diff_results(m).Delta_thresholds < null_dist_diff_results(m).NullDistDifference) / num_perm);
 
 end
 
+for d = 1:length(sweep_struct)
+    figure;
+    hold on
+    histogram(null_dist_diff(d).N)
+    plot([ca_an_struct(d).delta_threshold ca_an_struct(d).delta_threshold] , [0 1000])
 
-
+end %ca_an_struct
 
 
 %% plotting summary

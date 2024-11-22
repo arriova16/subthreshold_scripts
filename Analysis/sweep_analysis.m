@@ -70,13 +70,61 @@ end
 %% Pdetect and dprime- sweep
 
 for s = 1:length(sweep_struct)
-    
-    
+    %check code 
+    [dt,dp] = AnalyzeSweepTable(sweep_struct(s).ResponseTable(:,:));
+    sweep_struct(s).DetectionTable = dt;
+    sweep_struct(s).Dprime = dp;
 
+end
 
+%% predicted pdetect and dprime
+
+for a = 1%:lenght(sweep_struct)
+    [predict_dt, predict_dp] =AnalyzeSweepTable_predict(sweep_struct(a).DetectionTable);
 
 end
 
 
+
+%% permutation start
+%across and within amplitudes
+
+% num_perm = 1e4;
+num_perm = 10;
+
+for p = 2%:length(sweep_struct)
+    stim_amp_u = unique(sweep_struct(p).ResponseTable.StimAmp);
+    mech_u = unique(sweep_struct(p).ResponseTable.IndentorAmp);
+
+    %list of conditions
+    
+    %no stim condition
+    control_idx = [sweep_struct(p).ResponseTable.StimAmp] == 0 & ...
+        sweep_struct(p).ResponseTable.IndentorAmp == 0;
+    num_control = length(control_idx);
+    %mech only condition
+    mech_idx = [sweep_struct(p).ResponseTable.StimAmp] == 0 & ...
+        [sweep_struct(p).ResponseTable.IndentorAmp] ~= 0;
+    num_mech = length(mech_idx);
+    %stim and mech
+    treamtment_idx = [sweep_struct(p).ResponseTable.StimAmp] ~= 0 & ...
+        [sweep_struct(p).ResponseTable.IndentorAmp] ~= 0;
+    num_treatment = length(treamtment_idx);
+    %stim only
+    icms_idx = [sweep_struct(p).ResponseTable.StimAmp] ~= 0 & ...
+        [sweep_struct(p).ResponseTable.IndentorAmp] == 0;
+    num_icms = length(icms_idx);
+
+
+    for dm = 1:num_perm
+%         within_idx = datasample(group, 300, 'Replace', false);
+%         each_amp = datasample(group, 300, 'Replace', false);
+
+
+
+
+    end
+
+end
 
 
