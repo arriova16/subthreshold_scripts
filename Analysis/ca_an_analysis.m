@@ -23,7 +23,9 @@ for m = 1:length(monkey_list)
             else
                 ca_an_struct(c).Pulse = 'Anodic';
             end
-            ca_an_struct(c).Pulse = convertCharsToStrings(ca_an_struct(c).Pulse);
+            % ca_an_struct(c).Pulse = convertCharsToStrings(ca_an_struct(c).Pulse);
+            ca_an_struct(c).Pulse = ca_an_struct(c).Pulse;
+
             temp_ca_an = load(fullfile(ca_an_files(c).folder, ca_an_files(c).name));
 
             ca_an_struct(c).ResponseTable = temp_ca_an.bigtable;
@@ -63,10 +65,10 @@ for a = 1:length(ca_an_struct)
     pd1_ca_an = ca_an_struct(a).DetectionTable{:,2};
     pd2_ca_an = ca_an_struct(a).DetectionTable{:,3};
 
-    [sig_pd1, coeffs_pd1, ~,~,~, warn_pd1] = FitSigmoid(mech_ca_an, pd1_ca_an, 'NumCoeffs', 4,'Constraints', [0,300; -5, 5]);%, 'Plotfit', true);
-    [sig_pd2, coeffs_pd2, ~,~,~, warn_pd2] = FitSigmoid(mech_ca_an, pd2_ca_an, 'NumCoeffs', 4,'Constraints',[0,300;-5, 5]);% 'Plotfit', true);
-%     [sig_pd1, coeffs_pd1, ~,~,~, warn_pd1] = FitSigmoid(mech_ca_an, pd1_ca_an, 'Constraints', [0,300; -5, 5]);
-%     [sig_pd2, coeffs_pd2, ~,~,~, warn_pd2] = FitSigmoid(mech_ca_an, pd2_ca_an, 'Constraints',[0,300;-5, 5]);
+    % [sig_pd1, coeffs_pd1, ~,~,~, warn_pd1] = FitSigmoid(mech_ca_an, pd1_ca_an, 'NumCoeffs', 4,'Constraints', [0,300; -5, 5]);%, 'Plotfit', true);
+    % [sig_pd2, coeffs_pd2, ~,~,~, warn_pd2] = FitSigmoid(mech_ca_an, pd2_ca_an, 'NumCoeffs', 4,'Constraints',[0,300;-5, 5]);% 'Plotfit', true);
+    [sig_pd1, coeffs_pd1, ~,~,~, warn_pd1] = FitSigmoid(mech_ca_an, pd1_ca_an, 'Constraints', [0,300; -5, 5]);
+    [sig_pd2, coeffs_pd2, ~,~,~, warn_pd2] = FitSigmoid(mech_ca_an, pd2_ca_an, 'Constraints',[0,300;-5, 5]);
     xq_ca_an = linspace(mech_ca_an(1), mech_ca_an(end)*2);
     fit_pd1 = sig_pd1(coeffs_pd1, xq_ca_an);
     fit_pd2 = sig_pd2(coeffs_pd2, xq_ca_an);
@@ -236,7 +238,7 @@ for d = 1:length(null_dist_diff_results)
     hold on
     histogram(null_dist_diff_results(d).NullDistDifference)
     plot([null_dist_diff_results(d).Delta_thresholds null_dist_diff_results(d).Delta_thresholds] , [0 1000])
-
+    axis square
 end %ca_an_struct
 
 

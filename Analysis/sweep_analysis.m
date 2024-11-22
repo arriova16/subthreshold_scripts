@@ -1,7 +1,7 @@
 %% sweep analysis and permutation
 
-% tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
-tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+% tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
 
 file_list = dir(tld);
 
@@ -67,8 +67,8 @@ for s = 1:length(sweep_struct)
     [dt,dp, dt_predict, dp_predict] = AnalyzeSweepTable(sweep_struct(s).ResponseTable(:,:));
     sweep_struct(s).DetectionTable = dt;
     sweep_struct(s).Dprime = dp;
-    sweep_struct(s).DetectionTable_predict = dt_predict;
-    sweep_struct(s).Dprime_predict = dp_predict;
+    % sweep_struct(s).DetectionTable_predict = dt_predict;
+    % sweep_struct(s).Dprime_predict = dp_predict;
 
 end
 
@@ -80,50 +80,56 @@ num_perm = 1e4;
 % num_perm = 10;
 
 for p = 2%:length(sweep_struct)
+    %unique mechanical and stim amps
     stim_amp_u = unique(sweep_struct(p).ResponseTable.StimAmp);
     mech_u = unique(sweep_struct(p).ResponseTable.IndentorAmp);
-    for m = 1:length(mech_u)
-        for s = 1:length(stim_amp_u)
-            %list of conditions
-            %condition with all three icms with mechanical
-            three_sweep = [sweep_struct(p).ResponseTable.StimAmp] == stim_amp_u(s) & ...
-            [sweep_struct(p).ResponseTable.IndentorAmp] == mech_u(m);
-            three_sweep_idx = sweep_struct(p).ResponseTable(three_sweep,:);
-
-            %individual amplitudes
-%             each_amp = 
+    %find catch trials
+    control_idx = find([sweep_struct(p).RespoonseTable.StimAmp] == 0 & ...
+        [sweep_struct(p).ResponseTable.IndentorAmp] == 0);
+    num_controls = length(control_idx);
+        for c = 1:num_controls
+        for m = 1:length(mech_u)
+            for s = 1:length(stim_amp_u)
+                %list of conditions
+                %condition with all three icms with mechanical
+                three_sweep = [sweep_struct(p).ResponseTable.StimAmp] == stim_amp_u(s) & ...
+                [sweep_struct(p).ResponseTable.IndentorAmp] == mech_u(m);
+                three_sweep_idx = sweep_struct(p).ResponseTable(three_sweep,:);
     
-%             each_icms(s) = [sweep_struct(p).ResponseTable.IndentorAmp] == mech_u(m) &
-%             [sweep_struct(p).ResponseTable.StimAmp];
-    %         %no stim condition
-    %         control_idx = [sweep_struct(p).ResponseTable.StimAmp] == 0 & ...
-    %             sweep_struct(p).ResponseTable.IndentorAmp == 0;
-    %         num_control = length(control_idx);
-    %         %mech only condition
-    %         mech_idx = [sweep_struct(p).ResponseTable.StimAmp] == 0 & ...
-    %             [sweep_struct(p).ResponseTable.IndentorAmp] ~= 0;
-    %         num_mech = length(mech_idx);
-    %         %stim and mech
-    %         treamtment_idx = [sweep_struct(p).ResponseTable.StimAmp] ~= 0 & ...
-    %             [sweep_struct(p).ResponseTable.IndentorAmp] ~= 0;
-    %         num_treatment = length(treamtment_idx);
-    %         %stim only
-    %         icms_idx = [sweep_struct(p).ResponseTable.StimAmp] ~= 0 & ...
-    %             [sweep_struct(p).ResponseTable.IndentorAmp] == 0;
-    %         num_icms = length(icms_idx);
-    %     
+                %individual amplitudes
+    %             each_amp = 
         
-                
-         end %stim_amp_u
-         for dm = 1:num_perm
-            three_idx = datasample(three_sweep_idx, 20, 'Replace', false);
-                    %         within_idx = datasample(group, 300, 'Replace', false);
-                    %         each_amp = datasample(group, 300, 'Replace', false);
+    %             each_icms(s) = [sweep_struct(p).ResponseTable.IndentorAmp] == mech_u(m) &
+    %             [sweep_struct(p).ResponseTable.StimAmp];
+        %         %no stim condition
+        %         control_idx = [sweep_struct(p).ResponseTable.StimAmp] == 0 & ...
+        %             sweep_struct(p).ResponseTable.IndentorAmp == 0;
+        %         num_control = length(control_idx);
+        %         %mech only condition
+        %         mech_idx = [sweep_struct(p).ResponseTable.StimAmp] == 0 & ...
+        %             [sweep_struct(p).ResponseTable.IndentorAmp] ~= 0;
+        %         num_mech = length(mech_idx);
+        %         %stim and mech
+        %         treamtment_idx = [sweep_struct(p).ResponseTable.StimAmp] ~= 0 & ...
+        %             [sweep_struct(p).ResponseTable.IndentorAmp] ~= 0;
+        %         num_treatment = length(treamtment_idx);
+        %         %stim only
+        %         icms_idx = [sweep_struct(p).ResponseTable.StimAmp] ~= 0 & ...
+        %             [sweep_struct(p).ResponseTable.IndentorAmp] == 0;
+        %         num_icms = length(icms_idx);
+        %     
+            
                     
-                    
-         end %num_perm
-    end %mech_u
-
+             end %stim_amp_u
+             for dm = 1:num_perm
+                three_idx = datasample(three_sweep_idx, 20, 'Replace', false);
+                        %         within_idx = datasample(group, 300, 'Replace', false);
+                        %         each_amp = datasample(group, 300, 'Replace', false);
+                        
+                        
+             end %num_perm
+        end %mech_u
+    end %num_controls
 end %sweep_struct
 
 

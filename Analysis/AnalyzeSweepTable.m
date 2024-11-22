@@ -43,7 +43,7 @@ function [detection_table,dprime_table, predict_dt, predict_dp] = AnalyzeSweepTa
         dprime_table{:,c} = dprime;
 
     end
-    
+    % dprime_table = dprime_table
 % P(A)+P(B) - P(A)*(and)P(B)
 % P(A) = probability of Mechanical- just mechanical
 % P(B) = Probability of Electrical- just electrical 
@@ -58,7 +58,7 @@ function [detection_table,dprime_table, predict_dt, predict_dp] = AnalyzeSweepTa
    end
 
 %    predict_dt =  predict_pd;
-    predict_dt = array2table(predict_pd, 'VariableNames', [pd_strings]);
+    predict_dt = array2table(predict_pd, 'VariableNames', pd_strings);
 
    FA = max([icms_only(1,1), 1e-3]);
 
@@ -76,7 +76,7 @@ function [detection_table,dprime_table, predict_dt, predict_dp] = AnalyzeSweepTa
 
 %     predict_dp = empty_icms;
 
-    predict_dp = array2table(empty_icms, 'VariableNames', [pd_strings]);
+    predict_dp = array2table(empty_icms, 'VariableNames', pd_strings);
 
 
 end
