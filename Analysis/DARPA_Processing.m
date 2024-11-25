@@ -194,16 +194,32 @@ parfor d = 1:length(cat_data)
                 [~, coeffs2, ~, ~, ~, ~] = FitSigmoid(uia, p2detected, 'Constraints', [0, 300; -5, 5]);
                 mt2 = Sigmoid2MechThreshold(coeffs2, xq, dpt);
                 null_delta_threshold(p) = abs(mt1 - mt2);
+                
             end
             % Compute p
-            
+            cat_data(d).Summary.Null_delta = null_delta_threshold;
             cat_data(d).Summary(treatment_idx(t)).BootP = sum(null_delta_threshold > delta_thresholds) / num_permutations;
-            if cat_data(d).Summary(treatment_idx(t)).BootP < 0.05
+            if cat_data(d).Summary(treatment_idx(t)).BootP > 0.05
                 disp('Not significant')
             end
+            figure;
+            hold on
+            histogram(cat_data(d).Summary.Null_delta)
+            plot([delta_thresholds delta_thresholds], [0 1000])
+
         end
     end
     send(pfwb_update, 0);
+end
+
+%% histogram
+for a = 1:length(cat_data)
+figure;
+hold on
+histogram(null_delta_threshod)
+plot([delta_thresholds delta_thresholds], [0 1000])
+
+
 end
 
 %% plot
@@ -240,11 +256,15 @@ end
 
 return
 
+
+
 %% Individual electrode plots
+
+
 mrkr_size = 50;
 SetFont('Arial', 12)
 export = true;
-for d = 1%length(cat_data)
+for d = 1:length(cat_data)
     if length(cat_data(d).Electrodes) > 1
         ee_str = sprintf(['Electrodes %d' repmat(',%d', length(cat_data(d).Electrodes) - 1)], cat_data(d).Electrodes);
     else
@@ -333,10 +353,10 @@ for d = 1%length(cat_data)
     ylabel(sprintf('%s Threshold (mm)', GetUnicodeChar('Delta')))
     set(gcf, 'Units', 'pixels', 'Position', [100, 100, 1200, 400])
 
-    if export
-        ffname = fullfile(figure_path, title_str);
-        print(gcf, ffname, '-dpng', '-r300')
-    end
+    % if export
+    %     ffname = fullfile(figure_path, title_str);
+    %     print(gcf, ffname, '-dpng', '-r300')
+    % end
 end
 
 

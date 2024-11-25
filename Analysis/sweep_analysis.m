@@ -1,7 +1,7 @@
 %% sweep analysis and permutation
 
-tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
-% tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+% tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
 
 file_list = dir(tld);
 
@@ -51,7 +51,7 @@ sweep_struct = struct();
   sweep_ResponseTable = vertcat(data(sweep_idx).ResponseTable);
     
 %keep getting error but doesn't stop it
-for i = 1:size(sweep_idx)
+for i = 1:size(sweep_idx,1)
     sweep_struct(i).Monkey = sweep_monkey(i);
     sweep_struct(i).Task = sweep_Task(i);
     sweep_struct(i).Electrode = sweep_Electrode(i,:);
@@ -67,8 +67,8 @@ for s = 1:length(sweep_struct)
     [dt,dp, dt_predict, dp_predict] = AnalyzeSweepTable(sweep_struct(s).ResponseTable(:,:));
     sweep_struct(s).DetectionTable = dt;
     sweep_struct(s).Dprime = dp;
-    % sweep_struct(s).DetectionTable_predict = dt_predict;
-    % sweep_struct(s).Dprime_predict = dp_predict;
+    sweep_struct(s).DetectionTable_predict = dt_predict;
+    sweep_struct(s).Dprime_predict = dp_predict;
 
 end
 
@@ -88,15 +88,18 @@ for p = 2%:length(sweep_struct)
             %list of conditions
             
             %control_condition
-%             control_idx = [sweep_struct(p).ResponseTable.StimAmp] == 0 &
-%             [sweep_struct(p).ResponseTable.IndentorAmp] == 0;
+            control_idx = [sweep_struct(p).ResponseTable.StimAmp] == 0 & ...
+            [sweep_struct(p).ResponseTable.IndentorAmp] == 0;
 
             %condition with all three icms with mechanical
-
-
-
+            
+            sweep_idx = [sweep_struct(p).ResponseTable.StimAmp] == stim_amp_u(s) & ...
+            [sweep_struct(p).ResponseTable.IndentorAmp] == mech_u(m);
+          
+            all_sweep = find(control_idx | sweep_idx);
+            data_sweep = sweep_struct(p).ResponseTable(all_sweep,:);
             %condition with individual icms and mechanical
-        
+%             indivdual_sweep = 
             
 %mean across permuatation and mean with all points
 %probability of all of them not just within electrodes
@@ -104,12 +107,12 @@ for p = 2%:length(sweep_struct)
 
                 
              for dm = 1:num_perm
-%                 three_idx = datasample(three_sweep_idx, 20, 'Replace', false);
-                        %         within_idx = datasample(group, 300, 'Replace', false);
-                        %         each_amp = datasample(group, 300, 'Replace', false);
-                        
-                        
+%                  permuted_data = data_sweep(randperm(size(data_sweep,:)));
+                shuffle_sweep = datasample(sweep_struct(p).ResponseTable(all_sweep,:), 90, 'Replace', false);
+                [dt] = AnalyzeSweepTable(sweep_struct(p).ResponseTable(shuffle_sweep,:));
              end %num_perm
+%             [true] = AnalyzeSweepTable(shuffle_sweep);
+            
        end %stim_amp_u
 
     end %mech_u
@@ -117,57 +120,4 @@ for p = 2%:length(sweep_struct)
 end %sweep_struct
 
 
-
-    %find catch trials
-    control_idx = find([sweep_struct(p).RespoonseTable.StimAmp] == 0 & ...
-        [sweep_struct(p).ResponseTable.IndentorAmp] == 0);
-    num_controls = length(control_idx);
-        for c = 1:num_controls
-        for m = 1:length(mech_u)
-            for s = 1:length(stim_amp_u)
-                %list of conditions
-                %condition with all three icms with mechanical
-                three_sweep = [sweep_struct(p).ResponseTable.StimAmp] == stim_amp_u(s) & ...
-                [sweep_struct(p).ResponseTable.IndentorAmp] == mech_u(m);
-                three_sweep_idx = sweep_struct(p).ResponseTable(three_sweep,:);
-    
-                %individual amplitudes
-    %             each_amp = 
-        
-%     three_sweep = [sweep_struct(p).ResponseTable.StimAmp] == stim_amp_u(s) & ...
-%             [sweep_struct(p).ResponseTable.IndentorAmp] == mech_u(m);
-%             three_sweep_idx = sweep_struct(p).ResponseTable(three_sweep,:);
-    %             each_icms(s) = [sweep_struct(p).ResponseTable.IndentorAmp] == mech_u(m) &
-    %             [sweep_struct(p).ResponseTable.StimAmp];
-        %         %no stim condition
-        %         control_idx = [sweep_struct(p).ResponseTable.StimAmp] == 0 & ...
-        %             sweep_struct(p).ResponseTable.IndentorAmp == 0;
-        %         num_control = length(control_idx);
-        %         %mech only condition
-        %         mech_idx = [sweep_struct(p).ResponseTable.StimAmp] == 0 & ...
-        %             [sweep_struct(p).ResponseTable.IndentorAmp] ~= 0;
-        %         num_mech = length(mech_idx);
-        %         %stim and mech
-        %         treamtment_idx = [sweep_struct(p).ResponseTable.StimAmp] ~= 0 & ...
-        %             [sweep_struct(p).ResponseTable.IndentorAmp] ~= 0;
-        %         num_treatment = length(treamtment_idx);
-        %         %stim only
-        %         icms_idx = [sweep_struct(p).ResponseTable.StimAmp] ~= 0 & ...
-        %             [sweep_struct(p).ResponseTable.IndentorAmp] == 0;
-        %         num_icms = length(icms_idx);
-        %     
-            
-                    
-             end %stim_amp_u
-             for dm = 1:num_perm
-                three_idx = datasample(three_sweep_idx, 20, 'Replace', false);
-                        %         within_idx = datasample(group, 300, 'Replace', false);
-                        %         each_amp = datasample(group, 300, 'Replace', false);
-                        
-                        
-             end %num_perm
-        end %mech_u
-    end %num_controls
-end %sweep_struct
-
-
+      
