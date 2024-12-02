@@ -35,17 +35,16 @@ end
 
 threshold = 1.35;
 
-for n = 1%:length(og_struct)
+for n = 1:length(og_struct)
     
     [dt, dp] = AnalyzeResponseTable(og_struct(n).ResponseTable);
     og_struct(n).pdetect = dt;
-    og_struct(n).dprime = dp;
+    og_struct(n).
 
-    [~, coeffs_1, ~,~,~, warn_1] = FitSigmoid(og_struct(n).pdetect{:,1}, og_struct(n).pdetect{:,2},'NumCoeffs', 4, ...
-        'CoeffInit', [.2,30, NaN,NaN],'PlotFit', true);
-    % [~, coeffs_2, ~,~,~, warn_2] = FitSigmoid(og_struct(n).pdetect{:,1}, og_struct(n).pdetect{:,3},'PlotFit', true);
+
+
+
+
+
 
 end
-
-%% Permutation Analysis
-
