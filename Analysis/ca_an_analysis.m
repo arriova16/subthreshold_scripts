@@ -169,20 +169,6 @@ for p = 1:length(ca_an_struct)
     
 end %ca_an_struct
 
-%% plotting
-for a = 1:length(ca_an_struct)
-
-    figure; hold on
-    scatter(ca_an_struct(a).Perm_DT_control{:,1}, ca_an_struct(a).Perm_DT_control{:,2}, 20, rgb(33, 33, 33), 'filled')
-    scatter(ca_an_struct(a).Perm_DT_stim{:,1}, ca_an_struct(a).Perm_DT_stim{:,2}, 20, rgb(198, 40, 40), 'filled')
-    plot(ca_an_struct(a).Perm_DT_control{:,1}, ca_an_struct(a).Perm_DT_control{:,2},'Color',rgb(33, 33, 33), 'LineStyle', '-')
-    plot(ca_an_struct(a).Perm_DT_stim{:,1}, ca_an_struct(a).Perm_DT_stim{:,2}, 'Color',rgb(198, 40, 40), 'LineStyle', '-')
-    
-    plot(qq, coeffs1,'Color',rgb(84, 110, 122))
-
-
-
-end
 
 %% permutation within electrode pairs of cathodic and anodic
 %natalyas code
@@ -194,16 +180,31 @@ end
 % sm.isModulated(cont, se) = sm.p(cont, se) <= alpha / 2;
 
 %% plotting histogram check
+for a = 1:length(ca_an_struct)
 
+%     subplot(1,2,1);
+%     hold on;
+    scatter(ca_an_struct(a).Perm_DT_control{:,1}, ca_an_struct(a).Perm_DT_control{:,2}, 20, rgb(33, 33, 33), 'filled')
+    scatter(ca_an_struct(a).Perm_DT_stim{:,1}, ca_an_struct(a).Perm_DT_stim{:,2}, 20, rgb(198, 40, 40), 'filled')
+    plot(ca_an_struct(a).Perm_DT_control{:,1}, ca_an_struct(a).Perm_DT_control{:,2},'Color',rgb(33, 33, 33), 'LineStyle', '-')
+    plot(ca_an_struct(a).Perm_DT_stim{:,1}, ca_an_struct(a).Perm_DT_stim{:,2}, 'Color',rgb(198, 40, 40), 'LineStyle', '-')
+    
+%     plot(qq, coeffs1,'Color',rgb(84, 110, 122))
+
+end
+%%
 for d = 1:length(ca_an_struct)
 %     title(sprintf('%s', ca_an_struct(d).Electrodes), 'FontSize', 18)
-    figure;
-    hold on
+    
+%     subplot(1,2,2);hold on;
+figure;
     histogram(ca_an_struct(d).null_dist)
     plot([ca_an_struct(d).delta_threshold ca_an_struct(d).delta_threshold] , [0 1000])
     ylabel('Permutation Trials')
     xlabel('Delta threshold (Control-Treatment)')
-    ca_an_struct(d).Pulse = convertCharsToStrings(ca_an_struct(d).Pulse);
+    
+
+%     ca_an_struct(d).Pulse = convertCharsToStrings(ca_an_struct(d).Pulse);
 end %ca_an_struct
 
 %% permutation within pulse
@@ -254,6 +255,8 @@ for m = 1:length(null_dist_diff_results)
 end
 
 for d = 1:length(null_dist_diff_results)
+%     subplot(1,2,1); 
+hold on;
     figure;
     hold on
     histogram(null_dist_diff_results(d).NullDistDifference)
@@ -262,7 +265,18 @@ for d = 1:length(null_dist_diff_results)
      ylabel('Permutation Trials')
     xlabel('Delta threshold (Cathodic-Anodic)')
 end %ca_an_struct
-
+% for a = 1:length(ca_an_struct)
+% 
+%     subplot(1,2,2); hold on;
+% %     figure;
+%     scatter(ca_an_struct(a).Perm_DT_control{:,1}, ca_an_struct(a).Perm_DT_control{:,2}, 20, rgb(33, 33, 33), 'filled')
+%     scatter(ca_an_struct(a).Perm_DT_stim{:,1}, ca_an_struct(a).Perm_DT_stim{:,2}, 20, rgb(198, 40, 40), 'filled')
+%     plot(ca_an_struct(a).Perm_DT_control{:,1}, ca_an_struct(a).Perm_DT_control{:,2},'Color',rgb(33, 33, 33), 'LineStyle', '-')
+%     plot(ca_an_struct(a).Perm_DT_stim{:,1}, ca_an_struct(a).Perm_DT_stim{:,2}, 'Color',rgb(198, 40, 40), 'LineStyle', '-')
+%     
+% %     plot(qq, coeffs1,'Color',rgb(84, 110, 122))
+%     axis square
+% end
 
 %% plotting summary
 
