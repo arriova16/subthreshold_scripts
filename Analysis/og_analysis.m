@@ -35,17 +35,36 @@ end
 
 threshold = 1.35;
 
-for n = 1%:length(og_struct)
+for n = 1:length(og_struct)
     
     [dt, dp] = AnalyzeResponseTable(og_struct(n).ResponseTable);
     og_struct(n).pdetect = dt;
     og_struct(n).dprime = dp;
 
-    [~, coeffs_1, ~,~,~, warn_1] = FitSigmoid(og_struct(n).pdetect{:,1}, og_struct(n).pdetect{:,2},'NumCoeffs', 4, ...
-        'CoeffInit', [.2,30, NaN,NaN],'PlotFit', true);
-    % [~, coeffs_2, ~,~,~, warn_2] = FitSigmoid(og_struct(n).pdetect{:,1}, og_struct(n).pdetect{:,3},'PlotFit', true);
+    [Sig1, coeffs_1, ~,~,~, warn_1] = FitSigmoid(og_struct(n).pdetect{:,1}, og_struct(n).pdetect{:,2},'Constraints', [0, 200; -5, 5]);
+    [Sig2, coeffs_2, ~,~,~, warn_2] = FitSigmoid(og_struct(n).pdetect{:,1}, og_struct(n).pdetect{:,3},'Constraints', [0, 200; -5, 5]);
+    
+    xq = linspace(og_struct(n).pdetect{1,1}, (og_struct(n).pdetect{end,1})*2);
+    y_fit1 = Sig1(coeffs_1, xq);
+    y_fit2 = Sig2(coeffs_2, xq);
+
+    %converting to d'prime
+    
+    
+
 
 end
 
 %% Permutation Analysis
 
+num_perm = 1e4;
+
+for i = 1:length(og_struct)
+    %specific conditions for each criteria
+
+    
+
+
+
+
+end

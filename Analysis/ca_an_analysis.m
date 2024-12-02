@@ -1,7 +1,7 @@
 %Darpa Cathodic Anodic Analysis
 
-tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
-% tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+% tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
 
 ca_an_struct = struct();
 monkey_list = dir(tld); monkey_list = monkey_list(3:end);

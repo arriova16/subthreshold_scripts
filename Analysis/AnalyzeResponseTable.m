@@ -21,7 +21,7 @@ function [detection_table, dprime_table] = AnalyzeResponseTable(input_table)
             else
                 detection_table(d2,d1) = mean(y(d_idx));
             end
-           pd_strings{d1} = sprintf('pDetect_%d', u_icms(d1)); 
+           pd_strings{d1} = sprintf('Amp_%d', u_icms(d1)); 
            
          end %u_mech
     end %u_icms
