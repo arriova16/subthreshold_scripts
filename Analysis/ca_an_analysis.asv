@@ -81,6 +81,7 @@ end %ca_an_struct
 
 %% Permutation
 % num_perm = 1e4;
+clf; print to figure;
 
 num_perm = 10;
 for p = 1%:length(ca_an_struct)  
@@ -113,9 +114,7 @@ for p = 1%:length(ca_an_struct)
         m1 = Sigmoid2MechThreshold(coeffs1, qq, threshold);
         [~, coeffs2, ~,~,~,warn_2] = FitSigmoid(dt_perm_2{:,1}, dt_perm_2{:,2}, 'Constraints',[0.001, 1000; -50, 50], 'PlotFit', true);
         m2 = Sigmoid2MechThreshold(coeffs2, qq, threshold);
-        %get this to work so i can see figures but wont break my computer
-        % clf; print(figure);
-
+        
         null_delta_threshold(dm) = m1 - m2;
     end %num_perm
 

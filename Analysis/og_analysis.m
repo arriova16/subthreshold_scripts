@@ -41,8 +41,8 @@ for n = 1:length(og_struct)
     og_struct(n).pdetect = dt;
     og_struct(n).dprime = dp;
 
-    [Sig1, coeffs_1, ~,~,~, warn_1] = FitSigmoid(og_struct(n).pdetect{:,1}, og_struct(n).pdetect{:,2},'Constraints', [0, 200; -5, 5]);
-    [Sig2, coeffs_2, ~,~,~, warn_2] = FitSigmoid(og_struct(n).pdetect{:,1}, og_struct(n).pdetect{:,3},'Constraints', [0, 200; -5, 5]);
+    [~, coeffs_1, ~,~,~, warn_1] = FitSigmoid(og_struct(n).pdetect{:,1}, og_struct(n).pdetect{:,2},'Constraints', [0, 200; -5, 5]);
+    [~, coeffs_2, ~,~,~, warn_2] = FitSigmoid(og_struct(n).pdetect{:,1}, og_struct(n).pdetect{:,3},'Constraints', [0, 200; -5, 5]);
     
     xq = linspace(og_struct(n).pdetect{1,1}, (og_struct(n).pdetect{end,1})*2);
     y_fit1 = Sig1(coeffs_1, xq);
