@@ -1,7 +1,7 @@
 %% sweep analysis and permutation
 
-% tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
-tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+% tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
 
 file_list = dir(tld);
 
@@ -64,11 +64,13 @@ end
 %% Pdetect and dprime- sweep
 
 for s = 1:length(sweep_struct)
-    [dt,dp, dt_predict, dp_predict] = AnalyzeSweepTable(sweep_struct(s).ResponseTable(:,:));
+    [dt, dp] = AnalyzeSweepTable(sweep_struct(s).ResponseTable(:,:));
+    % [dt,dp, dt_predict, dp_predict] = AnalyzeSweepTable(sweep_struct(s).ResponseTable(:,:));
+
     sweep_struct(s).DetectionTable = dt;
-    sweep_struct(s).Dprime = dp;
-    sweep_struct(s).DetectionTable_predict = dt_predict;
-    sweep_struct(s).Dprime_predict = dp_predict;
+    % sweep_struct(s).Dprime = dp;
+    % sweep_struct(s).DetectionTable_predict = dt_predict;
+    % sweep_struct(s).Dprime_predict = dp_predict;
 
 end
 
@@ -108,8 +110,8 @@ for p = 2%:length(sweep_struct)
                 
              for dm = 1:num_perm
 %                  permuted_data = data_sweep(randperm(size(data_sweep,:)));
-                shuffle_sweep = datasample(sweep_struct(p).ResponseTable(all_sweep,:), 90, 'Replace', false);
-                [dt] = AnalyzeSweepTable(sweep_struct(p).ResponseTable(shuffle_sweep,:));
+                % shuffle_sweep = datasample(sweep_struct(p).ResponseTable(all_sweep,:), 90, 'Replace', false);
+                % [dt] = AnalyzeSweepTable(sweep_struct(p).ResponseTable(shuffle_sweep,:));
              end %num_perm
 %             [true] = AnalyzeSweepTable(shuffle_sweep);
             

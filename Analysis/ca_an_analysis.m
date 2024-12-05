@@ -80,17 +80,16 @@ for a = 1:length(ca_an_struct)
 end %ca_an_struct
 
 %% Permutation
-% num_perm = 1e4;
-
-num_perm = 10;
-for p = 1%:length(ca_an_struct)  
+clf; hold on
+num_perm = 1e4;
+% num_perm = 10;
+for p = 1:length(ca_an_struct)  
     %get indices
     delta_thresholds_abs = abs(ca_an_struct(p).mt_catch - ca_an_struct(p).mt_elec);
     delta_thresholds = (ca_an_struct(p).mt_catch - ca_an_struct(p).mt_elec);
     ca_an_struct(p).delta_threshold = delta_thresholds;
     ca_an_struct(p).delta_threshold_abs = delta_thresholds_abs;
     num_trials = size(ca_an_struct(p).ResponseTable,1);
-    idx_list = 1:num_trials;
     stim_first = find(ca_an_struct(p).ResponseTable.StimAmp ~=0,1, 'first');
     p1_idx = 1:stim_first-1;
     p2_idx = stim_first:num_trials(end);
@@ -110,21 +109,19 @@ for p = 1%:length(ca_an_struct)
         ca_an_struct(p).Perm_DT_stim = dt_perm_2;
         %check plots here
         [~, coeffs1, ~,~,~,warn_1] = FitSigmoid(dt_perm_1{:,1}, dt_perm_1{:,2} ,  'Constraints', [0.001, 1000; -50, 50]);
-        m1 = Sigmoid2MechThreshold(coeffs1, qq, threshold);
-        [~, coeffs2, ~,~,~,warn_2] = FitSigmoid(dt_perm_2{:,1}, dt_perm_2{:,2}, 'Constraints',[0.001, 1000; -50, 50], 'PlotFit', true);
-        m2 = Sigmoid2MechThreshold(coeffs2, qq, threshold);
+        [pm1] = SigmoidThreshold(coeffs1, qq, threshold);
+        [~, coeffs2, ~,~,~,warn_2] = FitSigmoid(dt_perm_2{:,1}, dt_perm_2{:,2}, 'Constraints',[0.001, 1000; -50, 50]);
+        [pm2] = SigmoidThreshold(coeffs2, qq, threshold);
         %get this to work so i can see figures but wont break my computer
         % clf; print(figure);
 
-        null_delta_threshold(dm) = m1 - m2;
+        null_delta_threshold(dm) = pm1 - pm2;
     end %num_perm
 
     ca_an_struct(p).null_dist = null_delta_threshold;
     ca_an_struct(p).Bootp_rt = 1 - (sum(delta_thresholds > null_delta_threshold) / num_perm);
     ca_an_struct(p).Bootp_lt = 1 - (sum(delta_thresholds < null_delta_threshold) / num_perm);
     
-        
-    % stuff = min([ca_an_struct(p).Bootp_rt, ca_an_struct(p).Bootp_lt]);
     
 end %ca_an_struct
 
@@ -154,17 +151,16 @@ end
 %%
 for d = 1:length(ca_an_struct)
 %     title(sprintf('%s', ca_an_struct(d).Electrodes), 'FontSize', 18)
-    
 %     subplot(1,2,2);hold on;
 figure;
+hold on
     histogram(ca_an_struct(d).null_dist)
     plot([ca_an_struct(d).delta_threshold ca_an_struct(d).delta_threshold] , [0 1000])
     ylabel('Permutation Trials')
     xlabel('Delta threshold (Control-Treatment)')
     
-
-%     ca_an_struct(d).Pulse = convertCharsToStrings(ca_an_struct(d).Pulse);
 end %ca_an_struct
+
 
 %% permutation within pulse
 % getting pairs of electrodes 
@@ -213,17 +209,17 @@ for m = 1:length(null_dist_diff_results)
 
 end
 
-for d = 1:length(null_dist_diff_results)
-%     subplot(1,2,1); 
-hold on;
-    figure;
-    hold on
-    histogram(null_dist_diff_results(d).NullDistDifference)
-    plot([null_dist_diff_results(d).Delta_thresholds null_dist_diff_results(d).Delta_thresholds] , [0 1000])
-    axis square
-     ylabel('Permutation Trials')
-    xlabel('Delta threshold (Cathodic-Anodic)')
-end %ca_an_struct
+% for d = 1:length(null_dist_diff_results)
+% %     subplot(1,2,1); 
+% hold on;
+%     figure;
+%     hold on
+%     histogram(null_dist_diff_results(d).NullDistDifference)
+%     plot([null_dist_diff_results(d).Delta_thresholds null_dist_diff_results(d).Delta_thresholds] , [0 1000])
+%     axis square
+%      ylabel('Permutation Trials')
+%     xlabel('Delta threshold (Cathodic-Anodic)')
+% end %ca_an_struct
 % for a = 1:length(ca_an_struct)
 % 
 %     subplot(1,2,2); hold on;
@@ -295,15 +291,3 @@ end
 %     axis square
 %     
 
-%%
-function mt = Sigmoid2MechThreshold(coeffs, xq, threshold)
-    SigmoidFun = GetSigmoid(length(coeffs));
-    y_fit = SigmoidFun(coeffs, xq);
-    % Convert sigmoid to d'
-    dprimeq = norminv(y_fit) - norminv(y_fit(1));
-    yq_idx = find(dprimeq >= threshold, 1, 'first');
-    mt = xq(yq_idx);
-    if isempty(yq_idx)
-        mt = NaN;
-    end
-end

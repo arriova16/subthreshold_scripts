@@ -35,33 +35,53 @@ end
 
 threshold = 1.35;
 
-for n = 1%:length(og_struct)
+for n = 1:length(og_struct)
     
     [dt, dp] = AnalyzeResponseTable(og_struct(n).ResponseTable);
     og_struct(n).pdetect = dt;
     og_struct(n).dprime = dp;
 
-    [Sig1, coeffs_1, ~,~,~, warn_1] = FitSigmoid(og_struct(n).pdetect{:,1}, og_struct(n).pdetect{:,2},'Constraints', [0, 200; -5, 5]);
-    [Sig2, coeffs_2, ~,~,~, warn_2] = FitSigmoid(og_struct(n).pdetect{:,1}, og_struct(n).pdetect{:,3},'Constraints', [0, 200; -5, 5]);
-
-
-    %converting to d'prime
-    xq = linspace(og_struct(n).pdetect{1,1}, (og_struct(n).pdetect{end,1})*2);
-    y_fit1 = Sig1(coeffs_1, xq);
-    y_fit2 = Sig2(coeffs_2, xq);
+    [~, coeffs_1, ~,~,~, warn_1] = FitSigmoid(og_struct(n).pdetect{:,1}, og_struct(n).pdetect{:,2},'Constraints', [0, 200; -5, 5]);
+    [~, coeffs_2, ~,~,~, warn_2] = FitSigmoid(og_struct(n).pdetect{:,1}, og_struct(n).pdetect{:,3},'Constraints', [0, 200; -5, 5]);
     
+    xq = linspace(og_struct(n).pdetect{1,1}, (og_struct(n).pdetect{end,1})*2);
+
+    [mt] = SigmoidThreshold(coeffs_1, xq, threshold);
+    [st] = SigmoidThreshold(coeffs_2, xq, threshold);
+
+    og_struct(n).Threshold_Mech = mt;
+    og_struct(n).Threshold_Stim = st;
+
+
 end
 
 %% Permutation Analysis
 
-num_perm = 1e4;
+% num_perm = 1e4;
+num_perm = 10;
 
-for i = 1:length(og_struct)
+for i = 1%:length(og_struct)
     %specific conditions for each criteria
+    u_mech = unique(og_struct(i).ResponseTable.IndentorAmp);
+    u_stim = unique(og_struct(i).ResponseTable.StimAmp);
+    for s = 1:length(u_stim)
+        for m = 1:length(u_mech)
+            %add other conditions like amps
+            control_idx = og_struct(i).ResponseTable.StimAmp == 0 & ...
+                og_struct(i).ResponseTable.IndentorAmp == u_mech(m);
+            treatment_idx = og_struct(i).ResponseTable.StimAmp == u_stim(s) & ...
+            og_struct(i).ResponseTable.IndentorAmp == u_mech(m);
+            
+            % perm_control = datasample(og_struct(i).ResponseTable(control_idx,:), 100, 'Replace', false);
+            % perm_treatment = datasample(og_struct(i).ResponseTable(treatment_idx,:),100, 'Replace', false);
+            
+            [dt_perm_control] = AnalyzeResponseTable(perm_control);
+            [dt_perm_treatment] = AnalyzeResponseTable(perm_treatment);
+            
+            % [~, coeffs_perm, ~,~,~, warn] = FitSigmoid()
 
+            
 
-
-
-
-
-end
+        end%u_mech
+    end %u_stim
+end %og_struct

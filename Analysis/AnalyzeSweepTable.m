@@ -43,7 +43,7 @@ function [detection_table,dprime_table, predict_dt, predict_dp] = AnalyzeSweepTa
         dprime_table{:,c} = dprime;
 
     end
-    % dprime_table = dprime_table
+    dprime_table = dprime_table;
 % P(A)+P(B) - P(A)*(and)P(B)
 % P(A) = probability of Mechanical- just mechanical
 % P(B) = Probability of Electrical- just electrical 
