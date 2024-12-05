@@ -80,9 +80,8 @@ for a = 1:length(ca_an_struct)
 end %ca_an_struct
 
 %% Permutation
-clf; hold on
-num_perm = 1e4;
-% num_perm = 10;
+% num_perm = 1e4;
+num_perm = 10;
 for p = 1:length(ca_an_struct)  
     %get indices
     delta_thresholds_abs = abs(ca_an_struct(p).mt_catch - ca_an_struct(p).mt_elec);
@@ -112,8 +111,7 @@ for p = 1:length(ca_an_struct)
         [pm1] = SigmoidThreshold(coeffs1, qq, threshold);
         [~, coeffs2, ~,~,~,warn_2] = FitSigmoid(dt_perm_2{:,1}, dt_perm_2{:,2}, 'Constraints',[0.001, 1000; -50, 50]);
         [pm2] = SigmoidThreshold(coeffs2, qq, threshold);
-        %get this to work so i can see figures but wont break my computer
-        % clf; print(figure);
+
 
         null_delta_threshold(dm) = pm1 - pm2;
     end %num_perm
