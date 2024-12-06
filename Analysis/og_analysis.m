@@ -76,8 +76,9 @@ for i = 1%:length(og_struct)
 
             perm_control = datasample(og_struct(i).ResponseTable(control_idx,:), 100, 'Replace', false);
             perm_treatment = datasample(og_struct(i).ResponseTable(treatment_idx,:),100, 'Replace', false);
+            
             %saving information from idx to here rather than earlier
-            % [dt_perm_control(cont)] = AnalyzeResponseTable(perm_control);
+            [dt_perm_control(cont)] = AnalyzeResponseTable(perm_control);
             % [dt_perm_treatment(cont)] = AnalyzeResponseTable(perm_treatment);
 
             % [~, coeffs_perm, ~,~,~, warn] = FitSigmoid()

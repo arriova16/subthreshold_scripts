@@ -87,31 +87,18 @@ end %ca_an_struct
 %% Permutation
 % num_perm = 1e4;
 % num_perm = 10;
-for p = 1%:length(ca_an_struct) 
+for p = 1:length(ca_an_struct) 
     %get indices
     % check to see if there are any sampling biasis  
     % new conditions
     mech_u = unique(ca_an_struct(p).ResponseTable.IndentorAmp);
     stim_u = unique(ca_an_struct(p).ResponseTable.StimAmp);
     
-    for m = 1:length(mech_u)
-        for s = 1:length(stim_u) 
-
-            control_idx = ca_an_struct(p).ResponseTable.StimAmp == 0 & ...
-                ca_an_struct(p).ResponseTable.IndentorAmp == 0;
-            mech_idx = ca_an_struct(p).ResponseTable.IndentorAmp == mech_u(m) & ...
-                ca_an_struct(p).ResponseTable.StimAmp == 0;
-            mech_stim_idx = ca_an_struct(p).ResponseTable.IndentorAmp == mech_u(m) & ...
-                ca_an_struct(p).ResponseTable.StimAmp == stim_u(s);
-            
-            combined_treatment = find(mech_stim_idx | control_idx);
-            combined_mech = find(mech_idx | control_idx);
-            
+    for  = 1:length(mech_u)
+        for 
 
 
 
-
-        end %stim_u
     end %mech_u
 
     
