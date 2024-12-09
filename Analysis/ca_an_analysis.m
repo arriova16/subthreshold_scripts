@@ -1,7 +1,7 @@
 %Darpa Cathodic Anodic Analysis
 
-% tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
-tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+% tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
 
 ca_an_struct = struct();
 monkey_list = dir(tld); monkey_list = monkey_list(3:end);
@@ -85,67 +85,48 @@ for a = 1:length(ca_an_struct)
 end %ca_an_struct
 
 %% Permutation
-% num_perm = 1e4;
+num_perm = 1e4;
 % num_perm = 10;
-for p = 1%:length(ca_an_struct) 
+for p = 1:length(ca_an_struct) 
     %get indices
     % check to see if there are any sampling biasis  
     % new conditions
+
+    
+    num_trials = size(ca_an_struct(p).ResponseTable,1);
+    stim_first = find(ca_an_struct(p).ResponseTable.StimAmp ~=0,1, 'first');
+    p1_idx = 1:stim_first-1;
+    p2_idx = stim_first:num_trials(end);
+
     mech_u = unique(ca_an_struct(p).ResponseTable.IndentorAmp);
-    stim_u = unique(ca_an_struct(p).ResponseTable.StimAmp);
-    
-    for m = 1:length(mech_u)
-        for s = 1:length(stim_u) 
+    qq = linspace(mech_u(1), mech_u(end));
+    %save coeffs/ in order to make plots
+    null_delta_threshold = zeros(num_perm,1);
 
-            control_idx = ca_an_struct(p).ResponseTable.StimAmp == 0 & ...
-                ca_an_struct(p).ResponseTable.IndentorAmp == 0;
-            mech_idx = ca_an_struct(p).ResponseTable.IndentorAmp == mech_u(m) & ...
-                ca_an_struct(p).ResponseTable.StimAmp == 0;
-            mech_stim_idx = ca_an_struct(p).ResponseTable.IndentorAmp == mech_u(m) & ...
-                ca_an_struct(p).ResponseTable.StimAmp == stim_u(s);
-            
-            combined_treatment = find(mech_stim_idx | control_idx);
-            combined_mech = find(mech_idx | control_idx);
-            
+    for dm = 1:num_perm
+        tmp_p1_idx = datasample(p1_idx, 300, 'Replace', false);
+        tmp_p2_idx = datasample(p2_idx, 300, 'Replace', false);
+
+        [dt_perm_1] = AnalyzeResponseTable(ca_an_struct(p).ResponseTable(tmp_p1_idx,:));
+        [dt_perm_2] = AnalyzeResponseTable(ca_an_struct(p).ResponseTable(tmp_p2_idx,:));
+        ca_an_struct(p).Perm_DT_control = dt_perm_1;
+        ca_an_struct(p).Perm_DT_stim = dt_perm_2;
+        %check plots here
+        [~, coeffs1, ~,~,~,warn_1] = FitSigmoid(dt_perm_1{:,1}, dt_perm_1{:,2} ,  'Constraints', [0.001, 1000; -50, 50]);
+        [pm1] = SigmoidThreshold(coeffs1, qq, threshold);
+        [~, coeffs2, ~,~,~,warn_2] = FitSigmoid(dt_perm_2{:,1}, dt_perm_2{:,2}, 'Constraints',[0.001, 1000; -50, 50]);
+        [pm2] = SigmoidThreshold(coeffs2, qq, threshold);
+         ca_an_struct(p).c1=coeffs1;
+                 ca_an_struct(p).c2=coeffs2;
+                          ca_an_struct(p).qq=qq;
 
 
+        null_delta_threshold(dm) = pm1 - pm2;
+    end %num_perm
 
-
-        end %stim_u
-    end %mech_u
-
-    
-    % num_trials = size(ca_an_struct(p).ResponseTable,1);
-    % stim_first = find(ca_an_struct(p).ResponseTable.StimAmp ~=0,1, 'first');
-    % p1_idx = 1:stim_first-1;
-    % p2_idx = stim_first:num_trials(end);
-    % 
-    % mech_u = unique(ca_an_struct(p).ResponseTable.IndentorAmp);
-    % qq = linspace(mech_u(1), mech_u(end));
-    % %save coeffs/ in order to make plots
-    % null_delta_threshold = zeros(num_perm,1);
-
-    % for dm = 1:num_perm
-    %     tmp_p1_idx = datasample(p1_idx, 300, 'Replace', false);
-    %     tmp_p2_idx = datasample(p2_idx, 300, 'Replace', false);
-    % 
-    %     [dt_perm_1] = AnalyzeResponseTable(ca_an_struct(p).ResponseTable(tmp_p1_idx,:));
-    %     [dt_perm_2] = AnalyzeResponseTable(ca_an_struct(p).ResponseTable(tmp_p2_idx,:));
-    %     ca_an_struct(p).Perm_DT_control = dt_perm_1;
-    %     ca_an_struct(p).Perm_DT_stim = dt_perm_2;
-    %     %check plots here
-    %     [~, coeffs1, ~,~,~,warn_1] = FitSigmoid(dt_perm_1{:,1}, dt_perm_1{:,2} ,  'Constraints', [0.001, 1000; -50, 50]);
-    %     [pm1] = SigmoidThreshold(coeffs1, qq, threshold);
-    %     [~, coeffs2, ~,~,~,warn_2] = FitSigmoid(dt_perm_2{:,1}, dt_perm_2{:,2}, 'Constraints',[0.001, 1000; -50, 50]);
-    %     [pm2] = SigmoidThreshold(coeffs2, qq, threshold);
-    % 
-    % 
-    %     null_delta_threshold(dm) = pm1 - pm2;
-    % end %num_perm
-    % 
-    % ca_an_struct(p).null_dist = null_delta_threshold;
-    % ca_an_struct(p).Bootp_rt = 1 - (sum(delta_thresholds > null_delta_threshold) / num_perm);
-    % ca_an_struct(p).Bootp_lt = 1 - (sum(delta_thresholds < null_delta_threshold) / num_perm);
+    ca_an_struct(p).null_dist = null_delta_threshold;
+    ca_an_struct(p).Bootp_rt = 1 - (sum(delta_thresholds > null_delta_threshold) / num_perm);
+    ca_an_struct(p).Bootp_lt = 1 - (sum(delta_thresholds < null_delta_threshold) / num_perm);
     
     
 end %ca_an_struct
