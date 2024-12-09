@@ -1,7 +1,7 @@
 %Darpa Cathodic Anodic Analysis
 
-tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
-% tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+% tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
 
 ca_an_struct = struct();
 monkey_list = dir(tld); monkey_list = monkey_list(3:end);
@@ -104,21 +104,32 @@ for p = 1:length(ca_an_struct)
     null_delta_threshold = zeros(num_perm,1);
 
     for dm = 1:num_perm
-        tmp_p1_idx = datasample(p1_idx, 300, 'Replace', false);
-        tmp_p2_idx = datasample(p2_idx, 300, 'Replace', false);
+        tmp_p1_idx = datasample(p1_idx,size(p1_idx,2) , 'Replace', false);
+        tmp_p2_idx = datasample(p2_idx,size(p2_idx,2), 'Replace', false);
 
-        [dt_perm_1] = AnalyzeResponseTable(ca_an_struct(p).ResponseTable(tmp_p1_idx,:));
-        [dt_perm_2] = AnalyzeResponseTable(ca_an_struct(p).ResponseTable(tmp_p2_idx,:));
+        %only saving the permuations once( need to figure out how to save
+        %the multiple perms
+                % [dt_perm_1] = AnalyzeResponseTable(ca_an_struct(p).ResponseTable(tmp_p1_idx,:));
+
+        [dt_perm_1,dp_perm1] = AnalyzeResponseTable(ca_an_struct(p).ResponseTable(tmp_p1_idx,:));
+        [dt_perm_2, dp_perm2] = AnalyzeResponseTable(ca_an_struct(p).ResponseTable(tmp_p2_idx,:));
+
         ca_an_struct(p).Perm_DT_control = dt_perm_1;
         ca_an_struct(p).Perm_DT_stim = dt_perm_2;
-        %check plots here
+        ca_an_struct(p).Perm_DP_control = dp_perm1;
+        ca_an_struct(p).Perm_DP_stim = dp_perm2;
+
         [~, coeffs1, ~,~,~,warn_1] = FitSigmoid(dt_perm_1{:,1}, dt_perm_1{:,2} ,  'Constraints', [0.001, 1000; -50, 50]);
         [pm1] = SigmoidThreshold(coeffs1, qq, threshold);
         [~, coeffs2, ~,~,~,warn_2] = FitSigmoid(dt_perm_2{:,1}, dt_perm_2{:,2}, 'Constraints',[0.001, 1000; -50, 50]);
         [pm2] = SigmoidThreshold(coeffs2, qq, threshold);
-         ca_an_struct(p).c1=coeffs1;
-                 ca_an_struct(p).c2=coeffs2;
-                          ca_an_struct(p).qq=qq;
+
+        sigfun = GetSigmoid(length(coeffs1|coeffs2));
+        y_fit1 = sigfun(coeffs1, qq);
+        y_fit2 = sigfun(coeffs2,qq);
+        ca_an_struct(p).yfit1=y_fit1;
+        ca_an_struct(p).y_fit2=y_fit2;
+        ca_an_struct(p).qq=qq;
 
 
         null_delta_threshold(dm) = pm1 - pm2;
@@ -141,18 +152,36 @@ end %ca_an_struct
 % sm.modValue(cont, se) = (sm.deltaStim.mean(cont, se)  - sm.deltaNoStim.mean(cont)) / sm.deltaNoStim.std(cont);
 % sm.isModulated(cont, se) = sm.p(cont, se) <= alpha / 2;
 
-%% plotting histogram check
+%% plotting fit check
 for a = 1:length(ca_an_struct)
 
-%     subplot(1,2,1);
-%     hold on;
-    scatter(ca_an_struct(a).Perm_DT_control{:,1}, ca_an_struct(a).Perm_DT_control{:,2}, 20, rgb(33, 33, 33), 'filled')
-    scatter(ca_an_struct(a).Perm_DT_stim{:,1}, ca_an_struct(a).Perm_DT_stim{:,2}, 20, rgb(198, 40, 40), 'filled')
-    plot(ca_an_struct(a).Perm_DT_control{:,1}, ca_an_struct(a).Perm_DT_control{:,2},'Color',rgb(33, 33, 33), 'LineStyle', '-')
-    plot(ca_an_struct(a).Perm_DT_stim{:,1}, ca_an_struct(a).Perm_DT_stim{:,2}, 'Color',rgb(198, 40, 40), 'LineStyle', '-')
-    
-%     plot(qq, coeffs1,'Color',rgb(84, 110, 122))
+    % sgtitle(sprintf('%s', ca_an_struct(a).Electrodes), 'FontSize', 18)
 
+    %converting to dprime
+    dprime1 = norminv(ca_an_struct(a).yfit1) - norminv(ca_an_struct(a).yfit1(1));
+    dprime2 = norminv(ca_an_struct(a).y_fit2) - norminv(ca_an_struct(a).y_fit2(1));
+    yq_idx_1 = find(dprime1 >= threshold,1, 'first');
+    yq_idx_2 = find(dprime2 >= threshold,1, 'first');
+    mt_1_perm = ca_an_struct(a).qq(yq_idx_1);
+    mt_2_perm = ca_an_struct(a).qq(yq_idx_2);
+    
+
+    figure;
+    hold on
+    plot(ca_an_struct(a).qq, dprime1)
+    plot(ca_an_struct(a).qq, dprime2)
+    plot([0 mt_1_perm mt_1_perm], [threshold, threshold, -1],'Color',rgb(69, 90, 100),'LineStyle','--' )
+    plot([0 mt_2_perm mt_2_perm], [threshold, threshold, -1],'Color',rgb(69, 90, 100),'LineStyle','--' )
+
+    scatter(ca_an_struct(a).Perm_DP_control{:,1}, ca_an_struct(a).Perm_DP_control{:,2}, 20, rgb(33, 33, 33), 'filled')
+    scatter(ca_an_struct(a).Perm_DP_stim{:,1}, ca_an_struct(a).Perm_DP_stim{:,2}, 20, rgb(198, 40, 40), 'filled')
+    % plot(ca_an_struct(a).Perm_DP_control{:,1}, ca_an_struct(a).Perm_DP_control{:,2},'Color',rgb(33, 33, 33), 'LineStyle', '-')
+    % plot(ca_an_struct(a).Perm_DP_stim{:,1}, ca_an_struct(a).Perm_DP_stim{:,2}, 'Color',rgb(198, 40, 40), 'LineStyle', '-')
+
+    SetFont('Arial', 18)
+    xlabel('Amplitude (mm)')
+    ylabel('d''')
+    axis square
 end
 %%
 for d = 1:length(ca_an_struct)
@@ -167,6 +196,14 @@ hold on
     
 end %ca_an_struct
 
+%% plotting pairs
+for n = 1:length(ca_an_struct)
+
+
+
+
+
+end %ca_an_struct
 
 %% permutation within pulse
 % getting pairs of electrodes 
