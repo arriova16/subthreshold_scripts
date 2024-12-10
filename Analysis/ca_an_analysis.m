@@ -85,9 +85,9 @@ for a = 1:length(ca_an_struct)
 end %ca_an_struct
 
 %% Permutation
-num_perm = 1e4;
-% num_perm = 10;
-for p = 1:length(ca_an_struct) 
+% num_perm = 1e4;
+num_perm = 10;
+for p = 1%:length(ca_an_struct) 
     %get indices
     % check to see if there are any sampling biasis  
     % new conditions
@@ -101,7 +101,7 @@ for p = 1:length(ca_an_struct)
     mech_u = unique(ca_an_struct(p).ResponseTable.IndentorAmp);
     qq = linspace(mech_u(1), mech_u(end));
     %save coeffs/ in order to make plots
-    null_delta_threshold = zeros(num_perm,1);
+    % null_delta_threshold = zeros(num_perm,1);
 
     for dm = 1:num_perm
         tmp_p1_idx = datasample(p1_idx,size(p1_idx,2) , 'Replace', false);
