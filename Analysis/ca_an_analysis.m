@@ -84,10 +84,12 @@ for a = 1:length(ca_an_struct)
 
 end %ca_an_struct
 
+
 %% Permutation
-% num_perm = 1e4;
-num_perm = 10;
-for p = 1%:length(ca_an_struct) 
+%old and wont run correctly
+num_perm = 1e4;
+% num_perm = 10;
+for p = 1:length(ca_an_struct) 
     %get indices
     % check to see if there are any sampling biasis  
     % new conditions
@@ -101,16 +103,14 @@ for p = 1%:length(ca_an_struct)
     mech_u = unique(ca_an_struct(p).ResponseTable.IndentorAmp);
     qq = linspace(mech_u(1), mech_u(end));
     %save coeffs/ in order to make plots
-    % null_delta_threshold = zeros(num_perm,1);
+    null_delta_threshold = zeros(num_perm,1);
 
     for dm = 1:num_perm
-        tmp_p1_idx = datasample(p1_idx,size(p1_idx,2) , 'Replace', false);
-        tmp_p2_idx = datasample(p2_idx,size(p2_idx,2), 'Replace', false);
+        tmp_p1_idx = datasample(p1_idx, 300, 'Replace', false);
+        tmp_p2_idx = datasample(p2_idx, 300, 'Replace', false);
 
         %only saving the permuations once( need to figure out how to save
         %the multiple perms
-                % [dt_perm_1] = AnalyzeResponseTable(ca_an_struct(p).ResponseTable(tmp_p1_idx,:));
-
         [dt_perm_1,dp_perm1] = AnalyzeResponseTable(ca_an_struct(p).ResponseTable(tmp_p1_idx,:));
         [dt_perm_2, dp_perm2] = AnalyzeResponseTable(ca_an_struct(p).ResponseTable(tmp_p2_idx,:));
 
@@ -123,15 +123,16 @@ for p = 1%:length(ca_an_struct)
         [pm1] = SigmoidThreshold(coeffs1, qq, threshold);
         [~, coeffs2, ~,~,~,warn_2] = FitSigmoid(dt_perm_2{:,1}, dt_perm_2{:,2}, 'Constraints',[0.001, 1000; -50, 50]);
         [pm2] = SigmoidThreshold(coeffs2, qq, threshold);
-
+    %this should be a separate table
         sigfun = GetSigmoid(length(coeffs1|coeffs2));
         y_fit1 = sigfun(coeffs1, qq);
         y_fit2 = sigfun(coeffs2,qq);
         ca_an_struct(p).yfit1=y_fit1;
         ca_an_struct(p).y_fit2=y_fit2;
         ca_an_struct(p).qq=qq;
-
-
+        
+        %only saving last perm table so need to figure out how to save 1000
+        %other ones
         null_delta_threshold(dm) = pm1 - pm2;
     end %num_perm
 
@@ -333,4 +334,3 @@ end
 %     plot([ac_example1 ac_example1] , [0 1000])
 %     axis square
 %     
-
