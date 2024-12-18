@@ -1,7 +1,7 @@
 %Darpa Cathodic Anodic Analysis
 
-% tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
-tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+% tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
 
 ca_an_struct = struct();
 monkey_list = dir(tld); monkey_list = monkey_list(3:end);
@@ -89,7 +89,7 @@ end %ca_an_struct
 %old and wont run correctly
 % num_perm = 1e4;
 num_perm = 10;
-for p = 1:length(ca_an_struct) 
+for p = 1%:length(ca_an_struct) 
     %get indices
     % check to see if there are any sampling biasis  
     % new conditions
