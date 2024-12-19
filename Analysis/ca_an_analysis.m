@@ -1,7 +1,7 @@
 %Darpa Cathodic Anodic Analysis
 
-% tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
-tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+% tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
 
 ca_an_struct = struct();
 monkey_list = dir(tld); monkey_list = monkey_list(3:end);
@@ -110,10 +110,10 @@ for p = 1%:length(ca_an_struct)
         [dt_perm_1{dm}, dp_perm_1{dm}] = AnalyzeResponseTable(ca_an_struct(p).ResponseTable(tmp_p1_idx,:));
         [dt_perm_2{dm}, dp_perm_2{dm}] = AnalyzeResponseTable(ca_an_struct(p).ResponseTable(tmp_p2_idx,:));
 
-        ca_an_struct(p).PDT_control = (dt_perm_1);
-        ca_an_struct(p).PDT_stim = dt_perm_2;
-        ca_an_struct(p).PDP_control = dp_perm_1;
-        ca_an_struct(p).PDP_stim = dp_perm_2;
+        ca_an_struct(p).PDT_control = table2array(dt_perm_1{1,:});
+        ca_an_struct(p).PDT_stim = table2array(dt_perm_2{1,:});
+        ca_an_struct(p).PDP_control = table2array(dp_perm_1{1,:});
+        ca_an_struct(p).PDP_stim = table2array(dp_perm_2{1,:});
         % for l = 1:length(dt_perm_1)
            % [~, coeffs1, ~,~,~,warn_1] = FitSigmoid(dt_perm_1{:,1}, dt_perm_1{:,2},  'Constraints', [0.001, 1000; -50, 50]);
 
