@@ -1,7 +1,7 @@
 %Darpa Cathodic Anodic Analysis
 
-tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
-% tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+% tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
 
 ca_an_struct = struct();
 monkey_list = dir(tld); monkey_list = monkey_list(3:end);
@@ -89,7 +89,7 @@ end %ca_an_struct
 %old and wont run correctly
 num_perm = 1e4;
 % num_perm = 10;
-for p = 1%:length(ca_an_struct) 
+for p = 1:length(ca_an_struct) 
     %get indices
     % check to see if there are any sampling biasis  
     % new conditions
@@ -110,34 +110,32 @@ for p = 1%:length(ca_an_struct)
         [dt_perm_1{dm}, dp_perm_1{dm}] = AnalyzeResponseTable(ca_an_struct(p).ResponseTable(tmp_p1_idx,:));
         [dt_perm_2{dm}, dp_perm_2{dm}] = AnalyzeResponseTable(ca_an_struct(p).ResponseTable(tmp_p2_idx,:));
 
-        ca_an_struct(p).PDT_control = table2array(dt_perm_1{1,:});
-        ca_an_struct(p).PDT_stim = table2array(dt_perm_2{1,:});
-        ca_an_struct(p).PDP_control = table2array(dp_perm_1{1,:});
-        ca_an_struct(p).PDP_stim = table2array(dp_perm_2{1,:});
-        % for l = 1:length(dt_perm_1)
-           % [~, coeffs1, ~,~,~,warn_1] = FitSigmoid(dt_perm_1{:,1}, dt_perm_1{:,2},  'Constraints', [0.001, 1000; -50, 50]);
+        ca_an_struct(p).PDT_control = dt_perm_1;
+        ca_an_struct(p).PDT_stim = dt_perm_2;
+        ca_an_struct(p).PDP_control = dp_perm_1;
+        ca_an_struct(p).PDP_stim = dp_perm_2;
+            %only saving last perm; need to save all 1000
+           [~, coeffs1{dm}, ~,~,~,warn_1] = FitSigmoid(ca_an_struct(p).PDT_control{dm}{:,1}, ca_an_struct(p).PDT_control{dm}{:,2},  'Constraints', [0.001, 1000; -50, 50]);
+            [pm1] = SigmoidThreshold(coeffs1{dm}, qq, threshold);
+            [~, coeffs2{dm}, ~,~,~,warn_2] = FitSigmoid(ca_an_struct(p).PDT_stim{dm}{:,1},ca_an_struct(p).PDT_stim{dm}{:,2}, 'Constraints',[0.001, 1000; -50, 50]);
+            [pm2] = SigmoidThreshold(coeffs2{dm}, qq, threshold);
+        % % % % %this should be a separate table
+        %only saving the last one/ need to save the rest
+            sigfun = GetSigmoid(length(coeffs1{1}));
+            y_fit1{dm} = sigfun(coeffs1{dm}, qq);
+            y_fit2 = sigfun(coeffs2{dm},qq);
+            ca_an_struct(p).yfit1=y_fit1;
+            ca_an_struct(p).y_fit2=y_fit2;
+            ca_an_struct(p).qq=qq;
 
-            % [~, coeffs1, ~,~,~,warn_1] = FitSigmoid(cdt_array(:,1), cdt_array(:,2),  'Constraints', [0.001, 1000; -50, 50]);
-            % [pm1] = SigmoidThreshold(coeffs1, qq, threshold);
-            % [~, coeffs2, ~,~,~,warn_2] = FitSigmoid(sdt_array(:,1), sdt_array(:,2), 'Constraints',[0.001, 1000; -50, 50]);
-            % [pm2] = SigmoidThreshold(coeffs2, qq, threshold);
-        % % %this should be a separate table
-        %     sigfun = GetSigmoid(length(coeffs1|coeffs2));
-        %     y_fit1 = sigfun(coeffs1, qq);
-        %     y_fit2 = sigfun(coeffs2,qq);
-        %     ca_an_struct(p).yfit1=y_fit1;
-        %     ca_an_struct(p).y_fit2=y_fit2;
-        %     ca_an_struct(p).qq=qq;
-        % 
         % %     %only saving last perm table so need to figure out how to save 1000
         % %     %other ones
-        %     null_delta_threshold(dm) = pm1 - pm2;
-        % end %dt_perm_1
+            null_delta_threshold(dm) = pm1 - pm2;
     end %num_perm
-    % % 
-    % ca_an_struct(p).null_dist = null_delta_threshold;
-    % ca_an_struct(p).Bootp_rt = 1 - (sum(delta_thresholds > null_delta_threshold) / num_perm);
-    % ca_an_struct(p).Bootp_lt = 1 - (sum(delta_thresholds < null_delta_threshold) / num_perm);   
+
+    ca_an_struct(p).null_dist = null_delta_threshold;
+    ca_an_struct(p).Bootp_rt = 1 - (sum(delta_thresholds > null_delta_threshold) / num_perm);
+    ca_an_struct(p).Bootp_lt = 1 - (sum(delta_thresholds < null_delta_threshold) / num_perm);   
 end %ca_an_struct
 
 

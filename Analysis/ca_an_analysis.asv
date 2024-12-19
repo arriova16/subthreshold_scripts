@@ -87,9 +87,9 @@ end %ca_an_struct
 
 %% Permutation
 %old and wont run correctly
-num_perm = 1e4;
-% num_perm = 10;
-for p = 1%:length(ca_an_struct) 
+% num_perm = 1e4;
+num_perm = 10;
+for p = 1:length(ca_an_struct) 
     %get indices
     % check to see if there are any sampling biasis  
     % new conditions
@@ -110,12 +110,12 @@ for p = 1%:length(ca_an_struct)
         [dt_perm_1{dm}, dp_perm_1{dm}] = AnalyzeResponseTable(ca_an_struct(p).ResponseTable(tmp_p1_idx,:));
         [dt_perm_2{dm}, dp_perm_2{dm}] = AnalyzeResponseTable(ca_an_struct(p).ResponseTable(tmp_p2_idx,:));
 
-        ca_an_struct(p).PDT_control = vertcat(dt_perm_1);
+        ca_an_struct(p).PDT_control = dt_perm_1;
         ca_an_struct(p).PDT_stim = dt_perm_2;
         ca_an_struct(p).PDP_control = dp_perm_1;
         ca_an_struct(p).PDP_stim = dp_perm_2;
         % for l = 1:length(dt_perm_1)
-           % [~, coeffs1, ~,~,~,warn_1] = FitSigmoid(dt_perm_1{:,1}, dt_perm_1{:,2},  'Constraints', [0.001, 1000; -50, 50]);
+           [~, coeffs1, ~,~,~,warn_1] = FitSigmoid(ca_an_struct().PDT_control{1}{:,1}, dt_perm_1{:,2},  'Constraints', [0.001, 1000; -50, 50]);
 
             % [~, coeffs1, ~,~,~,warn_1] = FitSigmoid(cdt_array(:,1), cdt_array(:,2),  'Constraints', [0.001, 1000; -50, 50]);
             % [pm1] = SigmoidThreshold(coeffs1, qq, threshold);
