@@ -123,7 +123,7 @@ for p = 1:length(ca_an_struct)
         %only saving the last one/ need to save the rest
             sigfun = GetSigmoid(length(coeffs1{1}));
             y_fit1{dm} = sigfun(coeffs1{dm}, qq);
-            y_fit2 = sigfun(coeffs2{dm},qq);
+            y_fit2{dm} = sigfun(coeffs2{dm},qq);
             ca_an_struct(p).yfit1=y_fit1;
             ca_an_struct(p).y_fit2=y_fit2;
             ca_an_struct(p).qq=qq;
@@ -150,33 +150,34 @@ end %ca_an_struct
 
 %% plotting fit check
 for a = 1:length(ca_an_struct)
-
+    for p = 1:10
     %go over
     %converting to dprime
-    dprime1 = norminv(ca_an_struct(a).yfit1) - norminv(ca_an_struct(a).yfit1(1));
-    dprime2 = norminv(ca_an_struct(a).y_fit2) - norminv(ca_an_struct(a).y_fit2(1));
-    yq_idx_1 = find(dprime1 >= threshold,1, 'first');
-    yq_idx_2 = find(dprime2 >= threshold,1, 'first');
-    mt_1_perm = ca_an_struct(a).qq(yq_idx_1);
-    mt_2_perm = ca_an_struct(a).qq(yq_idx_2);
+        dprime1= norminv(ca_an_struct(a).yfit1{p}) - norminv(ca_an_struct(a).yfit1{p}(1,1));
+        dprime2 = norminv(ca_an_struct(a).y_fit2{p}) - norminv(ca_an_struct(a).y_fit2{p}(1,1));
+        yq_idx_1 = find(dprime1 >= threshold,1, 'first');
+        yq_idx_2 = find(dprime2 >= threshold,1, 'first');
+        % mt_1_perm = ca_an_struct(a).qq(yq_idx_1);
+        % mt_2_perm = ca_an_struct(a).qq(yq_idx_2);
+        % 
     
-
-    figure;
-    hold on
-    plot(ca_an_struct(a).qq, dprime1)
-    plot(ca_an_struct(a).qq, dprime2)
-    plot([0 mt_1_perm mt_1_perm], [threshold, threshold, -1],'Color',rgb(69, 90, 100),'LineStyle','--' )
-    plot([0 mt_2_perm mt_2_perm], [threshold, threshold, -1],'Color',rgb(69, 90, 100),'LineStyle','--' )
-
-    scatter(ca_an_struct(a).Perm_DP_control{:,1}, ca_an_struct(a).Perm_DP_control{:,2}, 20, rgb(33, 33, 33), 'filled')
-    scatter(ca_an_struct(a).Perm_DP_stim{:,1}, ca_an_struct(a).Perm_DP_stim{:,2}, 20, rgb(198, 40, 40), 'filled')
-    % plot(ca_an_struct(a).Perm_DP_control{:,1}, ca_an_struct(a).Perm_DP_control{:,2},'Color',rgb(33, 33, 33), 'LineStyle', '-')
-    % plot(ca_an_struct(a).Perm_DP_stim{:,1}, ca_an_struct(a).Perm_DP_stim{:,2}, 'Color',rgb(198, 40, 40), 'LineStyle', '-')
-
-    SetFont('Arial', 18)
-    xlabel('Amplitude (mm)')
-    ylabel('d''')
-    axis square
+        % figure;
+        % hold on
+        % plot(ca_an_struct(a).qq, dprime1)
+        % plot(ca_an_struct(a).qq, dprime2)
+        % plot([0 mt_1_perm mt_1_perm], [threshold, threshold, -1],'Color',rgb(69, 90, 100),'LineStyle','--' )
+        % plot([0 mt_2_perm mt_2_perm], [threshold, threshold, -1],'Color',rgb(69, 90, 100),'LineStyle','--' )
+        % 
+        % scatter(ca_an_struct(a).Perm_DP_control{:,1}, ca_an_struct(a).Perm_DP_control{:,2}, 20, rgb(33, 33, 33), 'filled')
+        % scatter(ca_an_struct(a).Perm_DP_stim{:,1}, ca_an_struct(a).Perm_DP_stim{:,2}, 20, rgb(198, 40, 40), 'filled')
+        % % plot(ca_an_struct(a).Perm_DP_control{:,1}, ca_an_struct(a).Perm_DP_control{:,2},'Color',rgb(33, 33, 33), 'LineStyle', '-')
+        % % plot(ca_an_struct(a).Perm_DP_stim{:,1}, ca_an_struct(a).Perm_DP_stim{:,2}, 'Color',rgb(198, 40, 40), 'LineStyle', '-')
+        % 
+        % SetFont('Arial', 18)
+        % xlabel('Amplitude (mm)')
+        % ylabel('d''')
+        % axis square
+    end
 end
 %%
 for d = 1:length(ca_an_struct)
