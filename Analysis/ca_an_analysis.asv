@@ -1,7 +1,7 @@
 %Darpa Cathodic Anodic Analysis
 
-% tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
-tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+% tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
 
 ca_an_struct = struct();
 monkey_list = dir(tld); monkey_list = monkey_list(3:end);
@@ -87,8 +87,8 @@ end %ca_an_struct
 
 %% Permutation
 %old and wont run correctly
-% num_perm = 1e4;
-num_perm = 10;
+num_perm = 1e4;
+% num_perm = 10;
 for p = 1:length(ca_an_struct) 
     %get indices
     % check to see if there are any sampling biasis  
@@ -114,30 +114,28 @@ for p = 1:length(ca_an_struct)
         ca_an_struct(p).PDT_stim = dt_perm_2;
         ca_an_struct(p).PDP_control = dp_perm_1;
         ca_an_struct(p).PDP_stim = dp_perm_2;
-        % for l = 1:length(dt_perm_1)
-           [~, coeffs1, ~,~,~,warn_1] = FitSigmoid(ca_an_struct().PDT_control{1}{:,1}, dt_perm_1{:,2},  'Constraints', [0.001, 1000; -50, 50]);
+            %only saving last perm; need to save all 1000
+           [~, coeffs1{dm}, ~,~,~,warn_1] = FitSigmoid(ca_an_struct(p).PDT_control{dm}{:,1}, ca_an_struct(p).PDT_control{dm}{:,2},  'Constraints', [0.001, 1000; -50, 50]);
+            [pm1] = SigmoidThreshold(coeffs1{dm}, qq, threshold);
+            [~, coeffs2{dm}, ~,~,~,warn_2] = FitSigmoid(ca_an_struct(p).PDT_stim{dm}{:,1},ca_an_struct(p).PDT_stim{dm}{:,2}, 'Constraints',[0.001, 1000; -50, 50]);
+            [pm2] = SigmoidThreshold(coeffs2{dm}, qq, threshold);
+        % % % % %this should be a separate table
+        %only saving the last one/ need to save the rest
+            sigfun = GetSigmoid(length(coeffs1{1}));
+            y_fit1{dm} = sigfun(coeffs1{dm}, qq);
+            y_fit2{dm} = sigfun(coeffs2{dm},qq);
+            ca_an_struct(p).yfit1=y_fit1;
+            ca_an_struct(p).y_fit2=y_fit2;
+            ca_an_struct(p).qq=qq;
 
-            % [~, coeffs1, ~,~,~,warn_1] = FitSigmoid(cdt_array(:,1), cdt_array(:,2),  'Constraints', [0.001, 1000; -50, 50]);
-            % [pm1] = SigmoidThreshold(coeffs1, qq, threshold);
-            % [~, coeffs2, ~,~,~,warn_2] = FitSigmoid(sdt_array(:,1), sdt_array(:,2), 'Constraints',[0.001, 1000; -50, 50]);
-            % [pm2] = SigmoidThreshold(coeffs2, qq, threshold);
-        % % %this should be a separate table
-        %     sigfun = GetSigmoid(length(coeffs1|coeffs2));
-        %     y_fit1 = sigfun(coeffs1, qq);
-        %     y_fit2 = sigfun(coeffs2,qq);
-        %     ca_an_struct(p).yfit1=y_fit1;
-        %     ca_an_struct(p).y_fit2=y_fit2;
-        %     ca_an_struct(p).qq=qq;
-        % 
         % %     %only saving last perm table so need to figure out how to save 1000
         % %     %other ones
-        %     null_delta_threshold(dm) = pm1 - pm2;
-        % end %dt_perm_1
+            null_delta_threshold(dm) = pm1 - pm2;
     end %num_perm
-    % % 
-    % ca_an_struct(p).null_dist = null_delta_threshold;
-    % ca_an_struct(p).Bootp_rt = 1 - (sum(delta_thresholds > null_delta_threshold) / num_perm);
-    % ca_an_struct(p).Bootp_lt = 1 - (sum(delta_thresholds < null_delta_threshold) / num_perm);   
+
+    ca_an_struct(p).null_dist = null_delta_threshold;
+    ca_an_struct(p).Bootp_rt = 1 - (sum(delta_thresholds > null_delta_threshold) / num_perm);
+    ca_an_struct(p).Bootp_lt = 1 - (sum(delta_thresholds < null_delta_threshold) / num_perm);   
 end %ca_an_struct
 
 
@@ -152,34 +150,44 @@ end %ca_an_struct
 
 %% plotting fit check
 for a = 1:length(ca_an_struct)
-
+    for p = 1:10
     %go over
     %converting to dprime
-    dprime1 = norminv(ca_an_struct(a).yfit1) - norminv(ca_an_struct(a).yfit1(1));
-    dprime2 = norminv(ca_an_struct(a).y_fit2) - norminv(ca_an_struct(a).y_fit2(1));
-    yq_idx_1 = find(dprime1 >= threshold,1, 'first');
-    yq_idx_2 = find(dprime2 >= threshold,1, 'first');
-    mt_1_perm = ca_an_struct(a).qq(yq_idx_1);
-    mt_2_perm = ca_an_struct(a).qq(yq_idx_2);
-    
-
-    figure;
-    hold on
-    plot(ca_an_struct(a).qq, dprime1)
-    plot(ca_an_struct(a).qq, dprime2)
-    plot([0 mt_1_perm mt_1_perm], [threshold, threshold, -1],'Color',rgb(69, 90, 100),'LineStyle','--' )
-    plot([0 mt_2_perm mt_2_perm], [threshold, threshold, -1],'Color',rgb(69, 90, 100),'LineStyle','--' )
-
-    scatter(ca_an_struct(a).Perm_DP_control{:,1}, ca_an_struct(a).Perm_DP_control{:,2}, 20, rgb(33, 33, 33), 'filled')
-    scatter(ca_an_struct(a).Perm_DP_stim{:,1}, ca_an_struct(a).Perm_DP_stim{:,2}, 20, rgb(198, 40, 40), 'filled')
-    % plot(ca_an_struct(a).Perm_DP_control{:,1}, ca_an_struct(a).Perm_DP_control{:,2},'Color',rgb(33, 33, 33), 'LineStyle', '-')
-    % plot(ca_an_struct(a).Perm_DP_stim{:,1}, ca_an_struct(a).Perm_DP_stim{:,2}, 'Color',rgb(198, 40, 40), 'LineStyle', '-')
-
-    SetFont('Arial', 18)
-    xlabel('Amplitude (mm)')
-    ylabel('d''')
-    axis square
+        dprime1{p}= norminv(ca_an_struct(a).yfit1{p}) - norminv(ca_an_struct(a).yfit1{p}(1,1));
+        dprime2 {p}= norminv(ca_an_struct(a).y_fit2{p}) - norminv(ca_an_struct(a).y_fit2{p}(1,1));
+        yq_idx_1{p} = find(dprime1{p} >= threshold,1, 'first');
+        yq_idx_2{p} = find(dprime2{p} >= threshold,1, 'first');
+        mt_1_perm{p} = ca_an_struct(a).qq(yq_idx_1{p});
+        mt_2_perm{p} = ca_an_struct(a).qq(yq_idx_2{p});
+        % 
+    end
 end
+    %%
+    for n = 1:length(ca_an_struct)
+        for c = 1:3
+            figure;
+            hold on
+      
+
+            scatter(ca_an_struct(n).qq, dprime1{c})
+            scatter(ca_an_struct(n).qq, dprime2{c})
+            plot([0 mt_1_perm{c} mt_1_perm{c}], [threshold, threshold, -1],'Color',rgb(69, 90, 100),'LineStyle','--' )
+            plot([0 mt_2_perm{c} mt_2_perm{c}], [threshold, threshold, -1],'Color',rgb(69, 90, 100),'LineStyle','--' )
+            plot(ca_an_struct(n).qq, ca_an_struct(n).mech_dprime_coeffs,'Color',rgb(84, 110, 122))
+
+         
+
+            % scatter(ca_an_struct(n).PDT_control{c}{:,1}, ca_an_struct(n).PDT_control{c}{:,2}, 20, rgb(33, 33, 33), 'filled')
+            % scatter(ca_an_struct(n).PDT_stim{c}{:,1}, ca_an_struct(n).PDT_stim{c}{:,2}, 20, rgb(198, 40, 40), 'filled')
+            % plot(ca_an_struct(n).PDP_control{c}{:,1}, ca_an_struct(n).PDP_control{c}{:,2},'Color',rgb(33, 33, 33), 'LineStyle', '-')
+            % plot(ca_an_struct(n).PDP_stim{c}{:,1}, ca_an_struct(n).PDP_stim{c}{:,2}, 'Color',rgb(198, 40, 40), 'LineStyle', '-')
+            % % 
+            SetFont('Arial', 18)
+            xlabel('Amplitude (mm)')
+            ylabel('d''')
+            axis square
+         end
+    end
 %%
 for d = 1:length(ca_an_struct)
 %     title(sprintf('%s', ca_an_struct(d).Electrodes), 'FontSize', 18)

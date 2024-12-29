@@ -1,7 +1,7 @@
 %Darpa Cathodic Anodic Analysis
 
-% tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
-tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+% tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
 
 ca_an_struct = struct();
 monkey_list = dir(tld); monkey_list = monkey_list(3:end);
@@ -153,32 +153,41 @@ for a = 1:length(ca_an_struct)
     for p = 1:10
     %go over
     %converting to dprime
-        dprime1= norminv(ca_an_struct(a).yfit1{p}) - norminv(ca_an_struct(a).yfit1{p}(1,1));
-        dprime2 = norminv(ca_an_struct(a).y_fit2{p}) - norminv(ca_an_struct(a).y_fit2{p}(1,1));
-        yq_idx_1 = find(dprime1 >= threshold,1, 'first');
-        yq_idx_2 = find(dprime2 >= threshold,1, 'first');
-        % mt_1_perm = ca_an_struct(a).qq(yq_idx_1);
-        % mt_2_perm = ca_an_struct(a).qq(yq_idx_2);
+        dprime1{p}= norminv(ca_an_struct(a).yfit1{p}) - norminv(ca_an_struct(a).yfit1{p}(1,1));
+        dprime2 {p}= norminv(ca_an_struct(a).y_fit2{p}) - norminv(ca_an_struct(a).y_fit2{p}(1,1));
+        yq_idx_1{p} = find(dprime1{p} >= threshold,1, 'first');
+        yq_idx_2{p} = find(dprime2{p} >= threshold,1, 'first');
+        mt_1_perm{p} = ca_an_struct(a).qq(yq_idx_1{p});
+        mt_2_perm{p} = ca_an_struct(a).qq(yq_idx_2{p});
         % 
-    
-        % figure;
-        % hold on
-        % plot(ca_an_struct(a).qq, dprime1)
-        % plot(ca_an_struct(a).qq, dprime2)
-        % plot([0 mt_1_perm mt_1_perm], [threshold, threshold, -1],'Color',rgb(69, 90, 100),'LineStyle','--' )
-        % plot([0 mt_2_perm mt_2_perm], [threshold, threshold, -1],'Color',rgb(69, 90, 100),'LineStyle','--' )
-        % 
-        % scatter(ca_an_struct(a).Perm_DP_control{:,1}, ca_an_struct(a).Perm_DP_control{:,2}, 20, rgb(33, 33, 33), 'filled')
-        % scatter(ca_an_struct(a).Perm_DP_stim{:,1}, ca_an_struct(a).Perm_DP_stim{:,2}, 20, rgb(198, 40, 40), 'filled')
-        % % plot(ca_an_struct(a).Perm_DP_control{:,1}, ca_an_struct(a).Perm_DP_control{:,2},'Color',rgb(33, 33, 33), 'LineStyle', '-')
-        % % plot(ca_an_struct(a).Perm_DP_stim{:,1}, ca_an_struct(a).Perm_DP_stim{:,2}, 'Color',rgb(198, 40, 40), 'LineStyle', '-')
-        % 
-        % SetFont('Arial', 18)
-        % xlabel('Amplitude (mm)')
-        % ylabel('d''')
-        % axis square
     end
 end
+    %%
+    for n = 1:length(ca_an_struct)
+        for c = 1:3
+            figure;
+            hold on
+      
+
+            plot(ca_an_struct(n).qq, dprime1{c})
+            plot(ca_an_struct(n).qq, dprime2{c})
+            plot([0 mt_1_perm{c} mt_1_perm{c}], [threshold, threshold, -1],'Color',rgb(69, 90, 100),'LineStyle','--' )
+            plot([0 mt_2_perm{c} mt_2_perm{c}], [threshold, threshold, -1],'Color',rgb(69, 90, 100),'LineStyle','--' )
+            % plot(ca_an_struct(n).qq, ca_an_struct(n).yfit1{c},'Color',rgb(84, 110, 122))
+ 
+         
+
+            % scatter(ca_an_struct(n).PDT_control{c}{:,1}, ca_an_struct(n).PDT_control{c}{:,2}, 20, rgb(33, 33, 33), 'filled')
+            % scatter(ca_an_struct(n).PDT_stim{c}{:,1}, ca_an_struct(n).PDT_stim{c}{:,2}, 20, rgb(198, 40, 40), 'filled')
+            scatter(ca_an_struct(n).PDP_control{c}{:,1}, ca_an_struct(n).PDP_control{c}{:,2},'Color',rgb(33, 33, 33))
+            scatter(ca_an_struct(n).PDP_stim{c}{:,1}, ca_an_struct(n).PDP_stim{c}{:,2}, 'Color',rgb(198, 40, 40))
+            % % 
+            SetFont('Arial', 18)
+            xlabel('Amplitude (mm)')
+            ylabel('d''')
+            axis square
+         end
+    end
 %%
 for d = 1:length(ca_an_struct)
 %     title(sprintf('%s', ca_an_struct(d).Electrodes), 'FontSize', 18)
