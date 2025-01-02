@@ -1,7 +1,7 @@
 %Darpa Cathodic Anodic Analysis
 
-tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
-% tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+% tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
 
 ca_an_struct = struct();
 monkey_list = dir(tld); monkey_list = monkey_list(3:end);
@@ -66,21 +66,22 @@ for a = 1:length(ca_an_struct)
     pd1_ca_an = ca_an_struct(a).DetectionTable{:,2};
     pd2_ca_an = ca_an_struct(a).DetectionTable{:,3};
 
-    [sig_pd1, coeffs_pd1, ~,~,~, warn_pd1] = FitSigmoid(mech_ca_an, pd1_ca_an, 'Constraints', [0,300; -5, 5]);
-    [sig_pd2, coeffs_pd2, ~,~,~, warn_pd2] = FitSigmoid(mech_ca_an, pd2_ca_an, 'Constraints',[0,300;-5, 5]);
-    xq_ca_an = linspace(mech_ca_an(1), mech_ca_an(end)*2);
-    
-    [mt_1] = SigmoidThreshold(coeffs_pd1, xq_ca_an, threshold);
-    [mt_2] = SigmoidThreshold(coeffs_pd2, xq_ca_an, threshold);
+    [sig_pd1, coeffs_pd1, ~,~,~, warn_pd1] = FitSigmoid(mech_ca_an, pd1_ca_an,'NumCoeffs', 4, 'Constraints', [0,300; -5, 5]);
+    % [sig_pd2, coeffs_pd2, ~,~,~, warn_pd2] = FitSigmoid(mech_ca_an, pd2_ca_an, 'Constraints',[0,300;-5, 5]);
 
-    ca_an_struct(a).mt_catch = mt_1;
-    ca_an_struct(a).mt_elec = mt_2;
-    
-    %getting delta thresholds of mech + elec 
-    delta_thresholds_abs = abs(ca_an_struct(a).mt_catch - ca_an_struct(a).mt_elec);
-    delta_thresholds = (ca_an_struct(a).mt_catch - ca_an_struct(a).mt_elec);
-    ca_an_struct(a).delta_threshold = delta_thresholds;
-    ca_an_struct(a).delta_threshold_abs = delta_thresholds_abs;
+    % xq_ca_an = linspace(mech_ca_an(1), mech_ca_an(end)*2);
+    % 
+    % [mt_1] = SigmoidThreshold(coeffs_pd1, xq_ca_an, threshold);
+    % [mt_2] = SigmoidThreshold(coeffs_pd2, xq_ca_an, threshold);
+    % 
+    % ca_an_struct(a).mt_catch = mt_1;
+    % ca_an_struct(a).mt_elec = mt_2;
+    % 
+    % %getting delta thresholds of mech + elec 
+    % delta_thresholds_abs = abs(ca_an_struct(a).mt_catch - ca_an_struct(a).mt_elec);
+    % delta_thresholds = (ca_an_struct(a).mt_catch - ca_an_struct(a).mt_elec);
+    % ca_an_struct(a).delta_threshold = delta_thresholds;
+    % ca_an_struct(a).delta_threshold_abs = delta_thresholds_abs;
 
 end %ca_an_struct
 
