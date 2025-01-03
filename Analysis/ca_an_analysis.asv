@@ -88,8 +88,8 @@ end %ca_an_struct
 
 %% Permutation
 %old and wont run correctly
-num_perm = 1e4;
-% num_perm = 5;
+% num_perm = 1e4;
+num_perm = 5;
 for p = 1:length(ca_an_struct) 
     %get indices
     % check to see if there are any sampling biasis  
@@ -116,26 +116,26 @@ for p = 1:length(ca_an_struct)
         ca_an_struct(p).PDP_control = dp_perm_1;
         ca_an_struct(p).PDP_stim = dp_perm_2;
             %only saving last perm; need to save all 1000
-           [~, coeffs1{dm}, ~,~,~,warn_1] = FitSigmoid(ca_an_struct(p).PDT_control{dm}{:,1}, ca_an_struct(p).PDT_control{dm}{:,2}, 'NumCoeffs', 4, 'Constraints', [0.001, 1000; -50, 50]);
-            [pm1] = SigmoidThreshold(coeffs1{dm}, qq, threshold);
-            [~, coeffs2{dm}, ~,~,~,warn_2] = FitSigmoid(ca_an_struct(p).PDT_stim{dm}{:,1},ca_an_struct(p).PDT_stim{dm}{:,2}, 'NumCoeffs', 4,'Constraints',[.00001, 5000; -500, 500]);
-            [pm2] = SigmoidThreshold(coeffs2{dm}, qq, threshold);
+           % [~, coeffs1{dm}, ~,~,~,warn_1] = FitSigmoid(ca_an_struct(p).PDT_control{dm}{:,1}, ca_an_struct(p).PDT_control{dm}{:,2}, 'NumCoeffs', 4, 'Constraints', [0.001, 1000; -50, 50]);
+           %  [pm1] = SigmoidThreshold(coeffs1{dm}, qq, threshold);
+            [~, coeffs2{dm}, ~,~,~,warn_2] = FitSigmoid(ca_an_struct(p).PDT_stim{dm}{:,1},ca_an_struct(p).PDT_stim{dm}{:,2}, 'NumCoeffs', 4,'Constraints',[.001, 200; -5, 5], 'PlotFit', true);
+            % [pm2] = SigmoidThreshold(coeffs2{dm}, qq, threshold);
 
-            sigfun = GetSigmoid(length(coeffs1{1}));
-            y_fit1{dm} = sigfun(coeffs1{dm}, qq);
-            y_fit2{dm} = sigfun(coeffs2{dm},qq);
-            ca_an_struct(p).yfit1=y_fit1;
-            ca_an_struct(p).y_fit2=y_fit2;
-            ca_an_struct(p).qq=qq;
+            % sigfun = GetSigmoid(length(coeffs1{1}));
+            % y_fit1{dm} = sigfun(coeffs1{dm}, qq);
+            % y_fit2{dm} = sigfun(coeffs2{dm},qq);
+            % ca_an_struct(p).yfit1=y_fit1;
+            % ca_an_struct(p).y_fit2=y_fit2;
+            % ca_an_struct(p).qq=qq;
 
-        %     %only saving last perm table so need to figure out how to save 1000
-        %     %other ones
-            null_delta_threshold(dm) = pm1 - pm2;
+        % %     %only saving last perm table so need to figure out how to save 1000
+        % %     %other ones
+            % null_delta_threshold(dm) = pm1 - pm2;
     end %num_perm
 
-    ca_an_struct(p).null_dist = null_delta_threshold;
-    ca_an_struct(p).Bootp_rt = 1 - (sum(delta_thresholds > null_delta_threshold) / num_perm);
-    ca_an_struct(p).Bootp_lt = 1 - (sum(delta_thresholds < null_delta_threshold) / num_perm);   
+    % ca_an_struct(p).null_dist = null_delta_threshold;
+    % ca_an_struct(p).Bootp_rt = 1 - (sum(delta_thresholds > null_delta_threshold) / num_perm);
+    % ca_an_struct(p).Bootp_lt = 1 - (sum(delta_thresholds < null_delta_threshold) / num_perm);   
 end %ca_an_struct
 
 
