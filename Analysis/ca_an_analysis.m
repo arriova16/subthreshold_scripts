@@ -87,9 +87,9 @@ end %ca_an_struct
 
 %% Permutation
 %old and wont run correctly
-num_perm = 1e4;
-% num_perm = 10;
-for p = 1:length(ca_an_struct) 
+% num_perm = 1e4;
+num_perm = 10;
+for p = 1%:length(ca_an_struct) 
     %get indices
     % check to see if there are any sampling biasis  
     % new conditions
@@ -117,25 +117,25 @@ for p = 1:length(ca_an_struct)
             %only saving last perm; need to save all 1000
            [~, coeffs1{dm}, ~,~,~,warn_1] = FitSigmoid(ca_an_struct(p).PDT_control{dm}{:,1}, ca_an_struct(p).PDT_control{dm}{:,2},  'Constraints', [0.001, 1000; -50, 50]);
             [pm1] = SigmoidThreshold(coeffs1{dm}, qq, threshold);
-            [~, coeffs2{dm}, ~,~,~,warn_2] = FitSigmoid(ca_an_struct(p).PDT_stim{dm}{:,1},ca_an_struct(p).PDT_stim{dm}{:,2}, 'Constraints',[0.001, 1000; -50, 50]);
-            [pm2] = SigmoidThreshold(coeffs2{dm}, qq, threshold);
+            % [~, coeffs2{dm}, ~,~,~,warn_2] = FitSigmoid(ca_an_struct(p).PDT_stim{dm}{:,1},ca_an_struct(p).PDT_stim{dm}{:,2}, 'Constraints',[0.001, 1000; -50, 50]);
+            % [pm2] = SigmoidThreshold(coeffs2{dm}, qq, threshold);
         % % % % %this should be a separate table
         %only saving the last one/ need to save the rest
-            sigfun = GetSigmoid(length(coeffs1{1}));
-            y_fit1{dm} = sigfun(coeffs1{dm}, qq);
-            y_fit2{dm} = sigfun(coeffs2{dm},qq);
-            ca_an_struct(p).yfit1=y_fit1;
-            ca_an_struct(p).y_fit2=y_fit2;
-            ca_an_struct(p).qq=qq;
-
-        % %     %only saving last perm table so need to figure out how to save 1000
-        % %     %other ones
-            null_delta_threshold(dm) = pm1 - pm2;
+            % sigfun = GetSigmoid(length(coeffs1{1}));
+    %         y_fit1{dm} = sigfun(coeffs1{dm}, qq);
+    %         y_fit2{dm} = sigfun(coeffs2{dm},qq);
+    %         ca_an_struct(p).yfit1=y_fit1;
+    %         ca_an_struct(p).y_fit2=y_fit2;
+    %         ca_an_struct(p).qq=qq;
+    % 
+    %     % %     %only saving last perm table so need to figure out how to save 1000
+    %     % %     %other ones
+    %         null_delta_threshold(dm) = pm1 - pm2;
     end %num_perm
-
-    ca_an_struct(p).null_dist = null_delta_threshold;
-    ca_an_struct(p).Bootp_rt = 1 - (sum(delta_thresholds > null_delta_threshold) / num_perm);
-    ca_an_struct(p).Bootp_lt = 1 - (sum(delta_thresholds < null_delta_threshold) / num_perm);   
+    % 
+    % ca_an_struct(p).null_dist = null_delta_threshold;
+    % ca_an_struct(p).Bootp_rt = 1 - (sum(delta_thresholds > null_delta_threshold) / num_perm);
+    % ca_an_struct(p).Bootp_lt = 1 - (sum(delta_thresholds < null_delta_threshold) / num_perm);   
 end %ca_an_struct
 
 
