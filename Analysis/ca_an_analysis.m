@@ -1,7 +1,7 @@
 %Darpa Cathodic Anodic Analysis
 
-% tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
-tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+% tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
 
 ca_an_struct = struct();
 monkey_list = dir(tld); monkey_list = monkey_list(3:end);
@@ -134,9 +134,9 @@ for p = 1:length(ca_an_struct)
             null_delta_threshold(dm) = pm1 - pm2;
     end %num_perm
     % 
-    % ca_an_struct(p).null_dist = null_delta_threshold;
-    % ca_an_struct(p).Bootp_rt = 1 - (sum(delta_thresholds > null_delta_threshold) / num_perm);
-    % ca_an_struct(p).Bootp_lt = 1 - (sum(delta_thresholds < null_delta_threshold) / num_perm);   
+    ca_an_struct(p).null_dist = null_delta_threshold;
+    ca_an_struct(p).Bootp_rt = 1 - (sum(delta_thresholds > null_delta_threshold) / num_perm);
+    ca_an_struct(p).Bootp_lt = 1 - (sum(delta_thresholds < null_delta_threshold) / num_perm);   
 end %ca_an_struct
 
 
@@ -164,7 +164,10 @@ for a = 1:length(ca_an_struct)
     end
 end
     %%
+    
+
     for n = 1:length(ca_an_struct)
+        title(sprintf('%s, %s', num2str(ca_an_struct(n).Electrodes), ca_an_struct(n).Pulse), 'FontSize', 18)
         for c = 1:3
             figure;
             hold on
@@ -176,13 +179,10 @@ end
             plot([0 mt_2_perm{c} mt_2_perm{c}], [threshold, threshold, -1],'Color',rgb(69, 90, 100),'LineStyle','--' )
             % plot(ca_an_struct(n).qq, ca_an_struct(n).yfit1{c},'Color',rgb(84, 110, 122))
  
-         
-
-            % scatter(ca_an_struct(n).PDT_control{c}{:,1}, ca_an_struct(n).PDT_control{c}{:,2}, 20, rgb(33, 33, 33), 'filled')
-            % scatter(ca_an_struct(n).PDT_stim{c}{:,1}, ca_an_struct(n).PDT_stim{c}{:,2}, 20, rgb(198, 40, 40), 'filled')
+      
             scatter(ca_an_struct(n).PDP_control{c}{:,1}, ca_an_struct(n).PDP_control{c}{:,2},'Color',rgb(33, 33, 33))
             scatter(ca_an_struct(n).PDP_stim{c}{:,1}, ca_an_struct(n).PDP_stim{c}{:,2}, 'Color',rgb(198, 40, 40))
-            % % 
+
             SetFont('Arial', 18)
             xlabel('Amplitude (mm)')
             ylabel('d''')

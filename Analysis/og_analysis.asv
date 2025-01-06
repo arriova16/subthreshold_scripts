@@ -42,16 +42,17 @@ for n = 1:length(og_struct)
     og_struct(n).pdetect = dt;
     og_struct(n).dprime = dp;
 
-    [~, coeffs_1, ~,~,~, warn_1] = FitSigmoid(og_struct(n).pdetect{:,1}, og_struct(n).pdetect{:,2}, 'NumCoeffs', 4, 'Constraints', [0, 5000; -100, 100]);
-    [~, coeffs_2, ~,~,~, warn_2] = FitSigmoid(og_struct(n).pdetect{:,1}, og_struct(n).pdetect{:,3},'NumCoeffs', 4, 'Constraints', [0, 5000; -100, 100]);
-
-    xq = linspace(og_struct(n).pdetect{1,1}, (og_struct(n).pdetect{end,1})*2);
-
-    [mt] = SigmoidThreshold(coeffs_1, xq, threshold);
-    [st] = SigmoidThreshold(coeffs_2, xq, threshold);
-
-    og_struct(n).Threshold_Mech = mt;
-    og_struct(n).Threshold_Stim = st;
+    [~, coeffs_1, ~,~,~, warn_1] = FitSigmoid(og_struct(n).pdetect{:,1}, og_struct(n).pdetect{:,2}, 'NumCoeffs', 4, 'Constraints', [0, 5000; -100, 100], ...
+    'PlotFit', true, 'ShowWarnings', true, 'EnableBackup', true);
+    [~, coeffs_2, ~,~,~, warn_2] = FitSigmoid(og_struct(n).pdetect{:,1}, og_struct(n).pdetect{:,3},'NumCoeffs', 4, 'Constraints', [0, 5000; -100, 100], 'PlotFit',true);
+    % 
+    % xq = linspace(og_struct(n).pdetect{1,1}, (og_struct(n).pdetect{end,1})*2);
+    % 
+    % [mt] = SigmoidThreshold(coeffs_1, xq, threshold);
+    % [st] = SigmoidThreshold(coeffs_2, xq, threshold);
+    % 
+    % og_struct(n).Threshold_Mech = mt;
+    % og_struct(n).Threshold_Stim = st;
 
 
 end
