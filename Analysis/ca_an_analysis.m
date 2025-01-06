@@ -1,7 +1,7 @@
 %Darpa Cathodic Anodic Analysis
 
-tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
-% tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+% tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
 
 ca_an_struct = struct();
 monkey_list = dir(tld); monkey_list = monkey_list(3:end);
@@ -117,6 +117,7 @@ for p = 1:length(ca_an_struct)
         ca_an_struct(p).PDP_control = dp_perm_1;
         ca_an_struct(p).PDP_stim = dp_perm_2;
             %only saving last perm; need to save all 1000
+            %set contrainsts to be the highest of the dprime or pdetect
            [~, coeffs1{dm}, ~,~,~,warn_1] = FitSigmoid(ca_an_struct(p).PDT_control{dm}{:,1}, ca_an_struct(p).PDT_control{dm}{:,2}, 'NumCoeffs', 4, 'Constraints', [0.001, 1000; -50, 50]);
             [pm1] = SigmoidThreshold(coeffs1{dm}, qq, threshold);
             [~, coeffs2{dm}, ~,~,~,warn_2] = FitSigmoid(ca_an_struct(p).PDT_stim{dm}{:,1},ca_an_struct(p).PDT_stim{dm}{:,2}, 'NumCoeffs', 4,'Constraints',[.00001, 5000; -500, 500]);
@@ -168,7 +169,7 @@ end
 
     for n = 1:length(ca_an_struct)
         title(sprintf('%s, %s', num2str(ca_an_struct(n).Electrodes), ca_an_struct(n).Pulse), 'FontSize', 18)
-        for c = 1:3
+        for c = 1:10
             figure;
             hold on
       
