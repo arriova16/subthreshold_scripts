@@ -66,8 +66,8 @@ for a = 1:length(ca_an_struct)
     pd1_ca_an = ca_an_struct(a).DetectionTable{:,2};
     pd2_ca_an = ca_an_struct(a).DetectionTable{:,3};
 
-    [sig_pd1, coeffs_pd1, ~,~,~, warn_pd1] = FitSigmoid(mech_ca_an, pd1_ca_an,'NumCoeffs', 4, 'Constraints', [0,300; -5, 5]);
-    [sig_pd2, coeffs_pd2, ~,~,~, warn_pd2] = FitSigmoid(mech_ca_an, pd2_ca_an, 'NumCoeffs', 4, 'Constraints',[0,300;-5, 5]);
+    [sig_pd1, coeffs_pd1, ~,~,~, warn_pd1] = FitSigmoid(mech_ca_an, pd1_ca_an,'NumCoeffs', 4, 'Constraints', [0, 300; -5,5; 0,2 ;0,1]);
+    [sig_pd2, coeffs_pd2, ~,~,~, warn_pd2] = FitSigmoid(mech_ca_an, pd2_ca_an, 'NumCoeffs', 4, 'Constraints',[0, 300; -5,5; 0,2 ;0,1]);
 
     xq_ca_an = linspace(mech_ca_an(1), mech_ca_an(end)*2);
 
@@ -76,7 +76,7 @@ for a = 1:length(ca_an_struct)
 
     ca_an_struct(a).mt_catch = mt_1;
     ca_an_struct(a).mt_elec = mt_2;
-
+ 
     %getting delta thresholds of mech + elec 
     delta_thresholds_abs = abs(ca_an_struct(a).mt_catch - ca_an_struct(a).mt_elec);
     delta_thresholds = (ca_an_struct(a).mt_catch - ca_an_struct(a).mt_elec);
@@ -89,8 +89,8 @@ end %ca_an_struct
 %% Permutation
 %old and wont run correctly
  
-num_perm = 1e4;
-% num_perm = 5;
+% num_perm = 1e4;
+num_perm = 5;
 for p = 1:length(ca_an_struct) 
     %get indices
     % check to see if there are any sampling biasis  
@@ -118,23 +118,16 @@ for p = 1:length(ca_an_struct)
         ca_an_struct(p).PDP_stim = dp_perm_2;
             %only saving last perm; need to save all 1000
             %set contrainsts to be the highest of the dprime or pdetect
-           [~, coeffs1{dm}, ~,~,~,warn_1] = FitSigmoid(ca_an_struct(p).PDT_control{dm}{:,1}, ca_an_struct(p).PDT_control{dm}{:,2}, 'NumCoeffs', 4, 'Constraints', [0.001, 1000; -50, 50]);
-            [pm1] = SigmoidThreshold(coeffs1{dm}, qq, threshold);
-            [~, coeffs2{dm}, ~,~,~,warn_2] = FitSigmoid(ca_an_struct(p).PDT_stim{dm}{:,1},ca_an_struct(p).PDT_stim{dm}{:,2}, 'NumCoeffs', 4,'Constraints',[.00001, 5000; -500, 500]);
-            [pm2] = SigmoidThreshold(coeffs2{dm}, qq, threshold);
+           [~, coeffs1{dm}, ~,~,~,warn_1] = FitSigmoid(ca_an_struct(p).PDT_control{dm}{:,1}, ca_an_struct(p).PDT_control{dm}{:,2}, 'NumCoeffs', 4, 'Constraints', [0,2000; -5,5; 0,50;-10,1]);
+            [pm1, dp_perm1] = SigmoidThreshold(coeffs1{dm}, qq, threshold);
+            [~, coeffs2{dm}, ~,~,~,warn_2] = FitSigmoid(ca_an_struct(p).PDT_stim{dm}{:,1},ca_an_struct(p).PDT_stim{dm}{:,2}, 'NumCoeffs', 4,'Constraints', [0,2000; -5,5; 0,50;-10,1]);
+            %change function to include dprime
+            [pm2,dp_perm_2] = SigmoidThreshold(coeffs2{dm}, qq, threshold);
+            % 
 
-            sigfun = GetSigmoid(length(coeffs1{1}));
-            y_fit1{dm} = sigfun(coeffs1{dm}, qq);
-            y_fit2{dm} = sigfun(coeffs2{dm},qq);
-            ca_an_struct(p).yfit1=y_fit1;
-            ca_an_struct(p).y_fit2=y_fit2;
-            ca_an_struct(p).qq=qq;
-
-        %     %only saving last perm table so need to figure out how to save 1000
-        %     %other ones
             null_delta_threshold(dm) = pm1 - pm2;
     end %num_perm
-    % 
+
     ca_an_struct(p).null_dist = null_delta_threshold;
     ca_an_struct(p).Bootp_rt = 1 - (sum(delta_thresholds > null_delta_threshold) / num_perm);
     ca_an_struct(p).Bootp_lt = 1 - (sum(delta_thresholds < null_delta_threshold) / num_perm);   
@@ -151,8 +144,11 @@ end %ca_an_struct
 % sm.isModulated(cont, se) = sm.p(cont, se) <= alpha / 2;
 
 %% plotting fit check
+%1)problem seeing is dprime is not lining up with the permutation fitsigmoid
+%2)another problem is the mechanical threshold point is not lining up with
+%the signmoid
 for a = 1:length(ca_an_struct)
-    for p = 1:10
+    for p = 1:3
     %go over
     %converting to dprime
         dprime1{p}= norminv(ca_an_struct(a).yfit1{p}) - norminv(ca_an_struct(a).yfit1{p}(1,1));
