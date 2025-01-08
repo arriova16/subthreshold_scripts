@@ -118,13 +118,12 @@ for p = 1:length(ca_an_struct)
         ca_an_struct(p).PDP_stim = dp_perm_2;
             %only saving last perm; need to save all 1000
             %set contrainsts to be the highest of the dprime or pdetect
-           [~, coeffs1{dm}, ~,~,~,warn_1] = FitSigmoid(ca_an_struct(p).PDT_control{dm}{:,1}, ca_an_struct(p).PDT_control{dm}{:,2}, 'NumCoeffs', 4, 'Constraints', [0,2000; -5,5; 0,50;-10,1]);
-            [pm1, dp_perm1] = SigmoidThreshold(coeffs1{dm}, qq, threshold);
-            [~, coeffs2{dm}, ~,~,~,warn_2] = FitSigmoid(ca_an_struct(p).PDT_stim{dm}{:,1},ca_an_struct(p).PDT_stim{dm}{:,2}, 'NumCoeffs', 4,'Constraints', [0,2000; -5,5; 0,50;-10,1]);
+           [~, coeffs1{dm}, ~,~,~,warn_1] = FitSigmoid(dt_perm_1{dm}{:,1}, dt_perm_1{dm}{:,2}, 'NumCoeffs', 4, 'Constraints', [0,2000; -5,5; 0,50;-10,1]);
+            [pm1, dprimep_1, ] = SigmoidThreshold(coeffs1{dm}, qq, threshold);
+            [~, coeffs2{dm}, ~,~,~,warn_2] = FitSigmoid(dt_perm_2{dm}{:,1},dt_perm_2{dm}{:,2}, 'NumCoeffs', 4,'Constraints', [0,2000; -5,5; 0,50;-10,1]);
             %change function to include dprime
-            [pm2,dp_perm_2] = SigmoidThreshold(coeffs2{dm}, qq, threshold);
-            % 
-
+            [pm2,dprimep_2] = SigmoidThreshold(coeffs2{dm}, qq, threshold);
+            
             null_delta_threshold(dm) = pm1 - pm2;
     end %num_perm
 
