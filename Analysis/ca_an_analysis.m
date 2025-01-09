@@ -101,13 +101,15 @@ for p = 1:length(ca_an_struct)
     p1_idx = 1:stim_first-1;
     p2_idx = stim_first:num_trials(end);
 
-    mech_u = unique(ca_an_struct(p).ResponseTable.IndentorAmp);
-    qq = linspace(mech_u(1), mech_u(end));
+    
     %save coeffs/ in order to make plots
     null_delta_threshold = zeros(num_perm,1);
     for dm = 1:num_perm
         tmp_p1_idx = datasample(p1_idx, 300, 'Replace', false);
         tmp_p2_idx = datasample(p2_idx, 300, 'Replace', false);
+
+        mech_u = unique(ca_an_struct(p).ResponseTable.IndentorAmp);
+        qq = linspace(mech_u(1), mech_u(end));
 
         [dt_perm_1{dm}, dp_perm_1{dm}] = AnalyzeResponseTable(ca_an_struct(p).ResponseTable(tmp_p1_idx,:));
         [dt_perm_2{dm}, dp_perm_2{dm}] = AnalyzeResponseTable(ca_an_struct(p).ResponseTable(tmp_p2_idx,:));
@@ -116,15 +118,13 @@ for p = 1:length(ca_an_struct)
         ca_an_struct(p).PDT_stim = dt_perm_2;
         ca_an_struct(p).PDP_control = dp_perm_1;
         ca_an_struct(p).PDP_stim = dp_perm_2;
-            %only saving last perm; need to save all 1000
-            %set contrainsts to be the highest of the dprime or pdetect
-           [~, coeffs1{dm}, ~,~,~,warn_1] = FitSigmoid(dt_perm_1{dm}{:,1}, dt_perm_1{dm}{:,2}, 'NumCoeffs', 4, 'Constraints', [0,2000; -5,5; 0,50;-10,1]);
-            [pm1, dprimep_1, ] = SigmoidThreshold(coeffs1{dm}, qq, threshold);
-            [~, coeffs2{dm}, ~,~,~,warn_2] = FitSigmoid(dt_perm_2{dm}{:,1},dt_perm_2{dm}{:,2}, 'NumCoeffs', 4,'Constraints', [0,2000; -5,5; 0,50;-10,1]);
-            %change function to include dprime
-            [pm2,dprimep_2] = SigmoidThreshold(coeffs2{dm}, qq, threshold);
+
+        [~, coeffs1{dm}, ~,~,~,warn_1] = FitSigmoid(dt_perm_1{dm}{:,1}, dt_perm_1{dm}{:,2}, 'NumCoeffs', 4, 'Constraints', [0,2000; -5,5; 0,50;-20,1]);
+        [pm1] = SigmoidThreshold(coeffs1{dm}, qq, threshold);
+        [~, coeffs2{dm}, ~,~,~,warn_2] = FitSigmoid(dt_perm_2{dm}{:,1},dt_perm_2{dm}{:,2}, 'NumCoeffs', 4,'Constraints', [0,2000; -5,5; 0,50;-20,1]);
+        [pm2] = SigmoidThreshold(coeffs2{dm}, qq, threshold);
             
-            null_delta_threshold(dm) = pm1 - pm2;
+        null_delta_threshold(dm) = pm1 - pm2;
     end %num_perm
 
     ca_an_struct(p).null_dist = null_delta_threshold;
@@ -133,58 +133,52 @@ for p = 1:length(ca_an_struct)
 end %ca_an_struct
 
 
-%% permutation within electrode pairs of cathodic and anodic
-%natalyas code
-
-% leftTail = 1 - sum(sm.deltaStim.mean(cont, se) < sm.deltaNoStim.dist(cont, :)) / numReps;
-% rightTail = 1 - (sum(sm.deltaStim.mean(cont, se) > sm.deltaNoStim.dist(cont, :)) / numReps);
-% sm.p(cont, se) = min([leftTail, rightTail]);
-% sm.modValue(cont, se) = (sm.deltaStim.mean(cont, se)  - sm.deltaNoStim.mean(cont)) / sm.deltaNoStim.std(cont);
-% sm.isModulated(cont, se) = sm.p(cont, se) <= alpha / 2;
 
 %% plotting fit check
+%redundant- figure out to remove and make plots another way
 %1)problem seeing is dprime is not lining up with the permutation fitsigmoid
 %2)another problem is the mechanical threshold point is not lining up with
 %the signmoid
-for a = 1:length(ca_an_struct)
-    for p = 1:3
-    %go over
-    %converting to dprime
-        dprime1{p}= norminv(ca_an_struct(a).yfit1{p}) - norminv(ca_an_struct(a).yfit1{p}(1,1));
-        dprime2 {p}= norminv(ca_an_struct(a).y_fit2{p}) - norminv(ca_an_struct(a).y_fit2{p}(1,1));
-        yq_idx_1{p} = find(dprime1{p} >= threshold,1, 'first');
-        yq_idx_2{p} = find(dprime2{p} >= threshold,1, 'first');
-        mt_1_perm{p} = ca_an_struct(a).qq(yq_idx_1{p});
-        mt_2_perm{p} = ca_an_struct(a).qq(yq_idx_2{p});
+
+for n = 1:length(ca_an_struct)
+    title(sprintf('%s, %s', num2str(ca_an_struct(n).Electrodes), ca_an_struct(n).Pulse), 'FontSize', 18)
+    for c = 1:10
+        % figure;
+        % hold on
+        % % 
+
+        plot(qq{c}, ca_an_struct(n).PDP_control{c}{:,2})
+        % plot(ca_an_struct(n).qq, dprime1{c})
+        % plot(ca_an_struct(n).qq, dprime2{c})
+        % plot([0 mt_1_perm{c} mt_1_perm{c}], [threshold, threshold, -1],'Color',rgb(69, 90, 100),'LineStyle','--' )
+        % plot([0 mt_2_perm{c} mt_2_perm{c}], [threshold, threshold, -1],'Color',rgb(69, 90, 100),'LineStyle','--' )
+        % % plot(ca_an_struct(n).qq, ca_an_struct(n).yfit1{c},'Color',rgb(84, 110, 122))
         % 
-    end
+        % 
+        % scatter(ca_an_struct(n).PDP_control{c}{:,1}, ca_an_struct(n).PDP_control{c}{:,2},'Color',rgb(33, 33, 33))
+        % scatter(ca_an_struct(n).PDP_stim{c}{:,1}, ca_an_struct(n).PDP_stim{c}{:,2}, 'Color',rgb(198, 40, 40))
+        % 
+        % SetFont('Arial', 18)
+        % xlabel('Amplitude (mm)')
+        % ylabel('d''')
+        % axis square
+     end
 end
-    %%
+
+% for a = 1:length(ca_an_struct)
+%     for p = 1:3
+%     %go over
+%     %converting to dprime
+%         dprime1{p}= norminv(ca_an_struct(a).yfit1{p}) - norminv(ca_an_struct(a).yfit1{p}(1,1));
+%         dprime2 {p}= norminv(ca_an_struct(a).y_fit2{p}) - norminv(ca_an_struct(a).y_fit2{p}(1,1));
+%         yq_idx_1{p} = find(dprime1{p} >= threshold,1, 'first');
+%         yq_idx_2{p} = find(dprime2{p} >= threshold,1, 'first');
+%         mt_1_perm{p} = ca_an_struct(a).qq(yq_idx_1{p});
+%         mt_2_perm{p} = ca_an_struct(a).qq(yq_idx_2{p});
+%         % 
+%     end
+% end
     
-
-    for n = 1:length(ca_an_struct)
-        title(sprintf('%s, %s', num2str(ca_an_struct(n).Electrodes), ca_an_struct(n).Pulse), 'FontSize', 18)
-        for c = 1:10
-            figure;
-            hold on
-      
-
-            plot(ca_an_struct(n).qq, dprime1{c})
-            plot(ca_an_struct(n).qq, dprime2{c})
-            plot([0 mt_1_perm{c} mt_1_perm{c}], [threshold, threshold, -1],'Color',rgb(69, 90, 100),'LineStyle','--' )
-            plot([0 mt_2_perm{c} mt_2_perm{c}], [threshold, threshold, -1],'Color',rgb(69, 90, 100),'LineStyle','--' )
-            % plot(ca_an_struct(n).qq, ca_an_struct(n).yfit1{c},'Color',rgb(84, 110, 122))
- 
-      
-            scatter(ca_an_struct(n).PDP_control{c}{:,1}, ca_an_struct(n).PDP_control{c}{:,2},'Color',rgb(33, 33, 33))
-            scatter(ca_an_struct(n).PDP_stim{c}{:,1}, ca_an_struct(n).PDP_stim{c}{:,2}, 'Color',rgb(198, 40, 40))
-
-            SetFont('Arial', 18)
-            xlabel('Amplitude (mm)')
-            ylabel('d''')
-            axis square
-         end
-    end
 %%
 for d = 1:length(ca_an_struct)
 %     title(sprintf('%s', ca_an_struct(d).Electrodes), 'FontSize', 18)
@@ -327,3 +321,11 @@ end
 %     plot([ac_example1 ac_example1] , [0 1000])
 %     axis square
 %     
+%% permutation within electrode pairs of cathodic and anodic
+%natalyas code
+
+% leftTail = 1 - sum(sm.deltaStim.mean(cont, se) < sm.deltaNoStim.dist(cont, :)) / numReps;
+% rightTail = 1 - (sum(sm.deltaStim.mean(cont, se) > sm.deltaNoStim.dist(cont, :)) / numReps);
+% sm.p(cont, se) = min([leftTail, rightTail]);
+% sm.modValue(cont, se) = (sm.deltaStim.mean(cont, se)  - sm.deltaNoStim.mean(cont)) / sm.deltaNoStim.std(cont);
+% sm.isModulated(cont, se) = sm.p(cont, se) <= alpha / 2;
