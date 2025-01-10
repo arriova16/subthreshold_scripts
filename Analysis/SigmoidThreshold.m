@@ -1,5 +1,5 @@
 %analyzing thresholds 
-function[mt, yq_idx, dprimeq] = SigmoidThreshold(coeffs, xq, threshold)
+function[mt, y_fit, dprimeq] = SigmoidThreshold(coeffs, xq, threshold)
     SigmoidFun = GetSigmoid(length(coeffs));
     y_fit = SigmoidFun(coeffs,xq);
     %Converting sigmoid to d'

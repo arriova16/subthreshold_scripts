@@ -120,12 +120,25 @@ for p = 1:length(ca_an_struct)
         ca_an_struct(p).PDP_stim = dp_perm_2;
 
         [~, coeffs1{dm}, ~,~,~,warn_1] = FitSigmoid(dt_perm_1{dm}{:,1}, dt_perm_1{dm}{:,2}, 'NumCoeffs', 4, 'Constraints', [0,2000; -5,5; 0,50;-20,1]);
-        [pm1] = SigmoidThreshold(coeffs1{dm}, qq, threshold);
+        [pm1, yfit_dp1, dprimeq_1] = SigmoidThreshold(coeffs1{dm}, qq, threshold);
         [~, coeffs2{dm}, ~,~,~,warn_2] = FitSigmoid(dt_perm_2{dm}{:,1},dt_perm_2{dm}{:,2}, 'NumCoeffs', 4,'Constraints', [0,2000; -5,5; 0,50;-20,1]);
-        [pm2] = SigmoidThreshold(coeffs2{dm}, qq, threshold);
+        [pm2, yfit_dp2, dprimeq_2] = SigmoidThreshold(coeffs2{dm}, qq, threshold);
             
         null_delta_threshold(dm) = pm1 - pm2;
     end %num_perm
+
+    %is this what i am trying to accomplish?
+    %checking the permutation dprimes and making sure the points match he
+    %fit
+      figure;
+        hold on
+        plot(qq, dprimeq_1)
+        plot(qq, dprimeq_2)
+        plot([0 pm1 pm1], [threshold, threshold, -1],'Color',rgb(69, 90, 100),'LineStyle','--' )
+        plot([0 pm2 pm2], [threshold, threshold, -1],'Color',rgb(69, 90, 100),'LineStyle','--' )
+        scatter( dp_perm_1{dm}{:,1}, dp_perm_1{dm}{:,2},'Color',rgb(33, 33, 33))
+        scatter( dp_perm_2{dm}{:,1}, dp_perm_2{dm}{:,2}, 'Color',rgb(198, 40, 40))
+
 
     ca_an_struct(p).null_dist = null_delta_threshold;
     ca_an_struct(p).Bootp_rt = 1 - (sum(delta_thresholds > null_delta_threshold) / num_perm);
@@ -139,15 +152,15 @@ end %ca_an_struct
 %1)problem seeing is dprime is not lining up with the permutation fitsigmoid
 %2)another problem is the mechanical threshold point is not lining up with
 %the signmoid
-
+%in order to check i need 1) 
 for n = 1:length(ca_an_struct)
-    title(sprintf('%s, %s', num2str(ca_an_struct(n).Electrodes), ca_an_struct(n).Pulse), 'FontSize', 18)
+    % title(sprintf('%s, %s', num2str(ca_an_struct(n).Electrodes), ca_an_struct(n).Pulse), 'FontSize', 18)
     for c = 1:10
-        % figure;
-        % hold on
+
+        figure;
+        hold on
         % % 
 
-        plot(qq{c}, ca_an_struct(n).PDP_control{c}{:,2})
         % plot(ca_an_struct(n).qq, dprime1{c})
         % plot(ca_an_struct(n).qq, dprime2{c})
         % plot([0 mt_1_perm{c} mt_1_perm{c}], [threshold, threshold, -1],'Color',rgb(69, 90, 100),'LineStyle','--' )
