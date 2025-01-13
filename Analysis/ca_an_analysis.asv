@@ -155,7 +155,7 @@ for p = 1:length(ca_an_struct)
       figure; hold on
         %save figures to folder
         %with specific names
-        %close figures instead of clearing
+        %
         plot(qq, ca_an_struct(p).yf_cont{c})
         plot(qq, ca_an_struct(p).yf_stim{c})
         plot([0 ca_an_struct(p).mech_thresh_cont{c} ca_an_struct(p).mech_thresh_cont{c}], [threshold, threshold, -1],'Color',rgb(69, 90, 100),'LineStyle','--' )
