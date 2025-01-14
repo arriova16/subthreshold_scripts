@@ -1,7 +1,7 @@
 %Darpa Cathodic Anodic Analysis
 
-% tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
-tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+% tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
 
 ca_an_struct = struct();
 monkey_list = dir(tld); monkey_list = monkey_list(3:end);
@@ -53,7 +53,7 @@ for m = 1:length(monkey_list)
 end %monkey_list
 
 %% Analysis(Pdetect and dPrime) for cathodic and anodic data
-
+%save this in a separate table within the struct
 threshold = 1.35;
 for a = 1:length(ca_an_struct)
     %pdetect and dprime
@@ -78,7 +78,7 @@ for a = 1:length(ca_an_struct)
     % ca_an_struct(a).y_dp_stim = y_dp_stim;
     ca_an_struct(a).mt_catch = mt_1;
     ca_an_struct(a).mt_elec = mt_2;
-
+    
     %getting delta thresholds of mech + elec 
     delta_thresholds_abs = abs(ca_an_struct(a).mt_catch - ca_an_struct(a).mt_elec);
     delta_thresholds = (ca_an_struct(a).mt_catch - ca_an_struct(a).mt_elec);
@@ -96,13 +96,14 @@ end %ca_an_struct
 % 
 %     plot([0 ca_an_struct(n).mt_catch ca_an_struct(n).mt_catch], [1.35 1.35, -1] , 'Color', rgb(69, 90, 100), 'LineStyle', '--')
 %     plot([0 ca_an_struct(n).mt_elec ca_an_struct(n).mt_elec], [1.35 1.35, -1] , 'Color', rgb(69, 90, 100), 'LineStyle', '--')
+ 
 % end
 
 %% Permutation
 %old and wont run correctly
  
-% num_perm = 1e4;
-num_perm = 500;
+num_perm = 1e4;
+% num_perm = 5;
 for p = 1:length(ca_an_struct) 
     %get indices
     % check to see if there are any sampling biasis  
@@ -124,7 +125,7 @@ for p = 1:length(ca_an_struct)
         mech_u = unique(ca_an_struct(p).ResponseTable.IndentorAmp);
         qq = linspace(mech_u(1), mech_u(end));
         
-        % ca_an_struct(p).qq = qq;
+        ca_an_struct(p).qq = qq;
 
         [dt_perm_1{dm}, dp_perm_1{dm}] = AnalyzeResponseTable(ca_an_struct(p).ResponseTable(tmp_p1_idx,:));
         [dt_perm_2{dm}, dp_perm_2{dm}] = AnalyzeResponseTable(ca_an_struct(p).ResponseTable(tmp_p2_idx,:));
@@ -134,9 +135,9 @@ for p = 1:length(ca_an_struct)
         ca_an_struct(p).PDP_control = dp_perm_1;
         ca_an_struct(p).PDP_stim = dp_perm_2;
         % 
-        [~, coeffs1{dm}, ~,~,~,warn_1] = FitSigmoid(dt_perm_1{dm}{:,1}, dt_perm_1{dm}{:,2}, 'NumCoeffs', 4, 'Constraints', [0,2000; -5,5; 0,50;-20,1]);
+        [~, coeffs1{dm}, ~,~,~,warn_1] = FitSigmoid(dt_perm_1{dm}{:,1}, dt_perm_1{dm}{:,2}, 'NumCoeffs', 4, 'Constraints', [0,2000; -5,5; 0,100;-50,1]);
         [pm1, ~, dprimeq_1] = SigmoidThreshold(coeffs1{dm}, qq, threshold);
-        [~, coeffs2{dm}, ~,~,~,warn_2] = FitSigmoid(dt_perm_2{dm}{:,1},dt_perm_2{dm}{:,2}, 'NumCoeffs', 4,'Constraints', [0,2000; -5,5; 0,50;-20,1]);
+        [~, coeffs2{dm}, ~,~,~,warn_2] = FitSigmoid(dt_perm_2{dm}{:,1},dt_perm_2{dm}{:,2}, 'NumCoeffs', 4,'Constraints', [0,2000; -5,5; 0,100;-50,1]);
         [pm2, ~, dprimeq_2] = SigmoidThreshold(coeffs2{dm}, qq, threshold);
         
         ca_an_struct(p).yf_cont{dm} = dprimeq_1;
@@ -150,7 +151,15 @@ for p = 1:length(ca_an_struct)
 
     %checking the permutation dprimes and making sure the points match he
     %fit
-     for c = 1:5
+  
+    ca_an_struct(p).null_dist = null_delta_threshold;
+    ca_an_struct(p).Bootp_rt = 1 - (sum(delta_thresholds > null_delta_threshold) / num_perm);
+    ca_an_struct(p).Bootp_lt = 1 - (sum(delta_thresholds < null_delta_threshold) / num_perm);   
+end %ca_an_struct
+
+%% check
+for i = 1:length(ca_an_struct)
+   for c = 1
 
       figure; hold on
         %save figures to folder
@@ -162,16 +171,8 @@ for p = 1:length(ca_an_struct)
         plot([0 ca_an_struct(p).mech_thresh_stim{c} ca_an_struct(p).mech_thresh_stim{c}], [threshold, threshold, -1],'Color',rgb(69, 90, 100),'LineStyle','--' )
         scatter(dp_perm_1{c}{:,1}, dp_perm_1{c}{:,2},'Color',rgb(33, 33, 33))
         scatter(dp_perm_2{c}{:,1}, dp_perm_2{c}{:,2}, 'Color',rgb(198, 40, 40))
-     end
-    % ca_an_struct(p).null_dist = null_delta_threshold;
-    % ca_an_struct(p).Bootp_rt = 1 - (sum(delta_thresholds > null_delta_threshold) / num_perm);
-    % ca_an_struct(p).Bootp_lt = 1 - (sum(delta_thresholds < null_delta_threshold) / num_perm);   
-end %ca_an_struct
-
-%% check
-
-
-
+    end
+end
 %check works
 % for n = 1:length(ca_an_struct)
 %     figure; hold on
