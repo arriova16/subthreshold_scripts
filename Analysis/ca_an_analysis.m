@@ -1,7 +1,7 @@
 %Darpa Cathodic Anodic Analysis
 
-tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
-% tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+% tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
 
 ca_an_struct = struct();
 monkey_list = dir(tld); monkey_list = monkey_list(3:end);
@@ -118,7 +118,8 @@ for p = 1:length(ca_an_struct)
     %save coeffs/ in order to make plots
     null_delta_threshold = zeros(num_perm,1);
     for dm = 1:num_perm
-        %ask in future about 300 
+        %changing permutations from trial base to response base (changing
+        %identity)
         tmp_p1_idx = datasample(p1_idx, 300, 'Replace', false);
         tmp_p2_idx = datasample(p2_idx, 300, 'Replace', false);
 
