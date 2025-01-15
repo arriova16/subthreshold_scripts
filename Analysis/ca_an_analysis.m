@@ -102,60 +102,55 @@ end %ca_an_struct
 %% Permutation
 %old and wont run correctly
  
-num_perm = 1e4;
-% num_perm = 5;
+% num_perm = 1e4;
+num_perm = 5;
 for p = 1:length(ca_an_struct) 
-    %get indices
-    % check to see if there are any sampling biasis  
-    % new conditions
-    
-    num_trials = size(ca_an_struct(p).ResponseTable,1);
-    stim_first = find(ca_an_struct(p).ResponseTable.StimAmp ~=0,1, 'first');
-    p1_idx = 1:stim_first-1;
-    p2_idx = stim_first:num_trials(end);
-
-    
-    %save coeffs/ in order to make plots
-    null_delta_threshold = zeros(num_perm,1);
     for dm = 1:num_perm
-        %changing permutations from trial base to response base (changing
-        %identity)
-        tmp_p1_idx = datasample(p1_idx, 300, 'Replace', false);
-        tmp_p2_idx = datasample(p2_idx, 300, 'Replace', false);
-
-        mech_u = unique(ca_an_struct(p).ResponseTable.IndentorAmp);
-        qq = linspace(mech_u(1), mech_u(end));
+        %this section is randperm-ing the response of ResponseTable
+        perm_Response = ca_an_struct(p).ResponseTable.Response;
+        numrows = height(perm_Response);
+        randomindices = randperm(numrows);
+        perm_Response = perm_Response(randomindices);
+    
+        %creating new table with perm_Response
+        perm_RT = ca_an_struct(p).ResponseTable;
+        perm_RT.Response = perm_Response;
+        ca_an_struct(p).perm_ResponseTable = perm_RT;
         
-        ca_an_struct(p).qq = qq;
-
-        [dt_perm_1{dm}, dp_perm_1{dm}] = AnalyzeResponseTable(ca_an_struct(p).ResponseTable(tmp_p1_idx,:));
-        [dt_perm_2{dm}, dp_perm_2{dm}] = AnalyzeResponseTable(ca_an_struct(p).ResponseTable(tmp_p2_idx,:));
-
-        ca_an_struct(p).PDT_control = dt_perm_1;
-        ca_an_struct(p).PDT_stim = dt_perm_2;
-        ca_an_struct(p).PDP_control = dp_perm_1;
-        ca_an_struct(p).PDP_stim = dp_perm_2;
-        % 
-        [~, coeffs1{dm}, ~,~,~,warn_1] = FitSigmoid(dt_perm_1{dm}{:,1}, dt_perm_1{dm}{:,2}, 'NumCoeffs', 4, 'Constraints', [0,2000; -5,5; 0,100;-50,1]);
-        [pm1, ~, dprimeq_1] = SigmoidThreshold(coeffs1{dm}, qq, threshold);
-        [~, coeffs2{dm}, ~,~,~,warn_2] = FitSigmoid(dt_perm_2{dm}{:,1},dt_perm_2{dm}{:,2}, 'NumCoeffs', 4,'Constraints', [0,2000; -5,5; 0,100;-50,1]);
-        [pm2, ~, dprimeq_2] = SigmoidThreshold(coeffs2{dm}, qq, threshold);
+        %continuing with sigmoid
         
-        ca_an_struct(p).yf_cont{dm} = dprimeq_1;
-        ca_an_struct(p).yf_stim{dm} = dprimeq_2;
+        delta_threshold = zeros(num_perm,1);
 
-        ca_an_struct(p).mech_thresh_cont{dm} = pm1;
-        ca_an_struct(p).mech_thresh_stim{dm} = pm2;
+        mech_u = unique(ca_an_struct(p).perm_ResponseTable.IndentorAmp);
+        qq = linspace(mech_u(1), mech_u(end)* 5);
+        ca_an_struct(p).qq_perm = qq;
+        
+        [dt_perm, dp_perm] = AnalyzeResponseTable(ca_an_struct(p).perm_ResponseTable);
+     
+        ca_an_struct(p).PDT = dt_perm;
+        ca_an_struct(p).PDP = dp_perm;
 
-        null_delta_threshold(dm) = pm1 - pm2;
+        [~, coeffs1, ~,~,~,warn_1] = FitSigmoid(dt_perm{:,1}, dt_perm{:,2}, 'NumCoeffs', 4, 'Constraints', [0,2000; -5,5; 0,100;-50,1]);
+        %error here
+        [pm1, ~, dprimeq_1] = SigmoidThreshold(coeffs1, qq, threshold);
+        % [~, coeffs2, ~,~,~,warn_2] = FitSigmoid(dt_perm{:,1},dt_perm{:,3}, 'NumCoeffs', 4,'Constraints', [0,2000; -5,5; 0,100;-50,1]);
+        % [pm2, ~, dprimeq_2] = SigmoidThreshold(coeffs2, qq, threshold);
+    % 
+    %     ca_an_struct(p).yf_cont = dprimeq_1;
+    %     ca_an_struct(p).yf_stim = dprimeq_2;
+    % 
+    %     ca_an_struct(p).mech_thresh_cont{dm} = pm1;
+    %     ca_an_struct(p).mech_thresh_stim{dm} = pm2;
+    % 
+        % perm_delta_threshold(dm) = pm1 - pm2;
     end %num_perm
 
     %checking the permutation dprimes and making sure the points match he
     %fit
   
-    ca_an_struct(p).null_dist = null_delta_threshold;
-    ca_an_struct(p).Bootp_rt = 1 - (sum(delta_thresholds > null_delta_threshold) / num_perm);
-    ca_an_struct(p).Bootp_lt = 1 - (sum(delta_thresholds < null_delta_threshold) / num_perm);   
+    % ca_an_struct(p).null_dist = null_delta_threshold;
+    % ca_an_struct(p).Bootp_rt = 1 - (sum(delta_thresholds > null_delta_threshold) / num_perm);
+    % ca_an_struct(p).Bootp_lt = 1 - (sum(delta_thresholds < null_delta_threshold) / num_perm);   
 end %ca_an_struct
 
 %% check
