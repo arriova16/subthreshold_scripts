@@ -106,20 +106,20 @@ end %ca_an_struct
 num_perm = 5;
 for p = 1:length(ca_an_struct) 
     for dm = 1:num_perm
-        %this section is randperm-ing the response of ResponseTable
-        perm_Response = ca_an_struct(p).ResponseTable.Response;
-        numrows = height(perm_Response);
-        randomindices = randperm(numrows);
-    %trouble getting multiple iterations of permutatation of response
-    %column
-        % perm_Response_1{dm} = perm_Response(randomindices);
-        
-        perm_it{dm} = perm_Response(randomindices);
-        
-        %creating new table with perm_Response with the perm iterations
-        perm_RT = ca_an_struct(p).ResponseTable;
-        perm_RT.Response = perm_it{dm};
-        ca_an_struct(p).perm_ResponseTable = perm_RT;
+    %     %this section is randperm-ing the response of ResponseTable
+    %     perm_Response = ca_an_struct(p).ResponseTable.Response;
+    %     numrows = height(perm_Response);
+    %     randomindices = randperm(numrows);
+    % %trouble getting multiple iterations of permutatation of response
+    % %column
+    %     % perm_Response_1{dm} = perm_Response(randomindices);
+    % 
+    %     perm_it{p,dm} = perm_Response(randomindices);
+    % 
+    %     %creating new table with perm_Response with the perm iterations
+    %     perm_RT = ca_an_struct(p).ResponseTable;
+    %     % perm_RT.Response = perm_it{dm};
+        % ca_an_struct(p).perm_ResponseTable = perm_RT;
         % 
         % %continuing with sigmoid
         % 
