@@ -100,8 +100,8 @@ end %ca_an_struct
 % end
 
 %% Permutation
-%old and wont run correctly
- 
+% permuting the mech amp tied to the response. So permuting those two against the electrical
+%shuffling within the mech amp condition not across the amplitude
 % num_perm = 1e4;
 num_perm = 5;
 for p = 1:length(ca_an_struct) 
