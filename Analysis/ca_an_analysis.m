@@ -102,8 +102,30 @@ end %ca_an_struct
 %% Permutation
 % permuting the mech amp tied to the response. So permuting those two against the electrical
 %shuffling within the mech amp condition not across the amplitude
-% num_perm = 1e4;
+
 num_perm = 5;
+for i = 1:length(ca_an_struct)
+    for p = 1:num_perm
+    %shuffling within condition
+    %leaving stim alone and shuffling indentor amp tied to responses
+
+        numrows = height(ca_an_struct(i).ResponseTable);
+        randomindices = randperm(numrows);
+
+
+
+
+
+
+    end %num_perm
+end %ca_an_struct
+
+
+
+
+%%
+% num_perm = 1e4;
+
 for p = 1:length(ca_an_struct) 
     for dm = 1:num_perm
     %     %this section is randperm-ing the response of ResponseTable
