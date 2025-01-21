@@ -28,7 +28,8 @@ for m = 1:length(monkey_list)
             ca_an_struct(c).Pulse = ca_an_struct(c).Pulse;
 
             temp_ca_an = load(fullfile(ca_an_files(c).folder, ca_an_files(c).name));
-
+            %work on getting rid off empty text in response
+            
             ca_an_struct(c).ResponseTable = temp_ca_an.bigtable;
             % rewrite this to be combined
             
@@ -40,17 +41,26 @@ for m = 1:length(monkey_list)
                 ee_2 = str2double(electrode_an_ca);
                 
             end
-            %
-            
+  
             ca_an_struct(c).Electrodes = sort(ee_2);
 
-            
-
+           
             num_trial_1 = size(ca_an_struct(c).ResponseTable,1);
             ca_an_struct(c).Trials = num_trial_1;
          end %ca_an_files
 
 end %monkey_list
+%% adjusting ResponseTable 
+%found 'empty in responsetable and getting rid of it
+
+for i = 1:length(ca_an_struct)
+    abort_idx = strcmp(ca_an_struct(i).ResponseTable{:,9}, 'empty');
+    new_rt = ca_an_struct(i).ResponseTable(~abort_idx,:);
+    c
+
+
+
+end
 
 %% Analysis(Pdetect and dPrime) for cathodic and anodic data
 %save this in a separate table within the struct
@@ -113,8 +123,15 @@ for i = 1:length(ca_an_struct)
         
         numrows = height(ca_an_struct(i).ResponseTable);
         randomindices = randperm(numrows);
-        c_dif = ca_an_struct(i).ResponseTa;
-        % mech_u = unique(ca_an_struct(i).ResponseTable.IndentorAmp);
+        RT = ca_an_struct(i).ResponseTable;
+        [mech_u,~, ia] = unique(RT.IndentorAmp);
+        for m = 1:length(mech_u)
+            %this gives me the trials of each indentor amp
+            mech_idx = find(ia==m);
+            response_idx = RT.Response(mech_idx,:);
+            
+        end
+
         %uses same perm'd rows and using it to tie together the response
         %with the mech amp
         
