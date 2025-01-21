@@ -119,14 +119,15 @@ for i = 1:length(ca_an_struct)
     %shuffling within condition
     %leaving stim alone and shuffling indentor amp tied to responses
         
-        numrows = height(ca_an_struct(i).ResponseTable);
-        randomindices = randperm(numrows);
+        % numrows = height(ca_an_struct(i).ResponseTable);
+        % randomindices = randperm(numrows);
         RT = ca_an_struct(i).ResponseTable;
         [mech_u,~, ia] = unique(RT.IndentorAmp);
         for m = 1:length(mech_u)
             %this gives me the trials of each indentor amp
             mech_idx = find(ia==m);
             response_idx = RT.Response(mech_idx,:);
+            
             
         end
 
