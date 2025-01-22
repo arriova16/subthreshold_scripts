@@ -114,28 +114,25 @@ end %ca_an_struct
 num_perm = 5;
 perm_delta_threshold = zeros(num_perm,1);
 
-for i = 1%:length(ca_an_struct)
+for i = 1:length(ca_an_struct)
     for p = 1:num_perm
     %shuffling within condition
     %leaving stim alone and shuffling indentor amp tied to responses
-        
-        % numrows = height(ca_an_struct(i).ResponseTable);
-        % randomindices = randperm(numrows);
-        RT = ca_an_struct(i).ResponseTable;
-        [mech_u,~, ia] = unique(RT.IndentorAmp);
-        for m = 1:length(mech_u)
-                %this gives me the trials of each indentor amp
-                mech_idx = find(ia==m);
-                %each of the unique mech
-                response_idx{m} = RT.Response(mech_idx,:);
-                % %permuting the response for each of the mech amps
-                response_perm = randperm(size(response_idx{m},1));
-                response_mech{m} = RT.Response(response_perm,:);
-                % new_rt = RT.Response(response_mech{m},:)
-            
-            
-        end
-
+    RT = ca_an_struct(i).ResponseTable;
+    [mech_u,~, ia] = unique(RT.IndentorAmp);
+    for m = 1:length(mech_u)
+        %this gives me the trials of each indentor amp
+        mech_idx = find(ia==m);
+        %each of the unique mech
+        response_idx{m} = RT.Response(mech_idx,:);
+        %permuting the response for each of the mech amps
+        response_perm = randperm(length(response_idx{m}));
+        response_mech{m} = RT.Response(response_perm,:);
+        %return the permuted responses to the response column
+        RT.Response(mech_idx,:) = response_mech{m};
+    
+    end
+    ca_an_struct(i).rt_perm = RT;
         %uses same perm'd rows and using it to tie together the response
         %with the mech amp
         
