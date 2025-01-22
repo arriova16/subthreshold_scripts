@@ -124,11 +124,17 @@ for i = 1:length(ca_an_struct)
         RT = ca_an_struct(i).ResponseTable;
         [mech_u,~, ia] = unique(RT.IndentorAmp);
         for m = 1:length(mech_u)
-            %this gives me the trials of each indentor amp
-            mech_idx = find(ia==m);
-            response_idx = RT.Response(mech_idx,:);
+            for a = 1:length(ia)
+                %this gives me the trials of each indentor amp
+                mech_idx = ia==m;
+                %each of the unique mech
+                % response_idx{m} = RT.Response(mech_idx,:);
+                % %permuting the response for each of the mech amps
+                % response_perm = randperm(size(response_idx{m},1));
+                % response_mech{m} = RT.Response(response_perm,:);
+
             
-            
+            end
         end
 
         %uses same perm'd rows and using it to tie together the response
