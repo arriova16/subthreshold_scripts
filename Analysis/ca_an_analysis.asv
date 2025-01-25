@@ -1,7 +1,7 @@
 %Darpa Cathodic Anodic Analysis
 
-% tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
-tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+% tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
 
 ca_an_struct = struct();
 monkey_list = dir(tld); monkey_list = monkey_list(3:end);
@@ -114,66 +114,47 @@ end %ca_an_struct
 num_perm = 5;
 perm_delta_threshold = zeros(num_perm,1);
 
-for i = 1%:length(ca_an_struct)
+for i = 1:length(ca_an_struct)
     for p = 1:num_perm
     %shuffling within condition
     %leaving stim alone and shuffling indentor amp tied to responses
-        
-        % numrows = height(ca_an_struct(i).ResponseTable);
-        % randomindices = randperm(numrows);
         RT = ca_an_struct(i).ResponseTable;
         [mech_u,~, ia] = unique(RT.IndentorAmp);
         for m = 1:length(mech_u)
             %this gives me the trials of each indentor amp
-             mech_idx = find(ia==m);
-                % %each of the unique mech
-                response_idx{m} = RT.Response(mech_idx,:);
-                % % % %permuting the response for each of the mech amps
-                response_perm = randperm(length(response_idx{m}));
-                RT.Response_new(mech_idx,:) = num2cell(response_perm);
-                % response_mech{m} = RT.Response(response_perm,:);
-                % % %return the permuted responses to the response column
-                
-                % % new_response = RT.Response;
-                % 
-                % % new_response = (response_mech{m});
-                % 
+            mech_idx = find(ia==m);
+            %each of the unique mech
+            response_idx{m} = RT.Response(mech_idx,:);
+            %permuting the response for each of the mech amps
+            response_perm = randperm(length(response_idx{m}));
+            response_mech{m} = RT.Response(response_perm,:);
+            %return the permuted responses to the response column
+            RT.Response(mech_idx,:) = response_mech{m};
+        
         end
-
-        %uses same perm'd rows and using it to tie together the response
-        %with the mech amp
-        
-
-        %getting conditions for each of the mech amps
-        % perm_response =ca_an_struct(i).ResponseTable.Response(randomindices);
-        % perm_mech = ca_an_struct(i).ResponseTable.IndentorAmp(randomindices);
-        
+        ca_an_struct(i).rt_perm = RT;
+    
         %creating a new response table with the perm response and perm mech amp 
-
-        % perm_RT = ca_an_struct(i).ResponseTable;
-        % perm_RT.Response = perm_response;
-        % perm_RT.IndentorAmp = perm_mech;
-        % ca_an_struct(i).perm_RT = perm_RT;
-        % 
-        % [dt_perm, dp_perm] = AnalyzeResponseTable(ca_an_struct(i).perm_RT);
-        % ca_an_struct(i).DT_perm = dt_perm;
-        % ca_an_struct(i).DP_perm = dp_perm;
-        % 
-        % qq = linspace(dt_perm{1,1}, dt_perm{end,1}*2);
-        % ca_an_struct(i).qq_perm = qq;
-
-        %  [~, coeffs1, ~,~,~,warn_1] = FitSigmoid(dt_perm{:,1}, dt_perm{:,2}, 'NumCoeffs', 4, 'Constraints', [0,2000; -5,5; 0,100;-50,1]);
-        % [pm1, ~, dprimeq_1] = SigmoidThreshold(coeffs1, qq, threshold);
-        % [~, coeffs2, ~,~,~,warn_2] = FitSigmoid(dt_perm{:,1},dt_perm{:,3}, 'NumCoeffs', 4,'Constraints', [0,2000; -5,5; 0,100;-50,1]);
-        % [pm2, ~, dprimeq_2] = SigmoidThreshold(coeffs2, qq, threshold);
-        % 
-        % ca_an_struct(i).yf_cont = dprimeq_1;
-        % ca_an_struct(i).yf_stim = dprimeq_2;
-        % 
-        % ca_an_struct(i).mech_thresh_cont= pm1;
-        % ca_an_struct(i).mech_thresh_stim = pm2;
-        % 
-        % perm_delta_threshold(p) = pm1 - pm2;
+    
+    %     [dt_perm, dp_perm] = AnalyzeResponseTable(ca_an_struct(i).rt_perm);
+    %     ca_an_struct(i).DT_perm = dt_perm;
+    %     ca_an_struct(i).DP_perm = dp_perm;
+    %     % 
+    %     qq = linspace(dt_perm{1,1}, dt_perm{end,1}*2);
+    %     ca_an_struct(i).qq_perm = qq;
+    % 
+    %      [~, coeffs1, ~,~,~,warn_1] = FitSigmoid(dt_perm{:,1}, dt_perm{:,2}, 'NumCoeffs', 4, 'Constraints', [0,2000; -5,5; 0,100;-50,1]);
+    %     [pm1, ~, dprimeq_1] = SigmoidThreshold(coeffs1, qq, threshold);
+    %     [~, coeffs2, ~,~,~,warn_2] = FitSigmoid(dt_perm{:,1},dt_perm{:,3}, 'NumCoeffs', 4,'Constraints', [0,2000; -5,5; 0,100;-50,1]);
+    %     [pm2, ~, dprimeq_2] = SigmoidThreshold(coeffs2, qq, threshold);
+    %     % 
+    %     ca_an_struct(i).yf_cont = dprimeq_1;
+    %     ca_an_struct(i).yf_stim = dprimeq_2;
+    % 
+    %     ca_an_struct(i).mech_thresh_cont= pm1;
+    %     ca_an_struct(i).mech_thresh_stim = pm2;
+    % 
+    %     perm_delta_threshold(p) = pm1 - pm2;
     end %num_perm
     % 
     % ca_an_struct(i).perm_dist = perm_delta_threshold;
