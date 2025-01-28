@@ -135,26 +135,26 @@ for i = 1:length(ca_an_struct)
         ca_an_struct(i).rt_perm = RT;
     
         %creating a new response table with the perm response and perm mech amp 
-    
-    %     [dt_perm, dp_perm] = AnalyzeResponseTable(ca_an_struct(i).rt_perm);
-    %     ca_an_struct(i).DT_perm = dt_perm;
-    %     ca_an_struct(i).DP_perm = dp_perm;
+    %should they be shuffled or replace?
+        [dt_perm{dm}, dp_perm{dm}] = AnalyzeResponseTable(ca_an_struct(i).rt_perm);
+        ca_an_struct(i).DT_perm = dt_perm;
+        ca_an_struct(i).DP_perm = dp_perm;
     %     % 
-    %     qq = linspace(dt_perm{1,1}, dt_perm{end,1}*2);
-    %     ca_an_struct(i).qq_perm = qq;
-    % 
-    %      [~, coeffs1, ~,~,~,warn_1] = FitSigmoid(dt_perm{:,1}, dt_perm{:,2}, 'NumCoeffs', 4, 'Constraints', [0,2000; -5,5; 0,100;-50,1]);
-    %     [pm1, ~, dprimeq_1] = SigmoidThreshold(coeffs1, qq, threshold);
-    %     [~, coeffs2, ~,~,~,warn_2] = FitSigmoid(dt_perm{:,1},dt_perm{:,3}, 'NumCoeffs', 4,'Constraints', [0,2000; -5,5; 0,100;-50,1]);
-    %     [pm2, ~, dprimeq_2] = SigmoidThreshold(coeffs2, qq, threshold);
-    %     % 
-    %     ca_an_struct(i).yf_cont = dprimeq_1;
-    %     ca_an_struct(i).yf_stim = dprimeq_2;
-    % 
-    %     ca_an_struct(i).mech_thresh_cont= pm1;
-    %     ca_an_struct(i).mech_thresh_stim = pm2;
-    % 
-    %     perm_delta_threshold(p) = pm1 - pm2;
+        % qq = linspace(dt_perm{1,1}, dt_perm{end,1}*2);
+        % ca_an_struct(i).qq_perm = qq;
+        % 
+        %  [~, coeffs1, ~,~,~,warn_1] = FitSigmoid(dt_perm{:,1}, dt_perm{:,2}, 'NumCoeffs', 4, 'Constraints', [0,2000; -5,5; 0,100;-50,1]);
+        % [pm1, ~, dprimeq_1] = SigmoidThreshold(coeffs1, qq, threshold);
+        % [~, coeffs2, ~,~,~,warn_2] = FitSigmoid(dt_perm{:,1},dt_perm{:,3}, 'NumCoeffs', 4,'Constraints', [0,2000; -5,5; 0,100;-50,1]);
+        % [pm2, ~, dprimeq_2] = SigmoidThreshold(coeffs2, qq, threshold);
+        % % 
+        % ca_an_struct(i).yf_cont = dprimeq_1;
+        % ca_an_struct(i).yf_stim = dprimeq_2;
+        % 
+        % ca_an_struct(i).mech_thresh_cont= pm1;
+        % ca_an_struct(i).mech_thresh_stim = pm2;
+        % 
+        % perm_delta_threshold(p) = pm1 - pm2;
     end %num_perm
     % 
     % ca_an_struct(i).perm_dist = perm_delta_threshold;
@@ -170,10 +170,10 @@ for i = 1:length(ca_an_struct)
         %save figures to folder
         %with specific names
         %close figures instead of clearing
-        plot(qq, ca_an_struct(p).yf_cont{c})
-        plot(qq, ca_an_struct(p).yf_stim{c})
-        plot([0 ca_an_struct(p).mech_thresh_cont{c} ca_an_struct(p).mech_thresh_cont{c}], [threshold, threshold, -1],'Color',rgb(69, 90, 100),'LineStyle','--' )
-        plot([0 ca_an_struct(p).mech_thresh_stim{c} ca_an_struct(p).mech_thresh_stim{c}], [threshold, threshold, -1],'Color',rgb(69, 90, 100),'LineStyle','--' )
+        plot(ca_an_struct(i).qq_perm, ca_an_struct(i).yf_cont{c})
+        plot(ca_an_struct(i).qq_perm, ca_an_struct(i).yf_stim{c})
+        plot([0 ca_an_struct(i).mech_thresh_cont{c} ca_an_struct(i).mech_thresh_cont{c}], [threshold, threshold, -1],'Color',rgb(69, 90, 100),'LineStyle','--' )
+        plot([0 ca_an_struct(i).mech_thresh_stim{c} ca_an_struct(i).mech_thresh_stim{c}], [threshold, threshold, -1],'Color',rgb(69, 90, 100),'LineStyle','--' )
         scatter(dp_perm_1{c}{:,1}, dp_perm_1{c}{:,2},'Color',rgb(33, 33, 33))
         scatter(dp_perm_2{c}{:,1}, dp_perm_2{c}{:,2}, 'Color',rgb(198, 40, 40))
     end
