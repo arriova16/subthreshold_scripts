@@ -110,8 +110,8 @@ end %ca_an_struct
 %% Permutation
 %shuffling the responses within each indentor amp
 
-% num_perm = 1e4;
-num_perm = 5;
+num_perm = 1e4;
+% num_perm = 5;
 perm_delta_threshold = zeros(num_perm,1);
 
 for i = 1:length(ca_an_struct)
@@ -140,7 +140,7 @@ for i = 1:length(ca_an_struct)
         ca_an_struct(i).DT_perm = dt_perm;
         ca_an_struct(i).DP_perm = dp_perm;
     %     % 
-        qq = linspace(mech_u(1,1),mech_u(end,1)*2);
+        qq = linspace(ca_an_struct(1).DT_perm{p}{1,1}, ca_an_struct(1).DT_perm{p}{end,1}*2);
         ca_an_struct(i).qq_perm = qq;
         % % 
          [~, coeffs1, ~,~,~,warn_1] = FitSigmoid(ca_an_struct(i).DT_perm{p}{:,1}, ca_an_struct(i).DT_perm{p}{:,2}, 'NumCoeffs', 4, 'Constraints', [0,2000; -5,5; 0,100;-50,1]);
@@ -148,18 +148,18 @@ for i = 1:length(ca_an_struct)
         [~, coeffs2, ~,~,~,warn_2] = FitSigmoid(ca_an_struct(i).DT_perm{p}{:,1},ca_an_struct(i).DT_perm{p}{:,3}, 'NumCoeffs', 4,'Constraints', [0,2000; -5,5; 0,100;-50,1]);
         [pm2, ~, dprimeq_2] = SigmoidThreshold(coeffs2, qq, threshold);
         
-        % ca_an_struct(i).yf_cont = dprimeq_1;
-        % ca_an_struct(i).yf_stim = dprimeq_2;
-        % 
-        % ca_an_struct(i).mech_thresh_cont= pm1;
-        % ca_an_struct(i).mech_thresh_stim = pm2;
-        % 
-        % perm_delta_threshold(p) = pm1 - pm2;
+        ca_an_struct(i).yf_cont = dprimeq_1;
+        ca_an_struct(i).yf_stim = dprimeq_2;
+
+        ca_an_struct(i).mech_thresh_cont= pm1;
+        ca_an_struct(i).mech_thresh_stim = pm2;
+
+        perm_delta_threshold(p) = pm1 - pm2;
     end %num_perm
-    % 
-    % ca_an_struct(i).perm_dist = perm_delta_threshold;
-    % ca_an_struct(i).Bootp_rt = 1 - (sum(delta_thresholds > perm_delta_threshold) / num_perm);
-    % ca_an_struct(i).Bootp_lt = 1 - (sum(delta_thresholds < perm_delta_threshold) / num_perm);   
+
+    ca_an_struct(i).perm_dist = perm_delta_threshold;
+    ca_an_struct(i).Bootp_rt = 1 - (sum(delta_thresholds > perm_delta_threshold) / num_perm);
+    ca_an_struct(i).Bootp_lt = 1 - (sum(delta_thresholds < perm_delta_threshold) / num_perm);   
 end %ca_an_struct
 
 %% check
@@ -237,17 +237,17 @@ end %ca_an_struct
 % end
     
 %%
-% for d = 1:length(ca_an_struct)
-% %     title(sprintf('%s', ca_an_struct(d).Electrodes), 'FontSize', 18)
-% %     subplot(1,2,2);hold on;
-% figure;
-% hold on
-%     histogram(ca_an_struct(d).null_dist)
-%     plot([ca_an_struct(d).delta_threshold ca_an_struct(d).delta_threshold] , [0 1000])
-%     ylabel('Permutation Trials')
-%     xlabel('Delta threshold (Control-Treatment)')
-% 
-% end %ca_an_struct
+for d = 1:length(ca_an_struct)
+%     title(sprintf('%s', ca_an_struct(d).Electrodes), 'FontSize', 18)
+%     subplot(1,2,2);hold on;
+figure;
+hold on
+    histogram(ca_an_struct(d).perm_dist)
+    plot([ca_an_struct(d).delta_threshold ca_an_struct(d).delta_threshold] , [0 1000])
+    ylabel('Permutation Trials')
+    xlabel('Delta threshold (Control-Treatment)')
+
+end %ca_an_struct
 
 
 %% permutation within pulse

@@ -237,17 +237,17 @@ end %ca_an_struct
 % end
     
 %%
-% for d = 1:length(ca_an_struct)
-% %     title(sprintf('%s', ca_an_struct(d).Electrodes), 'FontSize', 18)
-% %     subplot(1,2,2);hold on;
-% figure;
-% hold on
-%     histogram(ca_an_struct(d).null_dist)
-%     plot([ca_an_struct(d).delta_threshold ca_an_struct(d).delta_threshold] , [0 1000])
-%     ylabel('Permutation Trials')
-%     xlabel('Delta threshold (Control-Treatment)')
-% 
-% end %ca_an_struct
+for d = 1:length(ca_an_struct)
+%     title(sprintf('%s', ca_an_struct(d).Electrodes), 'FontSize', 18)
+%     subplot(1,2,2);hold on;
+figure;
+hold on
+    histogram(ca_an_struct(d).perm_dist)
+    plot([ca_an_struct(d).delta_threshold ca_an_struct(d).delta_threshold] , [0 1000])
+    ylabel('Permutation Trials')
+    xlabel('Delta threshold (Control-Treatment)')
+
+end %ca_an_struct
 
 
 %% permutation within pulse
