@@ -1,7 +1,7 @@
 %Darpa Cathodic Anodic Analysis
 
-tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
-% tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+% tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
 
 ca_an_struct = struct();
 monkey_list = dir(tld); monkey_list = monkey_list(3:end);
@@ -110,8 +110,8 @@ end %ca_an_struct
 %% Permutation
 %shuffling the responses within each indentor amp
 
-% num_perm = 1e4;
-num_perm = 5;
+num_perm = 1e4;
+% num_perm = 5;
 perm_delta_threshold = zeros(num_perm,1);
 
 for i = 1:length(ca_an_struct)
@@ -129,56 +129,56 @@ for i = 1:length(ca_an_struct)
             response_perm = randperm(length(response_idx{m}));
             response_mech{m} = RT.Response(response_perm,:);
             %return the permuted responses to the response column
-            RT.Response(mech_idx,:) = response_mech{m};
+            RT.Response(mech_idx) = response_mech{m};
         
         end
-        ca_an_struct(i).rt_perm = RT{p};
+        ca_an_struct(i).rt_perm = RT;
     
         %creating a new response table with the perm response and perm mech amp 
     %should they be shuffled or replace?
-        % [dt_perm{p}, dp_perm{p}] = AnalyzeResponseTable(ca_an_struct(i).rt_perm);
-        % ca_an_struct(i).DT_perm = dt_perm;
-        % ca_an_struct(i).DP_perm = dp_perm;
+        [dt_perm{p}, dp_perm{p}] = AnalyzeResponseTable(ca_an_struct(i).rt_perm);
+        ca_an_struct(i).DT_perm = dt_perm;
+        ca_an_struct(i).DP_perm = dp_perm;
     %     % 
-        % qq = linspace(dt_perm{1,1}, dt_perm{end,1}*2);
-        % ca_an_struct(i).qq_perm = qq;
-        % 
-        %  [~, coeffs1, ~,~,~,warn_1] = FitSigmoid(dt_perm{:,1}, dt_perm{:,2}, 'NumCoeffs', 4, 'Constraints', [0,2000; -5,5; 0,100;-50,1]);
-        % [pm1, ~, dprimeq_1] = SigmoidThreshold(coeffs1, qq, threshold);
-        % [~, coeffs2, ~,~,~,warn_2] = FitSigmoid(dt_perm{:,1},dt_perm{:,3}, 'NumCoeffs', 4,'Constraints', [0,2000; -5,5; 0,100;-50,1]);
-        % [pm2, ~, dprimeq_2] = SigmoidThreshold(coeffs2, qq, threshold);
+        qq = linspace(ca_an_struct(1).DT_perm{p}{1,1}, ca_an_struct(1).DT_perm{p}{end,1}*2);
+        ca_an_struct(i).qq_perm = qq;
         % % 
-        % ca_an_struct(i).yf_cont = dprimeq_1;
-        % ca_an_struct(i).yf_stim = dprimeq_2;
-        % 
-        % ca_an_struct(i).mech_thresh_cont= pm1;
-        % ca_an_struct(i).mech_thresh_stim = pm2;
-        % 
-        % perm_delta_threshold(p) = pm1 - pm2;
+         [~, coeffs1, ~,~,~,warn_1] = FitSigmoid(ca_an_struct(i).DT_perm{p}{:,1}, ca_an_struct(i).DT_perm{p}{:,2}, 'NumCoeffs', 4, 'Constraints', [0,2000; -5,5; 0,100;-50,1]);
+        [pm1, ~, dprimeq_1] = SigmoidThreshold(coeffs1, qq, threshold);
+        [~, coeffs2, ~,~,~,warn_2] = FitSigmoid(ca_an_struct(i).DT_perm{p}{:,1},ca_an_struct(i).DT_perm{p}{:,3}, 'NumCoeffs', 4,'Constraints', [0,2000; -5,5; 0,100;-50,1]);
+        [pm2, ~, dprimeq_2] = SigmoidThreshold(coeffs2, qq, threshold);
+        
+        ca_an_struct(i).yf_cont = dprimeq_1;
+        ca_an_struct(i).yf_stim = dprimeq_2;
+
+        ca_an_struct(i).mech_thresh_cont= pm1;
+        ca_an_struct(i).mech_thresh_stim = pm2;
+
+        perm_delta_threshold(p) = pm1 - pm2;
     end %num_perm
-    % 
-    % ca_an_struct(i).perm_dist = perm_delta_threshold;
-    % ca_an_struct(i).Bootp_rt = 1 - (sum(delta_thresholds > perm_delta_threshold) / num_perm);
-    % ca_an_struct(i).Bootp_lt = 1 - (sum(delta_thresholds < perm_delta_threshold) / num_perm);   
+
+    ca_an_struct(i).perm_dist = perm_delta_threshold;
+    ca_an_struct(i).Bootp_rt = 1 - (sum(delta_thresholds > perm_delta_threshold) / num_perm);
+    ca_an_struct(i).Bootp_lt = 1 - (sum(delta_thresholds < perm_delta_threshold) / num_perm);   
 end %ca_an_struct
 
 %% check
-for i = 1:length(ca_an_struct)
-   for c = 1
-
-      figure; hold on
-        %save figures to folder
-        %with specific names
-        %close figures instead of clearing
-        plot(ca_an_struct(i).qq_perm, ca_an_struct(i).yf_cont{c})
-        plot(ca_an_struct(i).qq_perm, ca_an_struct(i).yf_stim{c})
-        plot([0 ca_an_struct(i).mech_thresh_cont{c} ca_an_struct(i).mech_thresh_cont{c}], [threshold, threshold, -1],'Color',rgb(69, 90, 100),'LineStyle','--' )
-        plot([0 ca_an_struct(i).mech_thresh_stim{c} ca_an_struct(i).mech_thresh_stim{c}], [threshold, threshold, -1],'Color',rgb(69, 90, 100),'LineStyle','--' )
-        scatter(dp_perm_1{c}{:,1}, dp_perm_1{c}{:,2},'Color',rgb(33, 33, 33))
-        scatter(dp_perm_2{c}{:,1}, dp_perm_2{c}{:,2}, 'Color',rgb(198, 40, 40))
-    end
-end
-%check works
+% for i = 1:length(ca_an_struct)
+%    for c = 1
+% 
+%       figure; hold on
+%         %save figures to folder
+%         %with specific names
+%         %close figures instead of clearing
+%         plot(ca_an_struct(i).qq_perm, ca_an_struct(i).yf_cont{c})
+%         plot(ca_an_struct(i).qq_perm, ca_an_struct(i).yf_stim{c})
+%         plot([0 ca_an_struct(i).mech_thresh_cont{c} ca_an_struct(i).mech_thresh_cont{c}], [threshold, threshold, -1],'Color',rgb(69, 90, 100),'LineStyle','--' )
+%         plot([0 ca_an_struct(i).mech_thresh_stim{c} ca_an_struct(i).mech_thresh_stim{c}], [threshold, threshold, -1],'Color',rgb(69, 90, 100),'LineStyle','--' )
+%         scatter(dp_perm_1{c}{:,1}, dp_perm_1{c}{:,2},'Color',rgb(33, 33, 33))
+%         scatter(dp_perm_2{c}{:,1}, dp_perm_2{c}{:,2}, 'Color',rgb(198, 40, 40))
+%     end
+% end
+% %check works
 % for n = 1:length(ca_an_struct)
 %     figure; hold on
 %     scatter(ca_an_struct(n).DprimeTable{:,1}, ca_an_struct(n).DprimeTable{:,2})
@@ -197,13 +197,13 @@ end
 %2)another problem is the mechanical threshold point is not lining up with
 %the signmoid
 %in order to check i need 1) 
-for n = 1:length(ca_an_struct)
-    % title(sprintf('%s, %s', num2str(ca_an_struct(n).Electrodes), ca_an_struct(n).Pulse), 'FontSize', 18)
-    for c = 1:10
-
-        figure;
-        hold on
-        % % 
+% for n = 1:length(ca_an_struct)
+%     % title(sprintf('%s, %s', num2str(ca_an_struct(n).Electrodes), ca_an_struct(n).Pulse), 'FontSize', 18)
+%     for c = 1:10
+% 
+%         figure;
+%         hold on
+%         % % 
 
         % plot(ca_an_struct(n).qq, dprime1{c})
         % plot(ca_an_struct(n).qq, dprime2{c})
@@ -219,8 +219,8 @@ for n = 1:length(ca_an_struct)
         % xlabel('Amplitude (mm)')
         % ylabel('d''')
         % axis square
-     end
-end
+     % end
+% end
 
 % for a = 1:length(ca_an_struct)
 %     for p = 1:3
@@ -237,65 +237,65 @@ end
 % end
     
 %%
-for d = 1:length(ca_an_struct)
-%     title(sprintf('%s', ca_an_struct(d).Electrodes), 'FontSize', 18)
-%     subplot(1,2,2);hold on;
-figure;
-hold on
-    histogram(ca_an_struct(d).null_dist)
-    plot([ca_an_struct(d).delta_threshold ca_an_struct(d).delta_threshold] , [0 1000])
-    ylabel('Permutation Trials')
-    xlabel('Delta threshold (Control-Treatment)')
-    
-end %ca_an_struct
+% for d = 1:length(ca_an_struct)
+% %     title(sprintf('%s', ca_an_struct(d).Electrodes), 'FontSize', 18)
+% %     subplot(1,2,2);hold on;
+% figure;
+% hold on
+%     histogram(ca_an_struct(d).null_dist)
+%     plot([ca_an_struct(d).delta_threshold ca_an_struct(d).delta_threshold] , [0 1000])
+%     ylabel('Permutation Trials')
+%     xlabel('Delta threshold (Control-Treatment)')
+% 
+% end %ca_an_struct
 
 
 %% permutation within pulse
 % getting pairs of electrodes 
 %taking pairs of electrodes and getting the two different pulses
 
-null_dist_diff_results  = struct('Electrodes', {}, 'NullDistDifference', {});
-
-electrode = vertcat(ca_an_struct(:).Electrodes);
-electrode_u = unique(electrode, 'rows');
-
-for e = 1:size(electrode_u,1)
-    current_electrode = electrode_u(e,:);
-    electrode_idx = ismember(electrode,current_electrode,'rows');
-    
-    electrode_data = ca_an_struct(electrode_idx);
-
-    cathodic_idx = strcmpi({electrode_data.Pulse}, 'Cathodic');
-    anodic_idx = strcmpi({electrode_data.Pulse}, 'Anodic');
-
-
-    if any(cathodic_idx) && any(anodic_idx)
-        cathodic_null_dist = electrode_data(cathodic_idx).null_dist;
-        anodic_null_dist = electrode_data(anodic_idx).null_dist;
-
-        cathodic_delta_threshold = electrode_data(cathodic_idx).delta_threshold;
-        anodic_delta_threshold = electrode_data(anodic_idx).delta_threshold;
-
-        delta_diff = cathodic_delta_threshold- anodic_delta_threshold;
-
-        null_dist_diff = cathodic_null_dist - anodic_null_dist;
-
-        null_dist_diff_results(end+1).Electrodes = current_electrode;
-
-        null_dist_diff_results(end).NullDistDifference = null_dist_diff;
-        null_dist_diff_results(end).Delta_thresholds = delta_diff;
-
-        
-    end
- 
-
-end
-
-for m = 1:length(null_dist_diff_results)
-    null_dist_diff_results(m).Bootp_rt = 1 - (sum(null_dist_diff_results(m).Delta_thresholds > null_dist_diff_results(m).NullDistDifference) / num_perm);
-    null_dist_diff_results(m).Bootp_lt = 1 - (sum(null_dist_diff_results(m).Delta_thresholds < null_dist_diff_results(m).NullDistDifference) / num_perm);
-
-end
+% null_dist_diff_results  = struct('Electrodes', {}, 'NullDistDifference', {});
+% 
+% electrode = vertcat(ca_an_struct(:).Electrodes);
+% electrode_u = unique(electrode, 'rows');
+% 
+% for e = 1:size(electrode_u,1)
+%     current_electrode = electrode_u(e,:);
+%     electrode_idx = ismember(electrode,current_electrode,'rows');
+% 
+%     electrode_data = ca_an_struct(electrode_idx);
+% 
+%     cathodic_idx = strcmpi({electrode_data.Pulse}, 'Cathodic');
+%     anodic_idx = strcmpi({electrode_data.Pulse}, 'Anodic');
+% 
+% 
+%     if any(cathodic_idx) && any(anodic_idx)
+%         cathodic_null_dist = electrode_data(cathodic_idx).null_dist;
+%         anodic_null_dist = electrode_data(anodic_idx).null_dist;
+% 
+%         cathodic_delta_threshold = electrode_data(cathodic_idx).delta_threshold;
+%         anodic_delta_threshold = electrode_data(anodic_idx).delta_threshold;
+% 
+%         delta_diff = cathodic_delta_threshold- anodic_delta_threshold;
+% 
+%         null_dist_diff = cathodic_null_dist - anodic_null_dist;
+% 
+%         null_dist_diff_results(end+1).Electrodes = current_electrode;
+% 
+%         null_dist_diff_results(end).NullDistDifference = null_dist_diff;
+%         null_dist_diff_results(end).Delta_thresholds = delta_diff;
+% 
+% 
+%     end
+% 
+% 
+% end
+% 
+% for m = 1:length(null_dist_diff_results)
+%     null_dist_diff_results(m).Bootp_rt = 1 - (sum(null_dist_diff_results(m).Delta_thresholds > null_dist_diff_results(m).NullDistDifference) / num_perm);
+%     null_dist_diff_results(m).Bootp_lt = 1 - (sum(null_dist_diff_results(m).Delta_thresholds < null_dist_diff_results(m).NullDistDifference) / num_perm);
+% 
+% end
 
 % for d = 1:length(null_dist_diff_results)
 % %     subplot(1,2,1); 
@@ -323,56 +323,56 @@ end
 
 %% plotting summary
 
-electrode = vertcat(ca_an_struct(:).Electrodes);
-electrode_u = unique(electrode, 'rows');
-sized_e = length(electrode_u);
-pulse_data = vertcat(ca_an_struct(:).Pulse);
-
-cath_idx = strcmpi(pulse_data, 'Cathodic');
-an_idx = strcmpi(pulse_data, 'Anodic');
-
-w_o_icms_cath = vertcat(ca_an_struct(cath_idx).mt_catch);
-w_icms_cath = vertcat(ca_an_struct(cath_idx).mt_elec);
-w_o_icms_an = vertcat(ca_an_struct(an_idx).mt_catch);
-w_icms_an = vertcat(ca_an_struct(an_idx).mt_elec);
-delta_an = vertcat(ca_an_struct(an_idx).delta_threshold);
-delta_cath = vertcat(ca_an_struct(cath_idx).delta_threshold);
-ratio = delta_cath/delta_an;
-fixed = ratio(:,1);
-
-SetFont('Arial', 20)
-
-subplot(1,3,1); hold on
-    scatter(w_icms_cath, w_o_icms_cath, 150, rgb(123, 31, 162), 'filled')
-    scatter(w_icms_an, w_o_icms_an, 150, rgb(2, 119, 189), 'filled')
-    title('Thresholds')
-    ylabel('Without ICMS(mm)')
-    xlabel('With ICMS(mm)')
-    xlim([0 .25])
-    ylim([0 .25])
-    plot(xlim,ylim,'Color', [.8 .8 .8], 'LineStyle','--')
-
-    text(.15,.1, ColorText({'Cathodic', 'Anodic'}, [rgb(123, 31, 162);rgb(2, 119, 189)]), 'HorizontalAlignment', 'left', 'VerticalAlignment', 'top')
-    axis square
-
- subplot(1,3,2); hold on
-    scatter(delta_an, delta_cath, 150, rgb(33, 33, 33),'filled', 'LineWidth', 1.5)
-    plot([0,0], [-0.05 0.05] , 'Color', [.6 .6 .6], 'LineStyle', '--')
-    plot( [-0.05 0.05],[0,0] , 'Color', [.6 .6 .6], 'LineStyle', '--')
-    ylabel('\Delta Cathodic Threshold')
-    xlabel('\Delta Anodic Threshold')
-    xlim([-.049 .049])
-    ylim([-0.049 .049])
-    axis square
-for b = 1:size(electrode_u,1)
-    subplot(1,3,3) ; hold on
-    scatter((1:5), fixed, 150, rgb(33, 33, 33),'filled', 'LineWidth', 1.5)
-    set(gca,'XTick', [])
-    xlabel('Electrode')
-    ylabel('Delta Cathodic/ Delta Anodic')
-    axis square
-
-end
+% electrode = vertcat(ca_an_struct(:).Electrodes);
+% electrode_u = unique(electrode, 'rows');
+% sized_e = length(electrode_u);
+% pulse_data = vertcat(ca_an_struct(:).Pulse);
+% 
+% cath_idx = strcmpi(pulse_data, 'Cathodic');
+% an_idx = strcmpi(pulse_data, 'Anodic');
+% 
+% w_o_icms_cath = vertcat(ca_an_struct(cath_idx).mt_catch);
+% w_icms_cath = vertcat(ca_an_struct(cath_idx).mt_elec);
+% w_o_icms_an = vertcat(ca_an_struct(an_idx).mt_catch);
+% w_icms_an = vertcat(ca_an_struct(an_idx).mt_elec);
+% delta_an = vertcat(ca_an_struct(an_idx).delta_threshold);
+% delta_cath = vertcat(ca_an_struct(cath_idx).delta_threshold);
+% ratio = delta_cath/delta_an;
+% fixed = ratio(:,1);
+% 
+% SetFont('Arial', 20)
+% 
+% subplot(1,3,1); hold on
+%     scatter(w_icms_cath, w_o_icms_cath, 150, rgb(123, 31, 162), 'filled')
+%     scatter(w_icms_an, w_o_icms_an, 150, rgb(2, 119, 189), 'filled')
+%     title('Thresholds')
+%     ylabel('Without ICMS(mm)')
+%     xlabel('With ICMS(mm)')
+%     xlim([0 .25])
+%     ylim([0 .25])
+%     plot(xlim,ylim,'Color', [.8 .8 .8], 'LineStyle','--')
+% 
+%     text(.15,.1, ColorText({'Cathodic', 'Anodic'}, [rgb(123, 31, 162);rgb(2, 119, 189)]), 'HorizontalAlignment', 'left', 'VerticalAlignment', 'top')
+%     axis square
+% 
+%  subplot(1,3,2); hold on
+%     scatter(delta_an, delta_cath, 150, rgb(33, 33, 33),'filled', 'LineWidth', 1.5)
+%     plot([0,0], [-0.05 0.05] , 'Color', [.6 .6 .6], 'LineStyle', '--')
+%     plot( [-0.05 0.05],[0,0] , 'Color', [.6 .6 .6], 'LineStyle', '--')
+%     ylabel('\Delta Cathodic Threshold')
+%     xlabel('\Delta Anodic Threshold')
+%     xlim([-.049 .049])
+%     ylim([-0.049 .049])
+%     axis square
+% for b = 1:size(electrode_u,1)
+%     subplot(1,3,3) ; hold on
+%     scatter((1:5), fixed, 150, rgb(33, 33, 33),'filled', 'LineWidth', 1.5)
+%     set(gca,'XTick', [])
+%     xlabel('Electrode')
+%     ylabel('Delta Cathodic/ Delta Anodic')
+%     axis square
+% 
+% end
 %     hold on
 %     histogram(null_example1)
 %     plot([ac_example1 ac_example1] , [0 1000])
