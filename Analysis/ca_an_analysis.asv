@@ -1,7 +1,7 @@
 %Darpa Cathodic Anodic Analysis
 
-% tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
-tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+% tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
 
 ca_an_struct = struct();
 monkey_list = dir(tld); monkey_list = monkey_list(3:end);
@@ -140,21 +140,22 @@ for i = 1:length(ca_an_struct)
         ca_an_struct(i).DT_perm = dt_perm;
         ca_an_struct(i).DP_perm = dp_perm;
     %     % 
-        qq = linspace(ca_an_struct(1).DT_perm{p}{1,1}, ca_an_struct(1).DT_perm{p}{end,1}*2);
+        qq = linspace(dt_perm{p}{1,1}, dt_perm{p}{end,1}*2);
         ca_an_struct(i).qq_perm = qq;
-        % % 
-         [~, coeffs1, ~,~,~,warn_1] = FitSigmoid(ca_an_struct(i).DT_perm{p}{:,1}, ca_an_struct(i).DT_perm{p}{:,2}, 'NumCoeffs', 4, 'Constraints', [0,2000; -5,5; 0,100;-50,1]);
-        [pm1, ~, dprimeq_1] = SigmoidThreshold(coeffs1, qq, threshold);
-        [~, coeffs2, ~,~,~,warn_2] = FitSigmoid(ca_an_struct(i).DT_perm{p}{:,1},ca_an_struct(i).DT_perm{p}{:,3}, 'NumCoeffs', 4,'Constraints', [0,2000; -5,5; 0,100;-50,1]);
-        [pm2, ~, dprimeq_2] = SigmoidThreshold(coeffs2, qq, threshold);
         
-        ca_an_struct(i).yf_cont = dprimeq_1;
-        ca_an_struct(i).yf_stim = dprimeq_2;
+         [~, coeffs1{p}, ~,~,~,warn_1] = FitSigmoid(ca_an_struct(i).DT_perm{p}{:,1}, ca_an_struct(i).DT_perm{p}{:,2}, 'NumCoeffs', 4, 'Constraints', [-5,2000; -10,10; 0,100;-50,1]);
+        [pm1{p}, ~, dprimeq_1{p}] = SigmoidThreshold(coeffs1{p}, qq, threshold);
+ 
+        [~, coeffs2{p}, ~,~,~,warn_2] = FitSigmoid(ca_an_struct(i).DT_perm{p}{:,1},ca_an_struct(i).DT_perm{p}{:,3}, 'NumCoeffs', 4,'Constraints', [0,2000; -5,5; 0,100;-50,1]);
+        [pm2{p}, ~, dprimeq_2{p}] = SigmoidThreshold(coeffs2{p}, qq, threshold);
+        % 
+        ca_an_struct(i).yf_cont = dprimeq_1{p};
+        ca_an_struct(i).yf_stim = dprimeq_2{p};
 
-        ca_an_struct(i).mech_thresh_cont= pm1;
-        ca_an_struct(i).mech_thresh_stim = pm2;
-
-        perm_delta_threshold(p) = pm1 - pm2;
+        ca_an_struct(i).mech_thresh_cont= pm1{p};
+        ca_an_struct(i).mech_thresh_stim = pm2{p};
+        % 
+        perm_delta_threshold(p) = pm1{p} - pm2{p};
     end %num_perm
 
     ca_an_struct(i).perm_dist = perm_delta_threshold;
@@ -237,17 +238,17 @@ end %ca_an_struct
 % end
     
 %%
-for d = 1:length(ca_an_struct)
-%     title(sprintf('%s', ca_an_struct(d).Electrodes), 'FontSize', 18)
-%     subplot(1,2,2);hold on;
-figure;
-hold on
-    histogram(ca_an_struct(d).perm_dist)
-    plot([ca_an_struct(d).delta_threshold ca_an_struct(d).delta_threshold] , [0 1000])
-    ylabel('Permutation Trials')
-    xlabel('Delta threshold (Control-Treatment)')
-
-end %ca_an_struct
+% for d = 1:length(ca_an_struct)
+% %     title(sprintf('%s', ca_an_struct(d).Electrodes), 'FontSize', 18)
+% %     subplot(1,2,2);hold on;
+% figure;
+% hold on
+%     histogram(ca_an_struct(d).perm_dist)
+%     plot([ca_an_struct(d).delta_threshold ca_an_struct(d).delta_threshold] , [0 1000])
+%     ylabel('Permutation Trials')
+%     xlabel('Delta threshold (Control-Treatment)')
+% 
+% end %ca_an_struct
 
 
 %% permutation within pulse
