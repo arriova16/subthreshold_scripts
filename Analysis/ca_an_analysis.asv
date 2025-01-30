@@ -1,7 +1,7 @@
 %Darpa Cathodic Anodic Analysis
 
-tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
-% tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+% tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
 
 ca_an_struct = struct();
 monkey_list = dir(tld); monkey_list = monkey_list(3:end);
@@ -144,14 +144,16 @@ for i = 1:length(ca_an_struct)
         end
 
         num_perms = 5;
-        p_perm = zeros(num_perms, num_mech_stim);
+        
         for p = 1:num_perm
+            p_perm = zeros(num_mech_stim, 2);
             for m = 1:num_mech_stim
                 shuffle_idx = randperm(length(mech_responses{m}));
                 half_idx = floor(length(shuffle_idx)/2);
                 idx1 = shuffle_idx(1:half_idx);
                 idx2 = shuffle_idx(half_idx+1:end);
-                mech_responses{m} = r(ia == m);
+                p_perm(m,1) = mean(mech_responses{m}(idx1));
+                p_perm(m,2) = mean(mech_responses{m}(idx2));
             end
         end
         %%
@@ -186,6 +188,7 @@ for i = 1:length(ca_an_struct)
     ca_an_struct(i).Bootp_lt = 1 - (sum(delta_thresholds < perm_delta_threshold) / num_perm);   
 end %ca_an_struct
 
+return
 %% check
 % for i = 1:length(ca_an_struct)
 %    for c = 1
