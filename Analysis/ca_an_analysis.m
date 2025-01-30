@@ -113,7 +113,7 @@ end %ca_an_struct
 num_perm = 1e4;
 % num_perm = 5;
 perm_delta_threshold = zeros(num_perm,1);
-
+%issue with 
 for i = 1:length(ca_an_struct)
     for p = 1:num_perm
     %shuffling within condition
@@ -132,6 +132,31 @@ for i = 1:length(ca_an_struct)
             RT.Response(mech_idx) = response_mech{m};
         
         end
+
+        %%
+        a = RT.IndentorAmp;
+        r = strcmp(RT.Response, 'correct');
+        [mech_u,~, ia] = unique(RT.IndentorAmp);
+        num_mech_stim = length(mech_u);
+        mech_responses = cell(num_mech_stim, 1);
+        for m = 1:num_mech_stim
+            mech_responses{m} = r(ia == m);
+        end
+
+        num_perms = 5;
+        
+        for p = 1:num_perm
+            p_perm = zeros(num_mech_stim, 2);
+            for m = 1:num_mech_stim
+                shuffle_idx = randperm(length(mech_responses{m}));
+                half_idx = floor(length(shuffle_idx)/2);
+                idx1 = shuffle_idx(1:half_idx);
+                idx2 = shuffle_idx(half_idx+1:end);
+                p_perm(m,1) = mean(mech_responses{m}(idx1));
+                p_perm(m,2) = mean(mech_responses{m}(idx2));
+            end
+        end
+        %%
         ca_an_struct(i).rt_perm = RT;
     
         %creating a new response table with the perm response and perm mech amp 
@@ -163,6 +188,7 @@ for i = 1:length(ca_an_struct)
     ca_an_struct(i).Bootp_lt = 1 - (sum(delta_thresholds < perm_delta_threshold) / num_perm);   
 end %ca_an_struct
 
+return
 %% check
 % for i = 1:length(ca_an_struct)
 %    for c = 1
