@@ -1,5 +1,5 @@
-% tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
-tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+% tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
 
 og_struct = struct();
 monkey_list = dir(tld); monkey_list = monkey_list(3:end);
@@ -42,8 +42,8 @@ for n = 1:length(og_struct)
     og_struct(n).pdetect = dt;
     og_struct(n).dprime = dp;
 
-    [~, coeffs_1, ~,~,~, warn_1] = FitSigmoid(og_struct(n).pdetect{:,1}, og_struct(n).pdetect{:,2}, 'NumCoeffs', 4, 'Constraints', [0, 5000; -100, 100]);
-    [~, coeffs_2, ~,~,~, warn_2] = FitSigmoid(og_struct(n).pdetect{:,1}, og_struct(n).pdetect{:,3},'NumCoeffs', 4, 'Constraints', [0, 5000; -100, 100]);
+    [~, coeffs_1, ~,~,~, warn_1] = FitSigmoid(og_struct(n).pdetect{:,1}, og_struct(n).pdetect{:,2}, 'NumCoeffs', 4, 'Constraints',  [0, 500; -5,5; 0,100;-100,100]);
+    [~, coeffs_2, ~,~,~, warn_2] = FitSigmoid(og_struct(n).pdetect{:,1}, og_struct(n).pdetect{:,3},'NumCoeffs', 4, 'Constraints',  [0, 500; -5,5; 0,100;-100,100]);
 
     xq = linspace(og_struct(n).pdetect{1,1}, (og_struct(n).pdetect{end,1})*2);
 
@@ -55,7 +55,51 @@ for n = 1:length(og_struct)
 
 
 end
+%% permutation analysis 
+%not having so much big tables
 
+for i = 1:length(og_struct)
+    RT = og_struct(i).ResponseTable;
+    mech_amp = RT.IndentorAmp;
+    response = strcmp(RT.Response,'correct');
+    [mech_u, ~, ia] = unique(mech_amp);
+    num_mech = length(mech_u);
+    mech_response = cell(num_mech,1);
+    for m = 1:num_mech
+        mech_response{m} = response(ia==m);
+    end
+    
+    num_perm = 5;
+    % num_perm = 1e4;
+    for p = 1:num_perm
+
+        p_perm = zeros(num_mech,2);
+        for m = 1:num_mech
+
+            %shuffle based not on with or without stim but within
+            %condition. so regardless still comparing two psychometric
+            %functions but not based on whether stim occured. just
+            %comparing the two. so even though I am asking whether or not
+            %stim has an effect. this is asking whether or not there is an
+            %effect regardless of place of mech amp
+
+            shuffle_idx = randperm(length(mech_response{m}));
+            half_idx = floor(length(shuffle_idx)/2);
+            idx1 = shuffle_idx(1:half_idx);
+            idx2 = shuffle_idx(half_idx+1:end);
+            p_perm(m,1) = mean(mech_response{m}(idx1));
+            p_perm(m,2) = mean(mech_response{m}(idx2));
+           
+        end %num_mech
+        [~,coeffs1, ~,~,warn1] = FitSigmoid(mech_u, p_perm(:,1),  'NumCoeffs', 4,'Constraints', [0,5000; -20,20; -10,10; -50,50]);
+        % [~,coeffs2, ~,~,warn2] = FitSigmoid(mech_u, p_perm(:,2),  'NumCoeffs', 4,'Constraints', [0,5000; -20,20; -10,10; -50,50]);
+    end %num_perm
+
+    
+end %og_struct
+
+
+return
 %% Permutation Analysis
 
 % num_perm = 1e4;
