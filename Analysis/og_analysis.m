@@ -69,8 +69,8 @@ for i = 1:length(og_struct)
         mech_response{m} = response(ia==m);
     end
     
-    num_perm = 5;
-    % num_perm = 1e4;
+    % num_perm = 5;
+    num_perm = 1e4;
     for p = 1:num_perm
 
         p_perm = zeros(num_mech,2);
@@ -92,7 +92,7 @@ for i = 1:length(og_struct)
            
         end %num_mech
         [~,coeffs1, ~,~,warn1] = FitSigmoid(mech_u, p_perm(:,1),  'NumCoeffs', 4,'Constraints', [0,5000; -20,20; -10,10; -50,50]);
-        % [~,coeffs2, ~,~,warn2] = FitSigmoid(mech_u, p_perm(:,2),  'NumCoeffs', 4,'Constraints', [0,5000; -20,20; -10,10; -50,50]);
+        [~,coeffs2, ~,~,warn2] = FitSigmoid(mech_u, p_perm(:,2),  'NumCoeffs', 4,'Constraints', [0,5000; -20,20; -10,10; -50,50]);
     end %num_perm
 
     

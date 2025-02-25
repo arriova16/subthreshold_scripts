@@ -106,89 +106,104 @@ end %ca_an_struct
 %     plot([0 ca_an_struct(n).mt_elec ca_an_struct(n).mt_elec], [1.35 1.35, -1] , 'Color', rgb(69, 90, 100), 'LineStyle', '--')
  
 % end
+%% perm rewrite
+
+% num_perm = 1e4; 
+num_perm = 5;
+
+perm_delta_threshold = zeros(num_perm,1);
+for i = 1:length(ca_an_struct)
+    RT = ca_an_struct(i).ResponseTable;
+    [mech_u, ~, ia] = unique(RT.IndentorAmp);
+    r = strcmp(RT.Response, 'correct');
+    num_mech_stim = length(mech_u);
+
+
+end
+return
 
 %% Permutation
 %shuffling the responses within each indentor amp
 
-num_perm = 1e4;
-% num_perm = 5;
-perm_delta_threshold = zeros(num_perm,1);
-%issue with 
-for i = 1:length(ca_an_struct)
-    for p = 1:num_perm
-    %shuffling within condition
-    %leaving stim alone and shuffling indentor amp tied to responses
-        RT = ca_an_struct(i).ResponseTable;
-        [mech_u,~, ia] = unique(RT.IndentorAmp);
-        for m = 1:length(mech_u)
-            %this gives me the trials of each indentor amp
-            mech_idx = find(ia==m);
-            %each of the unique mech
-            response_idx{m} = RT.Response(mech_idx,:);
-            %permuting the response for each of the mech amps
-            response_perm = randperm(length(response_idx{m}));
-            response_mech{m} = RT.Response(response_perm,:);
-            %return the permuted responses to the response column
-            RT.Response(mech_idx) = response_mech{m};
-        
-        end
-
-        %%
-        a = RT.IndentorAmp;
-        r = strcmp(RT.Response, 'correct');
-        [mech_u,~, ia] = unique(RT.IndentorAmp);
-        num_mech_stim = length(mech_u);
-        mech_responses = cell(num_mech_stim, 1);
-        for m = 1:num_mech_stim
-            mech_responses{m} = r(ia == m);
-        end
-
-        num_perms = 5;
-        
-        for p = 1:num_perm
-            p_perm = zeros(num_mech_stim, 2);
-            for m = 1:num_mech_stim
-                shuffle_idx = randperm(length(mech_responses{m}));
-                half_idx = floor(length(shuffle_idx)/2);
-                idx1 = shuffle_idx(1:half_idx);
-                idx2 = shuffle_idx(half_idx+1:end);
-                p_perm(m,1) = mean(mech_responses{m}(idx1));
-                p_perm(m,2) = mean(mech_responses{m}(idx2));
-            end
-        end
-        %%
-        ca_an_struct(i).rt_perm = RT;
-    
-        %creating a new response table with the perm response and perm mech amp 
-    %should they be shuffled or replace?
-        [dt_perm{p}, dp_perm{p}] = AnalyzeResponseTable(ca_an_struct(i).rt_perm);
-        ca_an_struct(i).DT_perm = dt_perm;
-        ca_an_struct(i).DP_perm = dp_perm;
-    %     % 
-        qq = linspace(dt_perm{p}{1,1}, dt_perm{p}{end,1}*2);
-        ca_an_struct(i).qq_perm = qq;
-        
-         [~, coeffs1{p}, ~,~,~,warn_1] = FitSigmoid(ca_an_struct(i).DT_perm{p}{:,1}, ca_an_struct(i).DT_perm{p}{:,2}, 'NumCoeffs', 4, 'Constraints', [-5,2000; -10,10; 0,100;-50,1]);
-        [pm1{p}, ~, dprimeq_1{p}] = SigmoidThreshold(coeffs1{p}, qq, threshold);
- 
-        [~, coeffs2{p}, ~,~,~,warn_2] = FitSigmoid(ca_an_struct(i).DT_perm{p}{:,1},ca_an_struct(i).DT_perm{p}{:,3}, 'NumCoeffs', 4,'Constraints', [0,2000; -5,5; 0,100;-50,1]);
-        [pm2{p}, ~, dprimeq_2{p}] = SigmoidThreshold(coeffs2{p}, qq, threshold);
-        % 
-        ca_an_struct(i).yf_cont = dprimeq_1{p};
-        ca_an_struct(i).yf_stim = dprimeq_2{p};
-
-        ca_an_struct(i).mech_thresh_cont= pm1{p};
-        ca_an_struct(i).mech_thresh_stim = pm2{p};
-        % 
-        perm_delta_threshold(p) = pm1{p} - pm2{p};
-    end %num_perm
-
-    ca_an_struct(i).perm_dist = perm_delta_threshold;
-    ca_an_struct(i).Bootp_rt = 1 - (sum(delta_thresholds > perm_delta_threshold) / num_perm);
-    ca_an_struct(i).Bootp_lt = 1 - (sum(delta_thresholds < perm_delta_threshold) / num_perm);   
-end %ca_an_struct
-
-return
+% num_perm = 1e4;
+% % num_perm = 5;
+% perm_delta_threshold = zeros(num_perm,1);
+% %issue with 
+% for i = 1:length(ca_an_struct)
+%     for p = 1:num_perm
+%     %shuffling within condition
+%     %leaving stim alone and shuffling indentor amp tied to responses
+%         RT = ca_an_struct(i).ResponseTable;
+%         [mech_u,~, ia] = unique(RT.IndentorAmp);
+%         for m = 1:length(mech_u)
+%             %this gives me the trials of each indentor amp
+%             mech_idx = find(ia==m);
+%             %each of the unique mech
+%             response_idx{m} = RT.Response(mech_idx,:);
+%             %permuting the response for each of the mech amps
+%             response_perm = randperm(length(response_idx{m}));
+%             response_mech{m} = RT.Response(response_perm,:);
+%             %return the permuted responses to the response column
+%             RT.Response(mech_idx) = response_mech{m};
+% 
+%         end
+% 
+%         %%
+%         a = RT.IndentorAmp;
+%         r = strcmp(RT.Response, 'correct');
+%         [mech_u,~, ia] = unique(RT.IndentorAmp);
+%         num_mech_stim = length(mech_u);
+%         mech_responses = cell(num_mech_stim, 1);
+%         for m = 1:num_mech_stim
+%             mech_responses{m} = r(ia == m);
+%         end
+% 
+%         num_perms = 5;
+% 
+%         for p = 1:num_perm
+%             p_perm = zeros(num_mech_stim, 2);
+%             for m = 1:num_mech_stim
+%                 shuffle_idx = randperm(length(mech_responses{m}));
+%                 half_idx = floor(length(shuffle_idx)/2);
+%                 idx1 = shuffle_idx(1:half_idx);
+%                 idx2 = shuffle_idx(half_idx+1:end);
+%                 p_perm(m,1) = mean(mech_responses{m}(idx1));
+%                 p_perm(m,2) = mean(mech_responses{m}(idx2));
+%             end
+%         end
+%         %%
+%         ca_an_struct(i).rt_perm = RT;
+% 
+%         %creating a new response table with the perm response and perm mech amp 
+%     %should they be shuffled or replace?
+%         [dt_perm{p}, dp_perm{p}] = AnalyzeResponseTable(ca_an_struct(i).rt_perm);
+%         ca_an_struct(i).DT_perm = dt_perm;
+%         ca_an_struct(i).DP_perm = dp_perm;
+%     %     % 
+%         qq = linspace(dt_perm{p}{1,1}, dt_perm{p}{end,1}*2);
+%         ca_an_struct(i).qq_perm = qq;
+% 
+%          [~, coeffs1{p}, ~,~,~,warn_1] = FitSigmoid(ca_an_struct(i).DT_perm{p}{:,1}, ca_an_struct(i).DT_perm{p}{:,2}, 'NumCoeffs', 4, 'Constraints', [-5,2000; -10,10; 0,100;-50,1]);
+%         [pm1{p}, ~, dprimeq_1{p}] = SigmoidThreshold(coeffs1{p}, qq, threshold);
+% 
+%         [~, coeffs2{p}, ~,~,~,warn_2] = FitSigmoid(ca_an_struct(i).DT_perm{p}{:,1},ca_an_struct(i).DT_perm{p}{:,3}, 'NumCoeffs', 4,'Constraints', [0,2000; -5,5; 0,100;-50,1]);
+%         [pm2{p}, ~, dprimeq_2{p}] = SigmoidThreshold(coeffs2{p}, qq, threshold);
+%         % 
+%         ca_an_struct(i).yf_cont = dprimeq_1{p};
+%         ca_an_struct(i).yf_stim = dprimeq_2{p};
+% 
+%         ca_an_struct(i).mech_thresh_cont= pm1{p};
+%         ca_an_struct(i).mech_thresh_stim = pm2{p};
+%         % 
+%         perm_delta_threshold(p) = pm1{p} - pm2{p};
+%     end %num_perm
+% 
+%     ca_an_struct(i).perm_dist = perm_delta_threshold;
+%     ca_an_struct(i).Bootp_rt = 1 - (sum(delta_thresholds > perm_delta_threshold) / num_perm);
+%     ca_an_struct(i).Bootp_lt = 1 - (sum(delta_thresholds < perm_delta_threshold) / num_perm);   
+% end %ca_an_struct
+% 
+% return
 %% check
 % for i = 1:length(ca_an_struct)
 %    for c = 1
