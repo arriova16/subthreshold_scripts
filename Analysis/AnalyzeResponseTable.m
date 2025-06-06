@@ -1,6 +1,6 @@
 %function to analyze block and hybrid table
 function [detection_table, dprime_table] = AnalyzeResponseTable(input_table)
-%rewrite!!!
+%rewrite!!! update
     % c(1) = rate of change, c(2) = x-offset, c(3) = multiplier, c(4) = offset
     % sigfun = @(c,x) (c(3) .* (1./(1 + exp(-c(1).*(x-c(2)))))) + c(4);
     
