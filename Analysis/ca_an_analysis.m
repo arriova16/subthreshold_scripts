@@ -1,10 +1,11 @@
 %Darpa Cathodic Anodic Analysis
 
 % tld = 'C:\Users\arrio\Box\BensmaiaLab\UserData\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
-tld = 'Z:\UserFolders\ToriArriola\DARPA_updated\PreProcessedData';
+tld = '/Users/arriova16/Library/CloudStorage/OneDrive-Personal/data/ToriArriola/DARPA_updated/PreProcessedData';
 
 ca_an_struct = struct();
-monkey_list = dir(tld); monkey_list = monkey_list(3:end);
+monkey_list = dir(tld);
+monkey_list = monkey_list(4:end);
 
 for m = 1:length(monkey_list)
      subf_ca_an = fullfile(tld, monkey_list(1).name, 'Cathodic_Anodic');
